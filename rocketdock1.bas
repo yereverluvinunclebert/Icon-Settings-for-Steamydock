@@ -84,6 +84,9 @@ Public captureIconCount As Integer      ' allow the icon count to be accessible 
 Public rDThumbImageSize As String
 Public sFilenameCheck As String ' debug
 
+Public rDIconConfigFormXPosTwips As String
+Public rDIconConfigFormYPosTwips As String
+
 'Public sdAppPath As String
 'Public steamyDockInstalled As Boolean
 'Public SDinstalled As String
@@ -172,7 +175,7 @@ Private Const CF_SCREENFONTS As Long = &H1
 
 'type declaration used to choose a font via the system dialog window
 Public Type FormFontInfo
-  name As String
+  Name As String
   Weight As Integer
   Height As Integer
   UnderLine As Boolean
@@ -199,7 +202,7 @@ End Type
 
 Private Type FONTSTRUC
   lStructSize As Long
-  hWnd As Long
+  hwnd As Long
   hdc As Long
   lpLogFont As Long
   iPointSize As Long
@@ -238,7 +241,7 @@ Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
 (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
 Private Declare Function GetDeviceCaps Lib "gdi32" _
   (ByVal hdc As Long, ByVal nIndex As Long) As Long
-Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
 ' .76 DAEB 28/05/2022 rdIconConfigForm.frm New font code synchronising method with FCW fixing tool not displaying previously chosen font ENDS
 
 ''------------------------------------------------------ STARTS
@@ -267,6 +270,10 @@ Public cacheingFlg As Boolean
 Public sdChkToggleDialogs As String ' .70 DAEB 16/05/2022 rDIConConfig.frm Read the chkToggleDialogs value from a file and save the value for next time
 
 Public origSettingsFile As String
+
+Public interimSettingsFile As String
+
+Public programStatus As String
 
 '------------------------------------------------------ ENDS
 
@@ -297,12 +304,6 @@ Main_Error:
     
 End Sub
 
-
-
-
-
-
-
 '---------------------------------------------------------------------------------------
 ' Procedure : displayEmbeddedAllIcons
 ' Author    : beededea
@@ -316,17 +317,17 @@ End Sub
 '
 Public Sub displayEmbeddedIcons(ByVal Filename As String, ByRef targetPicBox As PictureBox, ByVal IconSize As Integer)
     
-    Dim lIconIndex As Long
-    Dim xSize As Long
-    Dim ySize As Long
+    Dim lIconIndex As Long: lIconIndex = 0
+    Dim xSize As Long: xSize = 0
+    Dim ySize As Long: ySize = 0
     Dim hIcon() As Long
-    'Dim hLIcon() As Long
-    'Dim hSIcon() As Long
+    'Dim hLIcon() As Long: this long = 0
+    'Dim hSIcon() As Long: this long = 0
     Dim hIconID() As Long
-    Dim nIcons As Long
-    Dim Result As Long
-    Dim flags As Long
-    Dim i As Long
+    Dim nIcons As Long: nIcons = 0
+    Dim Result As Long: Result = 0
+    Dim flags As Long: flags = 0
+    Dim i As Long: i = 0
     Dim pic As IPicture
     
     On Error Resume Next
@@ -401,9 +402,9 @@ Public Sub displayEmbeddedIcons(ByVal Filename As String, ByRef targetPicBox As 
 
         End With
     End If
-    ' get rid of the icon we created
+    ' get rid of the icons we created
     Call DestroyIcon(hIcon(i + lIconIndex - 1))
-
+    'Call DestroyIcon(hIcon(LBound(hIcon))
 
 End Sub
 
@@ -441,7 +442,7 @@ Private Function CreateIcon(ByVal hImage As Long) As IPicture
     Dim pic As IPicture
     Dim dsc As PictDesc
     Dim iid(0 To 15) As Byte
-    Dim Result As Long
+    Dim Result As Long: Result = 0
     
    On Error GoTo CreateIcon_Error
 
@@ -487,7 +488,7 @@ Public Sub displayEmbeddedIconsOld(ByVal Filename As String, ByRef targetPicBox 
     ' unfortunately the ExtractIconEx API only returns 16 and 32 bit icons
     
     Dim sExeName       As String
-    Dim lIndex         As Long
+    Dim lIndex         As Long: lIndex = 0
 
 ' eg. FileName = "C:\Program Files (x86)\Microsoft Visual Studio 8\Common7\IDE\vbexpress.exe"
    On Error GoTo displayEmbeddedIcons_Error
@@ -565,260 +566,7 @@ displayEmbeddedIcons_Error:
  
 End Sub
 
-''FIXIT: Declare 'getstring' with an early-bound data type                                  FixIT90210ae-R1672-R1B8ZE
-''---------------------------------------------------------------------------------------
-'' Procedure : getstring
-'' Author    : beededea
-'' Date      : 05/07/2019
-'' Purpose   :
-''---------------------------------------------------------------------------------------
-''
-'Public Function getstring(ByRef hKey As Long, ByRef strPath As String, ByRef strvalue As String) As String
-'
-'    Dim keyhand As Long
-'    'Dim datatype As Long
-'    Dim lResult As Long
-'    Dim strBuf As String
-'    Dim lDataBufSize As Long
-'    Dim intZeroPos As Integer
-'    Dim rvar As Integer
-'    'in .NET the variant type will need to be replaced by object?
-'
-'    'FIXIT: Declare 'lValueType' with an early-bound data type                                 FixIT90210ae-R1672-R1B8ZE
-'    Dim lValueType As Variant
-'
-'   On Error GoTo getstring_Error
-'
-'    rvar = RegOpenKey(hKey, strPath, keyhand)
-'    lResult = RegQueryValueEx(keyhand, strvalue, 0&, lValueType, ByVal 0&, lDataBufSize)
-'    If lValueType = REG_SZ Then
-'        strBuf = String$(lDataBufSize, " ")
-'        lResult = RegQueryValueEx(keyhand, strvalue, 0&, 0&, ByVal strBuf, lDataBufSize)
-'        Dim ERROR_SUCCESS As Variant
-'        If lResult = ERROR_SUCCESS Then
-'            intZeroPos = InStr(strBuf, Chr$(0))
-'            If intZeroPos > 0 Then
-'                getstring = Left$(strBuf, intZeroPos - 1)
-'            Else
-'                getstring = strBuf
-'            End If
-'        End If
-'    End If
-'
-'   On Error GoTo 0
-'   Exit Function
-'
-'getstring_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getstring of Module Module1"
-'End Function
 
-''---------------------------------------------------------------------------------------
-'' Procedure : savestring
-'' Author    : beededea
-'' Date      : 05/07/2019
-'' Purpose   :
-''---------------------------------------------------------------------------------------
-''
-'Public Sub savestring(ByRef hKey As Long, ByRef strPath As String, ByRef strvalue As String, ByRef strData As String)
-'
-'    Dim keyhand As Long
-'    Dim R As Long
-'   On Error GoTo savestring_Error
-'
-'    R = RegCreateKey(hKey, strPath, keyhand)
-'    R = RegSetValueEx(keyhand, strvalue, 0, REG_SZ, ByVal strData, Len(strData))
-'    R = RegCloseKey(keyhand)
-'
-'   On Error GoTo 0
-'   Exit Sub
-'
-'savestring_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure savestring of Module Module1"
-'End Sub
-
-''----------------------------------------
-''Name: testWindowsVersion
-''Description:
-''----------------------------------------
-'Public Sub testWindowsVersion(classicThemeCapable As Boolean)
-'
-'    '=================================
-'    '2000 / XP / NT / 7 / 8 / 10
-'    '=================================
-'    On Error GoTo testWindowsVersion_Error
-'
-'    ' variables declared
-'
-'    Dim ProgramFilesDir As String
-'    Dim WindowsVer As String
-'    Dim strString As String
-'
-'    'initialise the dimensioned variables
-'    strString = ""
-'    classicThemeCapable = False
-'    WindowsVer = ""
-'    ProgramFilesDir = ""
-'
-'    ' other variable assignments
-'    strString = getstring(HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProductName")
-'    WindowsVer = strString
-'    requiresAdmin = False
-'
-'    ' note that when running in compatibility mode the o/s will respond with "Windows XP"
-'    ' The IDE runs in compatibility mode so it may report the wrong working folder
-'
-'    'MsgBox WindowsVer
-'
-'    'Get the value of "ProgramFiles", or "ProgramFilesDir"
-'
-'    Select Case WindowsVer
-'    Case "Microsoft Windows NT4"
-'        classicThemeCapable = True
-'        strString = getstring(HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProgramFilesDir")
-'    Case "Microsoft Windows 2000"
-'        classicThemeCapable = True
-'        strString = getstring(HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProgramFilesDir")
-'    Case "Microsoft Windows XP"
-'        classicThemeCapable = True
-'        strString = getstring(HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\Windows\CurrentVersion", "ProgramFilesDir")
-'    Case "Microsoft Windows 2003"
-'        classicThemeCapable = True
-'        strString = getstring(HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProgramFilesDir")
-'    Case "Microsoft Vista"
-'        requiresAdmin = True
-'        classicThemeCapable = True
-'        strString = getstring(HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProgramFilesDir")
-'    Case "Microsoft 7"
-'        requiresAdmin = True
-'        classicThemeCapable = True
-'        strString = getstring(HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProgramFilesDir")
-'    Case Else
-'        requiresAdmin = True
-'        classicThemeCapable = False
-'        strString = getstring(HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\Windows\CurrentVersion", "ProgramFilesDir")
-'    End Select
-'
-'    'MsgBox strString
-'
-'
-'    ProgramFilesDir = strString
-'    If ProgramFilesDir = vbNullString Then ProgramFilesDir = "c:\program files (x86)" ' 64bit systems
-'    If Not DirExists(ProgramFilesDir) Then
-'        ProgramFilesDir = "c:\program files" ' 32 bit systems
-'    End If
-'
-'    If debugflg = 1 Then DebugPrint "%" & "ProgramFilesDir = " & ProgramFilesDir
-'
-'    ' turn on the timer that tests every 10 secs whether the visual theme has changed
-'    ' only on those o/s versions that need it
-'
-'    If classicThemeCapable = True Then
-'        rDIconConfigForm.mnuAuto.Caption = "Auto Theme Disable"
-'        rDIconConfigForm.themeTimer.Enabled = True
-'    Else
-'        rDIconConfigForm.mnuAuto.Caption = "Auto Theme Selection Cannot be Enabled"
-'        rDIconConfigForm.themeTimer.Enabled = False
-'    End If
-'
-'    '======================================================
-'    'END routine error handler
-'    '======================================================
-'
-'
-'    On Error GoTo 0: Exit Sub
-'
-'testWindowsVersion_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure testWindowsVersion of Module WinModule"
-'
-'End Sub
-
-''---------------------------------------------------------------------------------------
-'' Procedure : FExists
-'' Author    : beededea
-'' Date      : 17/10/2019
-'' Purpose   :
-''---------------------------------------------------------------------------------------
-''
-'Public Function FExists(ByRef OrigFile As String) As Boolean
-'    Dim FS As Object
-'   On Error GoTo FExists_Error
-'   If debugflg = 1 Then Debug.Print "%FExists"
-'
-'    Set FS = CreateObject("Scripting.FileSystemObject")
-'    FExists = FS.FileExists(OrigFile)
-'
-'   On Error GoTo 0
-'   Exit Function
-'
-'FExists_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure FExists of Module Module1"
-'End Function
-'
-'
-''---------------------------------------------------------------------------------------
-'' Procedure : DirExists
-'' Author    : beededea
-'' Date      : 17/10/2019
-'' Purpose   :
-''---------------------------------------------------------------------------------------
-''
-'Public Function DirExists(ByRef OrigFile As String) As Boolean
-'    Dim FS As Object
-'   On Error GoTo DirExists_Error
-'   If debugflg = 1 Then DebugPrint "%DirExists"
-'
-'    Set FS = CreateObject("Scripting.FileSystemObject")
-'    DirExists = FS.FolderExists(OrigFile)
-'
-'   On Error GoTo 0
-'   Exit Function
-'
-'DirExists_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure DirExists of Module Module1"
-'End Function
-
-
-
-
-''---------------------------------------------------------------------------------------
-'' Procedure : SpecialFolder
-'' Author    :  si_the_geek vbforums
-'' Date      : 17/10/2019
-'' Purpose   :
-''---------------------------------------------------------------------------------------
-''
-'Public Function SpecialFolder(pFolder As eSpecialFolders) As String
-''Returns the path to the specified special folder (AppData etc)
-'
-'Dim objShell  As Object
-'Dim objFolder As Object
-'
-'   On Error GoTo SpecialFolder_Error
-'   If debugflg = 1 Then DebugPrint "%SpecialFolder"
-'
-'  Set objShell = CreateObject("Shell.Application")
-'  Set objFolder = objShell.NameSpace(CLng(pFolder))
-'
-'  If (Not objFolder Is Nothing) Then SpecialFolder = objFolder.Self.path
-'
-'  Set objFolder = Nothing
-'  Set objShell = Nothing
-'
-'  If SpecialFolder = "" Then Err.Raise 513, "SpecialFolder", "The folder path could not be detected"
-'
-'   On Error GoTo 0
-'   Exit Function
-'
-'SpecialFolder_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure SpecialFolder of Module Module1"
-'
-'End Function
 
 '---------------------------------------------------------------------------------------
 ' Procedure : centrePreviewImage
@@ -831,7 +579,7 @@ End Sub
 ' this could be done with padding but it matches the VB6 method (no padding there)
 Public Sub centrePreviewImage(ByRef targetPicBox As PictureBox, ByRef IconSize As Integer)
 
-    If targetPicBox.name = "picPreview" Then
+    If targetPicBox.Name = "picPreview" Then
         If IconSize = 16 Then
             targetPicBox.Left = (1900)
             targetPicBox.Top = (1900)
@@ -901,10 +649,10 @@ Public Sub chkTheRegistry()
 
     If steamyDockInstalled = True And defaultDock = 1 Then  ' it will always exist even if not used
     
-        If FExists(dockSettingsFile) Then
-            rDGeneralReadConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralReadConfig", dockSettingsFile)
-            rDGeneralWriteConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralWriteConfig", dockSettingsFile)
-        End If
+'        If FExists(interimSettingsFile) Then
+'            rDGeneralReadConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralReadConfig", interimSettingsFile)
+'            rDGeneralWriteConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralWriteConfig", interimSettingsFile)
+'        End If
 '        If FExists(origSettingsFile) Then ' does the original settings.ini exist?
 '            frmRegistry.chkReadRegistry.Value = 0
 '            frmRegistry.chkReadSettings.Value = 1
@@ -950,81 +698,6 @@ End Sub
 
 
 
-
-
-''---------------------------------------------------------------------------------------
-'' Procedure : readSettingsIni
-'' Author    : beededea
-'' Date      : 21/09/2019
-'' Purpose   :
-''---------------------------------------------------------------------------------------
-''
-'Public Sub readSettingsIni(ByVal iconNumberToRead As Integer)
-'    'Reads an .INI File (SETTINGS.INI)
-'
-'   On Error GoTo readSettingsIni_Error
-'   If debugflg = 1 Then DebugPrint "%readSettingsIni"
-'
-'        sFilename = GetINISetting("Software\RocketDock\Icons", iconNumberToRead & "-FileName", rdSettingsFile)
-'        sFileName2 = GetINISetting("Software\RocketDock\Icons", iconNumberToRead & "-FileName2", rdSettingsFile)
-'        sTitle = GetINISetting("Software\RocketDock\Icons", iconNumberToRead & "-Title", rdSettingsFile)
-'        sCommand = GetINISetting("Software\RocketDock\Icons", iconNumberToRead & "-Command", rdSettingsFile)
-'        sArguments = GetINISetting("Software\RocketDock\Icons", iconNumberToRead & "-Arguments", rdSettingsFile)
-'        sWorkingDirectory = GetINISetting("Software\RocketDock\Icons", iconNumberToRead & "-WorkingDirectory", rdSettingsFile)
-'        sShowCmd = GetINISetting("Software\RocketDock\Icons", iconNumberToRead & "-ShowCmd", rdSettingsFile)
-'        sOpenRunning = GetINISetting("Software\RocketDock\Icons", iconNumberToRead & "-OpenRunning", rdSettingsFile)
-'        sIsSeparator = GetINISetting("Software\RocketDock\Icons", iconNumberToRead & "-IsSeparator", rdSettingsFile)
-'        sUseContext = GetINISetting("Software\RocketDock\Icons", iconNumberToRead & "-UseContext", rdSettingsFile)
-'        sDockletFile = GetINISetting("Software\RocketDock\Icons", iconNumberToRead & "-DockletFile", rdSettingsFile)
-'
-'
-'   On Error GoTo 0
-'   Exit Sub
-'
-'readSettingsIni_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readSettingsIni of Module Module2"
-'End Sub
-
-
-
-
-' .74 DAEB 22/05/2022 rDIConConfig.frm Msgbox replacement that can be placed on top of the form instead as the middle of the screen, see Steamydock for a potential replacement?
-'---------------------------------------------------------------------------------------
-' Procedure : msgBoxA
-' Author    : beededea
-' Date      : 20/05/2022
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Public Function msgBoxA(ByVal msgBoxPrompt As String, Optional ByVal msgButton As VbMsgBoxResult, Optional ByVal msgTitle As String, Optional ByVal msgShowAgain As Boolean = False) As Integer
-    
-    ' set the defined properties of a form
-    On Error GoTo msgBoxA_Error
-
-    frmMessage.propMessage = msgBoxPrompt
-    frmMessage.propTitle = msgTitle
-    frmMessage.propShowAgain = msgShowAgain
-    frmMessage.propButtonVal = msgButton
-    
-    frmMessage.Display ' run a subroutine in the form that displays the form
-
-    msgBoxA = frmMessage.propReturnedValue
-
-    On Error GoTo 0
-    Exit Function
-
-msgBoxA_Error:
-
-    With Err
-         If .Number <> 0 Then
-            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure msgBoxA of Module mdlMain"
-            Resume Next
-          End If
-    End With
-
-End Function
-
 ' .76 DAEB 28/05/2022 rDIConConfig.frm New font code synchronising method with FCW fixing tool not displaying previously chosen font STARTS
 '---------------------------------------------------------------------------------------
 ' Procedure : displayFontSelector
@@ -1053,18 +726,18 @@ Private Sub displayFontSelector(ByRef currFont As String, ByRef currSize As Inte
       '700     Font is bold.
       .Italic = currItalics
       .UnderLine = currUnderline
-      .name = currFont
+      .Name = currFont
     End With
     
     fontResult = fDialogFont(thisFont)
     If fontResult = False Then Exit Sub
     
     ' some fonts have naming problems and the result is an empty font name field on the font selector
-    If thisFont.name = vbNullString Then thisFont.name = "times new roman"
-    If thisFont.name = vbNullString Then Exit Sub
+    If thisFont.Name = vbNullString Then thisFont.Name = "times new roman"
+    If thisFont.Name = vbNullString Then Exit Sub
     
     With thisFont
-        currFont = .name
+        currFont = .Name
         currSize = .Height
         currWeight = .Weight
         currItalics = .Italic
@@ -1090,23 +763,23 @@ End Sub
 ' Purpose   : display the default windows dialog box that allows the user to select a font
 '---------------------------------------------------------------------------------------
 '
-Public Function fDialogFont(ByRef f As FormFontInfo) As Boolean
+Public Function fDialogFont(ByRef F As FormFontInfo) As Boolean
       
     ' variables declared
     Dim logFnt As LOGFONT
     Dim ftStruc As FONTSTRUC
-    Dim lLogFontAddress As Long
-    Dim lMemHandle As Long
-    Dim hWndAccessApp As Long
+    Dim lLogFontAddress As Long: lLogFontAddress = 0
+    Dim lMemHandle As Long: lMemHandle = 0
+    Dim hWndAccessApp As Long: hWndAccessApp = 0
     
      On Error GoTo fDialogFont_Error
     
-    logFnt.lfWeight = f.Weight
-    logFnt.lfItalic = f.Italic * -1
-    logFnt.lfUnderline = f.UnderLine * -1
-    logFnt.lfHeight = -fMulDiv(CLng(f.Height), GetDeviceCaps(GetDC(hWndAccessApp), LOGPIXELSY), 72)
-    Call StringToByte(f.name, logFnt.lfFaceName())
-    ftStruc.rgbColors = f.Color
+    logFnt.lfWeight = F.Weight
+    logFnt.lfItalic = F.Italic * -1
+    logFnt.lfUnderline = F.UnderLine * -1
+    logFnt.lfHeight = -fMulDiv(CLng(F.Height), GetDeviceCaps(GetDC(hWndAccessApp), LOGPIXELSY), 72)
+    Call StringToByte(F.Name, logFnt.lfFaceName())
+    ftStruc.rgbColors = F.Color
     ftStruc.lStructSize = Len(ftStruc)
     
     lMemHandle = GlobalAlloc(GHND, Len(logFnt))
@@ -1127,12 +800,12 @@ Public Function fDialogFont(ByRef f As FormFontInfo) As Boolean
     ftStruc.flags = CF_SCREENFONTS Or CF_INITTOLOGFONTSTRUCT
     If ChooseFont(ftStruc) = 1 Then
       CopyMemory logFnt, ByVal lLogFontAddress, Len(logFnt)
-      f.Weight = logFnt.lfWeight
-      f.Italic = CBool(logFnt.lfItalic)
-      f.UnderLine = CBool(logFnt.lfUnderline)
-      f.name = fByteToString(logFnt.lfFaceName())
-      f.Height = CLng(ftStruc.iPointSize / 10)
-      f.Color = ftStruc.rgbColors
+      F.Weight = logFnt.lfWeight
+      F.Italic = CBool(logFnt.lfItalic)
+      F.UnderLine = CBool(logFnt.lfUnderline)
+      F.Name = fByteToString(logFnt.lfFaceName())
+      F.Height = CLng(ftStruc.iPointSize / 10)
+      F.Color = ftStruc.rgbColors
       fDialogFont = True
     Else
       fDialogFont = False
@@ -1157,22 +830,23 @@ End Function
 Private Function fMulDiv(ByVal In1 As Long, ByVal In2 As Long, ByVal In3 As Long) As Long
     
     ' variables declared
-    Dim lngTemp As Long
-   On Error GoTo fMulDiv_Error
+    Dim lngTemp As Long: lngTemp = 0
+    
+    On Error GoTo fMulDiv_Error
 
-  On Error GoTo fMulDiv_err
-  If In3 <> 0 Then
-    lngTemp = In1 * In2
-    lngTemp = lngTemp / In3
-  Else
-    lngTemp = -1
-  End If
+    On Error GoTo fMulDiv_err
+    If In3 <> 0 Then
+      lngTemp = In1 * In2
+      lngTemp = lngTemp / In3
+    Else
+      lngTemp = -1
+    End If
 fMulDiv_end:
-  fMulDiv = lngTemp
-  Exit Function
+      fMulDiv = lngTemp
+      Exit Function
 fMulDiv_err:
-  lngTemp = -1
-  Resume fMulDiv_err
+      lngTemp = -1
+      Resume fMulDiv_err
 
    On Error GoTo 0
    Exit Function
@@ -1194,10 +868,11 @@ End Function
 Private Sub StringToByte(ByVal InString As String, ByRef ByteArray() As Byte)
     
     ' variables declared
-    Dim intLbound As Integer
-    Dim intUbound As Integer
-    Dim intLen As Integer
-    Dim intX As Integer
+    Dim intLbound As Integer: intLbound = 0
+    Dim intUbound As Integer: intUbound = 0
+    Dim intLen As Integer: intLen = 0
+    Dim intX As Integer: intX = 0
+    
     On Error GoTo StringToByte_Error
 
     intLbound = LBound(ByteArray)
@@ -1226,9 +901,10 @@ End Sub
 Private Function fByteToString(ByRef aBytes() As Byte) As String
       
     ' variables declared
-    Dim dwBytePoint As Long
-    Dim dwByteVal As Long
-    Dim szOut As String
+    Dim dwBytePoint As Long: dwBytePoint = 0
+    Dim dwByteVal As Long: dwByteVal = 0
+    Dim szOut As String: szOut = vbNullString
+    
     On Error GoTo fByteToString_Error
 
     dwBytePoint = LBound(aBytes)
@@ -1261,7 +937,7 @@ End Function
 '---------------------------------------------------------------------------------------
 '
 Public Sub changeFont(ByRef formName As Object, ByRef fntNow As Boolean, ByRef fntFont As String, ByRef fntSize As Integer, ByRef fntWeight As Integer, ByRef fntStyle As Boolean, ByRef fntColour As Long, ByRef fntItalics As Boolean, ByRef fntUnderline As Boolean, ByRef fntFontResult As Boolean)
-    Dim useloop As Integer
+    Dim useloop As Integer: useloop = 0
     Dim Ctrl As Control
     
     On Error GoTo changeFont_Error
@@ -1277,14 +953,14 @@ Public Sub changeFont(ByRef formName As Object, ByRef fntNow As Boolean, ByRef f
     ' .TBD DAEB 26/05/2022 rdIconConfig.frm Add listboxes to the types handled
     For Each Ctrl In formName.Controls
          If (TypeOf Ctrl Is CommandButton) Or (TypeOf Ctrl Is ListBox) Or (TypeOf Ctrl Is TextBox) Or (TypeOf Ctrl Is FileListBox) Or (TypeOf Ctrl Is Label) Or (TypeOf Ctrl Is ComboBox) Or (TypeOf Ctrl Is CheckBox) Or (TypeOf Ctrl Is OptionButton) Or (TypeOf Ctrl Is Frame) Then
-           If fntFont <> "" Then Ctrl.Font.name = fntFont
+           If fntFont <> "" Then Ctrl.Font.Name = fntFont
            If fntSize > 0 Then Ctrl.Font.Size = fntSize
             Ctrl.Font.Italic = fntItalics
         End If
     Next
     
     ' .TBD DAEB 26/05/2022 rdIconConfig.frm Added the specifics for the main form to a separate routine
-    If formName.name = "rDIconConfigForm" Then
+    If formName.Name = "rDIconConfigForm" Then
         Call rdIconConfigSpecificFonts(formName, fntFont, fntSize, fntWeight, fntStyle, fntColour, fntItalics, fntUnderline)
     End If
     
@@ -1324,34 +1000,34 @@ End Sub
 
 
 Private Sub rdIconConfigSpecificFonts(ByRef formName As Object, ByRef fntFont As String, ByRef fntSize As Integer, ByRef fntWeight As Integer, ByRef fntStyle As Boolean, ByRef fntColour As Long, ByRef fntItalics As Boolean, ByRef fntUnderline As Boolean)
-    Dim useloop As Integer
+    Dim useloop As Integer: useloop = 0
     
     ' change the size of the two labels beneath the preview image
     formName.lblFileInfo.Font.Size = 7
     formName.lblWidthHeight.Font.Size = 7
     
     ' change the font size of the large number
-    formName.lblRdIconNumber.Font.name = "Trebuchet MS"
+    formName.lblRdIconNumber.Font.Name = "Trebuchet MS"
     formName.lblRdIconNumber.Font.Size = 45
     
     ' change the font size of the large blank
-    formName.lblBlankText.Font.name = "Trebuchet MS"
+    formName.lblBlankText.Font.Name = "Trebuchet MS"
     formName.lblBlankText.Font.Size = 45
 
     'loop through the 12 dynamic icon thumbnails, they all exist by the time this routine is called
     For useloop = 0 To 11
-        formName.picThumbIcon(useloop).Font.name = fntFont 'array
+        formName.picThumbIcon(useloop).Font.Name = fntFont 'array
         If fntSize > 0 Then formName.picThumbIcon(useloop).Font.Size = fntSize 'array
         
-        formName.fraThumbLabel(useloop).Font.name = fntFont 'array
+        formName.fraThumbLabel(useloop).Font.Name = fntFont 'array
         If fntSize > 0 Then formName.fraThumbLabel(useloop).Font.Size = fntSize 'array
         
-        formName.lblThumbName(useloop).Font.name = fntFont 'array
+        formName.lblThumbName(useloop).Font.Name = fntFont 'array
         If fntSize > 0 Then formName.lblThumbName(useloop).Font.Size = fntSize 'array
     Next useloop
     
     ' then the treeview that is picky about .fontname or .font.name where the others are not.
-    formName.folderTreeView.Font.name = fntFont
+    formName.folderTreeView.Font.Name = fntFont
     If fntSize > 0 Then formName.folderTreeView.Font.Size = fntSize
     
     ' The comboboxes all autoselect when the font is changed, we need to reset this afterwards
@@ -1374,13 +1050,13 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Sub backupDockSettings(Optional askQuestion As Boolean = False)
-    Dim ans As VbMsgBoxResult
-    Dim iconPath As String
-    Dim dllPath As String
-    Dim dialogInitDir As String
-    Dim bkpSettingsFile As String
-    Dim bkpFilename As String
+Public Sub backupDockSettings(Optional ByVal askQuestion As Boolean = False)
+    Dim ans As VbMsgBoxResult: ans = vbNo
+    Dim iconPath As String: iconPath = vbNullString
+    Dim dllPath As String: dllPath = vbNullString
+    Dim dialogInitDir As String: dialogInitDir = vbNullString
+    Dim bkpSettingsFile As String: bkpSettingsFile = vbNullString
+    Dim bkpFilename As String: bkpFilename = vbNullString
     
     Const x_MaxBuffer = 256
     
@@ -1390,7 +1066,7 @@ Public Sub backupDockSettings(Optional askQuestion As Boolean = False)
 
     bkpFilename = fbackupSettings()
     If askQuestion = True Then
-        ans = msgBoxA("Created an incremental backup of the Dock settings file - " & vbCr & vbCr & bkpFilename & vbCr & vbCr & "Would you like to review ALL the backup files? ", vbQuestion + vbYesNo, "Backing up settings.")
+        ans = msgBoxA("Created an incremental backup of the Dock settings file - " & vbCr & vbCr & bkpFilename & vbCr & vbCr & "Would you like to review ALL the backup files? ", vbQuestion + vbYesNo, "Backing up settings.", False, "none")
         If ans = 6 Then
     
             On Error Resume Next
@@ -1422,7 +1098,7 @@ Public Sub backupDockSettings(Optional askQuestion As Boolean = False)
             
             Dim retFileName As String
             Dim retfileTitle As String
-            Call f_GetOpenFileName(retFileName, retfileTitle)
+            Call getFileNameAndTitle(retFileName, retfileTitle)
             bkpSettingsFile = retFileName
             
             If Not bkpSettingsFile = "" Then
@@ -1436,7 +1112,7 @@ Public Sub backupDockSettings(Optional askQuestion As Boolean = False)
                     ' .94 DAEB 26/06/2022 rDIConConfig.frm Backup and restore - fix the problem with dock entries being zeroed after a restore.
                     FileCopy bkpSettingsFile, dockSettingsFile
                     
-                    Call btnSaveRestart_Click_event(rDIconConfigForm.hWnd)
+                    Call btnSaveRestart_Click_event(rDIconConfigForm.hwnd)
                 End If
             End If
     
@@ -1461,43 +1137,36 @@ backupDockSettings_Error:
    
 End Sub
 
-Public Sub btnSaveRestart_Click_event(Handle As Long)
+Public Sub btnSaveRestart_Click_event(ByRef handle As Long)
 
     ' variables declared
 
-    Dim NameProcess As String
-    Dim useloop As Integer
-    Dim ans As Boolean
-    Dim answer As VbMsgBoxResult
-    Dim itis As Boolean
-    
-
-     
-   'initialise the dimensioned variables
-    NameProcess = ""
-    ans = False
-    answer = vbNo
-    useloop = 0
-    itis = False
+    Dim NameProcess As String: NameProcess = ""
+    Dim useloop As Integer: useloop = 0
+    Dim ans As Boolean: ans = False
+    Dim answer As VbMsgBoxResult: answer = vbNo
+    Dim itis As Boolean: itis = False
     
     'If moreConfigVisible = True Then Call picMoreConfigDown_Click ' .nn cause the new expanding section to close
     
 '    If defaultDock = 0 Then ' .14 DAEB 27/02/2021 rdIConConfigForm.frm Added default dock check to ensure it works without RD installed
 '        origSettingsFile = rdAppPath & "\settings.ini"
 '    Else
-        origSettingsFile = sdAppPath & "\settings.ini"
+'        origSettingsFile = sdAppPath & "\settings.ini"
 ''    End If
+
+    PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
-    If FExists(dockSettingsFile) Then
-        rDGeneralReadConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralReadConfig", dockSettingsFile)
-        rDGeneralWriteConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralWriteConfig", dockSettingsFile)
+    If FExists(interimSettingsFile) Then
+        rDGeneralReadConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralReadConfig", interimSettingsFile)
+        rDGeneralWriteConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralWriteConfig", interimSettingsFile)
     End If
             
-    If defaultDock = 0 Then
-        NameProcess = dockAppPath & "\" & "RocketDock.exe" ' .07 DAEB 01/02/2021 rDIconConfigForm.frm Modified the parameter passed to isRunning to include the full path, otherwise it does not correlate with the found processes' folder
-    Else
+'    If defaultDock = 0 Then
+'        NameProcess = dockAppPath & "\" & "RocketDock.exe" ' .07 DAEB 01/02/2021 rDIconConfigForm.frm Modified the parameter passed to isRunning to include the full path, otherwise it does not correlate with the found processes' folder
+'    Else
         NameProcess = dockAppPath & "\" & "SteamyDock.exe" ' .07 DAEB 01/02/2021 rDIconConfigForm.frm Modified the parameter passed to isRunning to include the full path, otherwise it does not correlate with the found processes' folder
-    End If
+'    End If
         
     
     '.02 DAEB 26/10/2020 rDIconConfigForm.frm   Added function isRunning and changed the logic to fix a bug where the config. would not be saved if the dock was not running. STARTS.
@@ -1508,15 +1177,19 @@ Public Sub btnSaveRestart_Click_event(Handle As Long)
         ans = checkAndKill(NameProcess, False, False) ' kill a running process
         ' if the process has died then
         If ans = True Then ' only proceed if the kill has succeeded
-            Call readInterimAndWriteConfig ' save the config.
+            PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
+            FileCopy interimSettingsFile, dockSettingsFile
+            'Call readInterimAndWriteConfig ' save the config.
             ' restart rocketdock /steamydock
             If FExists(NameProcess) Then ' .09 DAEB 07/02/2021 rDIconConfigForm.frm use the fullprocess variable without adding path again - duh!
-                ans = ShellExecute(Handle, "Open", NameProcess, vbNullString, App.Path, 1)
+                ans = ShellExecute(handle, "Open", NameProcess, vbNullString, App.Path, 1)
             End If
         End If
     Else
         ' save the config.
-        Call readInterimAndWriteConfig ' save the config.
+        PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
+        FileCopy interimSettingsFile, dockSettingsFile
+        'Call readInterimAndWriteConfig ' save the config.
         ' say not found     ' .11 DAEB 26/10/2020 rDIconConfigForm.frm No longer pops up the question if the dialog boxes are suppressed.
         If Val(sdChkToggleDialogs) = 1 Then
            answer = msgBoxA("Could not find a " & NameProcess & " process, would you like me to restart " & NameProcess & "?", vbQuestion + vbYesNo, "Restarting SteamyDock")
@@ -1528,7 +1201,7 @@ Public Sub btnSaveRestart_Click_event(Handle As Long)
 
         ' restart rocketdock /steamydock
         If FExists(NameProcess) Then
-            ans = ShellExecute(Handle, "Open", NameProcess, vbNullString, App.Path, 1)
+            ans = ShellExecute(handle, "Open", NameProcess, vbNullString, App.Path, 1)
         End If
     End If
     '.02 DAEB 26/10/2020   Added function isRunning and changed the logic to fix a bug where the config. would not be saved if the dock was not running. ENDS.
@@ -1545,15 +1218,12 @@ End Sub
 ' .40 DAEB 09/05/2021 rdIconConfig.frm turned into a function as it returns a value
 
 Public Function fbackupSettings() As String
-    'Dim AY() As String
-    'Dim suffix As String
-    'Dim maxBound As Integer
-    'Dim fileVersion As Integer
+
     Dim bkpSettingsFile As String
-    Dim useloop As Integer
+    Dim useloop As Integer: useloop = 0
     Dim srchSettingsFile As String
     Dim versionNumberAvailable As Integer
-    Dim bkpfileFound As Boolean
+    Dim bkpfileFound As Boolean: bkpfileFound = False
     
     
         ' set the name of the bkp file
@@ -1599,7 +1269,7 @@ l_exit_bkp_loop:
 ''                If FExists(origSettingsFile) Then
 ''                    FileCopy origSettingsFile, bkpSettingsFile
 ''                Else
-'                    FileCopy rdSettingsFile, bkpSettingsFile
+'                    FileCopy interimSettingsFile, bkpSettingsFile
 ''                End If
 '            Else    ' steamydock alone
                 If FExists(dockSettingsFile) Then ' .41 DAEB 09/05/2021 rdIconConfig.frm fix copying the dock settings file for backups
@@ -1622,15 +1292,15 @@ End Function
 
 ' .89 DAEB 13/06/2022 rDIConConfig.frm Moved backup-related private routines to modules to make them public
 '---------------------------------------------------------------------------------------
-' Procedure : f_GetOpenFileName
+' Procedure : getFileNameAndTitle
 ' Author    : beededea
 ' Date      : 02/09/2019
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Sub f_GetOpenFileName(retFileName As String, retfileTitle As String)
-   On Error GoTo f_GetOpenFileName_Error
-   If debugflg = 1 Then DebugPrint "%f_GetOpenFileName"
+Public Sub getFileNameAndTitle(ByRef retFileName As String, ByRef retfileTitle As String)
+   On Error GoTo getFileNameAndTitle_Error
+   If debugflg = 1 Then DebugPrint "%getFileNameAndTitle"
 
   If GetOpenFileName(x_OpenFilename) <> 0 Then
     If x_OpenFilename.lpstrFile = "*.*" Then
@@ -1647,38 +1317,12 @@ Public Sub f_GetOpenFileName(retFileName As String, retfileTitle As String)
    On Error GoTo 0
    Exit Sub
 
-f_GetOpenFileName_Error:
+getFileNameAndTitle_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure f_GetOpenFileName of Form rDIconConfigForm"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getFileNameAndTitle of Form rDIconConfigForm"
 End Sub
 
-' .89 DAEB 13/06/2022 rDIConConfig.frm Moved backup-related private routines to modules to make them public
-'---------------------------------------------------------------------------------------
-' Procedure : f_GetSaveFileName
-' Author    : beededea
-' Date      : 02/09/2019
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Public Sub f_GetSaveFileName()
-   On Error GoTo f_GetSaveFileName_Error
-   If debugflg = 1 Then DebugPrint "%f_GetSaveFileName"
 
-  If GetSaveFileName(x_OpenFilename) <> 0 Then
-    'PURPOSE: A file was selected
-    MsgBox Left$(x_OpenFilename.lpstrFile, x_OpenFilename.nMaxFile)
-  Else
-    'PURPOSE: The CANCEL button was pressed
-    MsgBox "Cancel"
-  End If
-
-   On Error GoTo 0
-   Exit Sub
-
-f_GetSaveFileName_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure f_GetSaveFileName of Form rDIconConfigForm"
-End Sub
 
 '.02 DAEB 26/10/2020   Created new sub readInterimAndWriteConfig to allow the save to be called more than once on a btnSaveRestart_Click
 '---------------------------------------------------------------------------------------
@@ -1689,18 +1333,21 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Public Sub readInterimAndWriteConfig()
-    Dim useloop As Integer
+    Dim useloop As Integer: useloop = 0
     On Error GoTo readInterimAndWriteConfig_Error
+    
+    PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
+
         
     'use of the 3rd config file in the user data area first
         If steamyDockInstalled = True And defaultDock = 1 And rDGeneralWriteConfig = "True" Then ' note it will always exist even if not used
-            If FExists(dockSettingsFile) Then ' does the temporary settings.ini exist?
+            If FExists(interimSettingsFile) Then ' does the temporary settings.ini exist?
                 ' read the registry values for each of the icons and write them to the settings.ini
                 
                 For useloop = 0 To rdIconMaximum
                     
                     'readSettingsIni (useloop)
-                    readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
+                    readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, interimSettingsFile
 
                     ' write the steamydock config file
                     
@@ -1723,10 +1370,10 @@ Public Sub readInterimAndWriteConfig()
 '
 '                ' write the rocketdock settings.ini
 '                'writeSettingsIni (rdIconNumber) ' the settings.ini only exists when RD is set to use it
-'                Call writeIconSettingsIni("Software\RocketDock" & "\Icons", rdIconNumber, rdSettingsFile)
+'                Call writeIconSettingsIni("Software\RocketDock" & "\Icons", rdIconNumber, interimSettingsFile)
 '
 '                ' copy the duplicate settings file to the original
-'                FileCopy rdSettingsFile, origSettingsFile
+'                FileCopy interimSettingsFile, origSettingsFile
 '            Else ' Rocketdock is using the registry
 ''                chkReadRegistry.Value = 1
 ''                chkReadSettings.Value = 0
@@ -1736,7 +1383,7 @@ Public Sub readInterimAndWriteConfig()
 '                For useloop = 0 To rdIconMaximum
 '
 '                     'readSettingsIni (useloop)
-'                    readIconSettingsIni "Software\RocketDock\Icons", useloop, rdSettingsFile
+'                    readIconSettingsIni "Software\RocketDock\Icons", useloop, interimSettingsFile
 '
 '                     ' write the rocketdock registry
 '                    writeRegistryOnce (useloop)
@@ -1761,4 +1408,145 @@ readInterimAndWriteConfig_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readInterimAndWriteConfig of Form rDIconConfigForm"
 
 End Sub
+
+
+' 17/11/2020 rDIconConfigForm.frm .05 DAEB Added the missing code to read/write the current theme to the tool's own settings file
+'---------------------------------------------------------------------------------------
+' Procedure : setThemeSkin
+' Author    : beededea
+' Date      : 13/06/2020
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Sub setThemeSkin(ByRef thisForm As Form)
+   On Error GoTo setThemeSkin_Error
+
+    If rDSkinTheme = "dark" Then
+        Call setThemeShade(thisForm, 212, 208, 199)
+    Else
+        Call setThemeShade(thisForm, 240, 240, 240)
+    End If
+
+   On Error GoTo 0
+   Exit Sub
+
+setThemeSkin_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setThemeSkin of Form dockSettings"
+End Sub
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : setThemeShade
+' Author    : beededea
+' Date      : 26/09/2019
+' Purpose   : if running on Win7 with the classic theme setting the theme to dark should do nothing
+'             if running on any other theme then setting the theme to dark should replace the visual elements
+'---------------------------------------------------------------------------------------
+'
+Public Sub setThemeShade(ByRef thisForm As Form, ByVal redC As Integer, ByVal greenC As Integer, ByVal blueC As Integer)
+
+    Dim a As String: a = vbNullString
+    Dim firstRun As Boolean: firstRun = False
+    Dim Ctrl As Control
+    Dim useloop As Integer: useloop = 0
+    
+    firstRun = False
+    
+    On Error GoTo setThemeShade_Error
+    If debugflg = 1 Then DebugPrint "setThemeShade"
+    
+    ' RGB(redC, greenC, blueC) is the background colour used by the classic theme
+    
+    thisForm.BackColor = RGB(redC, greenC, blueC)
+    ' a method of looping through all the controls that require reversion of any background colouring
+    For Each Ctrl In thisForm.Controls
+        a = Ctrl.Name
+        If (TypeOf Ctrl Is CommandButton) Or (TypeOf Ctrl Is CheckBox) Or (TypeOf Ctrl Is Label) Or (TypeOf Ctrl Is OptionButton) Or (TypeOf Ctrl Is Frame) Then
+          Ctrl.BackColor = RGB(redC, greenC, blueC)
+        End If
+    Next
+    
+    If thisForm.Name = "rDIconConfigForm" Then
+
+        ' exclude the label frame from any themeing
+        For useloop = 0 To 11
+            thisForm.fraThumbLabel(useloop).BackColor = vbWhite
+        Next useloop
+        
+        ' the first of the thumbnail labels goes white when themed, a quick fix
+        thisForm.lblThumbName(0).ForeColor = vbBlack
+        
+        'these buttons must be styled as they are graphical buttons with images that conform to a classic theme
+        
+        If redC = 212 Then
+            classicTheme = True
+            thisForm.mnuLight.Checked = False
+            thisForm.mnuDark.Checked = True
+            If FExists(App.Path & "\resources\arrowDown.jpg") Then thisForm.btnArrowDown.Picture = LoadPicture(App.Path & "\resources\arrowDown.jpg") ' imageList candidates
+            If FExists(App.Path & "\resources\leftArrow.jpg") Then thisForm.btnMapPrev.Picture = LoadPicture(App.Path & "\resources\leftArrow.jpg")
+            If FExists(App.Path & "\resources\rightArrow.jpg") Then thisForm.btnMapNext.Picture = LoadPicture(App.Path & "\resources\rightArrow.jpg")
+            If FExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.btnArrowUp.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
+            ' .52 DAEB 24/04/2022 rDIConConfig.frm Added up button to the two down buttons, theme them and add another at the bottom left
+            If FExists(App.Path & "\resources\arrowDown.jpg") Then thisForm.btnSettingsDown.Picture = LoadPicture(App.Path & "\resources\arrowDown.jpg")
+            If FExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.btnSettingsUp.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
+            If FExists(App.Path & "\resources\arrowDown.jpg") Then thisForm.picMoreConfigDown.Picture = LoadPicture(App.Path & "\resources\arrowDown.jpg")
+            If FExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.picMoreConfigUp.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
+            If FExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.picHideConfig.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
+        Else
+            classicTheme = False
+            thisForm.mnuLight.Checked = True
+            thisForm.mnuDark.Checked = False
+            If FExists(App.Path & "\resources\arrowDown10.jpg") Then thisForm.btnArrowDown.Picture = LoadPicture(App.Path & "\resources\arrowDown10.jpg")
+            If FExists(App.Path & "\resources\leftArrow10.jpg") Then thisForm.btnMapPrev.Picture = LoadPicture(App.Path & "\resources\leftArrow10.jpg")
+            If FExists(App.Path & "\resources\rightArrow10.jpg") Then thisForm.btnMapNext.Picture = LoadPicture(App.Path & "\resources\rightArrow10.jpg")
+            If FExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.btnArrowUp.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
+            ' .52 DAEB 24/04/2022 rDIConConfig.frm Added up button to the two down buttons, theme them and add another at the bottom left
+            If FExists(App.Path & "\resources\arrowDown10.jpg") Then thisForm.btnSettingsDown.Picture = LoadPicture(App.Path & "\resources\arrowDown10.jpg")
+            If FExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.btnSettingsUp.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
+            If FExists(App.Path & "\resources\arrowDown10.jpg") Then thisForm.picMoreConfigDown.Picture = LoadPicture(App.Path & "\resources\arrowDown10.jpg")
+            If FExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.picMoreConfigUp.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
+            If FExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.picHideConfig.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
+        End If
+        
+        ' these elements are normal elements that should have their styling removed on a classic theme
+        
+        ' we don't want all pictureboxes to be themed, only this one
+        thisForm.picPreview.BackColor = RGB(redC, greenC, blueC)
+        
+        ' all other buttons go here, note we can colour buttons on VB6 succesfully without losing the theme,
+        ' whilst VB.NET loses the bleeding theme deliberately and VB6 is superior in this respect.
+        
+        thisForm.picRdThumbFrame.BackColor = RGB(redC, greenC, blueC)
+        thisForm.btnRemoveFolder.BackColor = RGB(redC, greenC, blueC)
+        thisForm.picCover.BackColor = RGB(redC, greenC, blueC)
+        thisForm.back.BackColor = RGB(redC, greenC, blueC)
+        thisForm.sliPreviewSize.BackColor = RGB(redC, greenC, blueC)
+    
+    End If
+    
+    PutINISetting "Software\SteamyDockSettings", "SkinTheme", rDSkinTheme, toolSettingsFile ' now saved to the toolsettingsfile ' 17/11/2020 rDIconConfigForm.frm .05 DAEB Added the missing code to read/write the current theme to the tool's own settings file
+
+    ' on NT6 plus using the MSCOMCTL slider with the lighter default theme, the slider
+    ' fails to pick up the new theme colour fully
+    ' the following lines triggers a partial colour change on the treeview that has no backcolor property
+    ' this also causes a refresh of the preview pane - so don't remove it.
+    ' I will have to create a new slider to overcome this - not yet tested the VB.NET version
+    ' do not remove - essential
+
+    'a = sliPreviewSize.Value
+    'sliPreviewSize.Value = 1
+    'sliPreviewSize.Value = a
+    
+    ' the above no longer required with Krool's replacement controls
+    
+   On Error GoTo 0
+   Exit Sub
+
+setThemeShade_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setThemeShade of Form rDIconConfigForm"
+
+End Sub
+
 

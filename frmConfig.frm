@@ -192,7 +192,7 @@ Attribute VB_Exposed = False
 
 Private Sub btnKillIcon_Click()
     frmRegistry.Hide
-    rDIconConfigForm.btnSettingsDown.Visible = True
+    rDIconConfigForm.btnSettingsDown.Visible = False
     rDIconConfigForm.btnSettingsUp.Visible = False
 End Sub
 
@@ -204,6 +204,6 @@ End Sub
 
 
 Private Sub btnKillIcon_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If rDEnableBalloonTooltips = "1" Then CreateToolTip btnKillIcon.hWnd, "This window displays the location of the current settings. This tells you where the configuration details are being stored and where they are being read from and saved to. The help has more information.", _
+    If rDEnableBalloonTooltips = "1" Then CreateToolTip btnKillIcon.hwnd, "This window displays the location of the current settings. This tells you where the configuration details are being stored and where they are being read from and saved to. The help has more information.", _
                   TTIconInfo, "Help on the Configuration Settings Location", , , , True
 End Sub

@@ -108,28 +108,28 @@ Attribute VB_Exposed = False
 
 Option Explicit
 '///// GDI functions
-Private Declare Function GetDeviceCaps Lib "gdi32.dll" (ByVal hDC As Long, ByVal nIndex As Long) As Long
+Private Declare Function GetDeviceCaps Lib "gdi32.dll" (ByVal hdc As Long, ByVal nIndex As Long) As Long
 'Private Declare Function GetObjectA Lib "gdi32.dll" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
-Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hDC As Long, ByVal hObject As Long) As Long
-Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hDC As Long, ByRef pBitmapInfo As Any, ByVal un As Long, ByRef lplpVoid As Long, ByVal handle As Long, ByVal dw As Long) As Long
-Private Declare Function SetDIBits Lib "gdi32.dll" (ByVal hDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, ByRef lpBits As Any, ByRef lpBI As Any, ByVal wUsage As Long) As Long
-Private Declare Function GetDIBits Lib "gdi32.dll" (ByVal hDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, ByRef lpBits As Any, ByRef lpBI As Any, ByVal wUsage As Long) As Long
-Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hdc As Long) As Long
+Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hdc As Long, ByVal hObject As Long) As Long
+Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hdc As Long, ByRef pBitmapInfo As Any, ByVal un As Long, ByRef lplpVoid As Long, ByVal handle As Long, ByVal dw As Long) As Long
+Private Declare Function SetDIBits Lib "gdi32.dll" (ByVal hdc As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, ByRef lpBits As Any, ByRef lpBI As Any, ByVal wUsage As Long) As Long
+Private Declare Function GetDIBits Lib "gdi32.dll" (ByVal hdc As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, ByRef lpBits As Any, ByRef lpBI As Any, ByVal wUsage As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hdc As Long) As Long
 Private Declare Function CreateSolidBrush Lib "gdi32.dll" (ByVal crColor As Long) As Long
 Private Declare Function DeleteEnhMetaFile Lib "gdi32.dll" (ByVal hEMF As Long) As Long
 '///// User32 functions
 Private Declare Function GetIconInfo Lib "user32.dll" (ByVal hIcon As Long, ByRef piconinfo As Any) As Long
 'Private Declare Function GetSysColor Lib "user32.dll" (ByVal nIndex As Long) As Long
-Private Declare Function FillRect Lib "user32.dll" (ByVal hDC As Long, ByRef lpRect As RECTI, ByVal hBrush As Long) As Long
+Private Declare Function FillRect Lib "user32.dll" (ByVal hdc As Long, ByRef lpRect As RECTI, ByVal hBrush As Long) As Long
 Private Declare Function FindWindow Lib "user32.dll" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
 Private Declare Function GetWindowThreadProcessId Lib "user32.dll" (ByVal hWnd As Long, ByRef lpdwProcessId As Long) As Long
 Private Declare Function GetWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
 Private Declare Function FindWindowEx Lib "user32.dll" Alias "FindWindowExA" (ByVal hWndParent As Long, ByVal hWndChildAfter As Long, ByVal lpszClass As String, ByVal lpszWindow As String) As Long
 Private Declare Function SetProp Lib "user32.dll" Alias "SetPropA" (ByVal hWnd As Long, ByVal lpString As String, ByVal hData As Long) As Long
 Private Declare Function GetProp Lib "user32.dll" Alias "GetPropA" (ByVal hWnd As Long, ByVal lpString As String) As Long
-Private Declare Function CreateWindowEx Lib "user32.dll" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, ByRef lpParam As Any) As Long
+Private Declare Function CreateWindowEx Lib "user32.dll" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, ByRef lpParam As Any) As Long
 Private Declare Function CopyImage Lib "user32.dll" (ByVal handle As Long, ByVal un1 As Long, ByVal n1 As Long, ByVal n2 As Long, ByVal un2 As Long) As Long
 Private Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
@@ -156,7 +156,7 @@ Private Declare Function SetFilePointer Lib "kernel32.dll" (ByVal hFile As Long,
 Private Declare Function GetFileSize Lib "kernel32.dll" (ByVal hFile As Long, ByRef lpFileSizeHigh As Long) As Long
 Private Declare Function IsBadCodePtr Lib "kernel32.dll" (ByVal lpfn As Long) As Long
 Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
-Private Declare Function GetProcAddress Lib "kernel32.dll" (ByVal hmodule As Long, ByVal lpProcName As String) As Long
+Private Declare Function GetProcAddress Lib "kernel32.dll" (ByVal hModule As Long, ByVal lpProcName As String) As Long
 Private Declare Function LoadLibrary Lib "kernel32.dll" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
 Private Declare Function GetModuleHandle Lib "kernel32.dll" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Long
 Private Declare Function VirtualAlloc Lib "kernel32.dll" (ByVal lpAddress As Any, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
@@ -198,7 +198,7 @@ Private Declare Function GetFileVersionInfo Lib "Version.dll" Alias "GetFileVers
 Private Declare Function GetFileVersionInfoSize Lib "Version.dll" Alias "GetFileVersionInfoSizeA" (ByVal lptstrFilename As String, ByRef lpdwHandle As Long) As Long
 Private Declare Function VerQueryValue Lib "Version.dll" Alias "VerQueryValueA" (ByRef pBlock As Any, ByVal lpSubBlock As String, ByRef lplpBuffer As Any, ByRef puLen As Long) As Long
 Private Declare Function ImageList_GetIconSize Lib "comctl32.dll" (ByVal hIML As Long, ByRef Cx As Long, ByRef Cy As Long) As Long
-Private Declare Function SHGetImageListXP Lib "Shell32.dll" Alias "#727" (ByVal iImageList As Long, ByRef riid As Long, ByVal ppv As Long) As Long
+Private Declare Function SHGetImageListXP Lib "shell32.dll" Alias "#727" (ByVal iImageList As Long, ByRef riid As Long, ByVal ppv As Long) As Long
 Private Declare Function DispCallFunc Lib "oleaut32.dll" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As Integer, ByVal paCNT As Long, ByVal paTypes As Long, ByVal paValues As Long, ByRef retVAR As Variant) As Long
 
 Private Type RECTF                      ' GDI+ rectangle w/Single vartypes
@@ -772,7 +772,7 @@ Private Function pvLoadPicture(ByRef SourceData() As Byte, ByRef Size As Long, B
 
 End Function
 
-Private Function pvLoadFile(ByVal FileName As String, ByRef Size As Long, ByRef IconColorDepth As Long, _
+Private Function pvLoadFile(ByVal Filename As String, ByRef Size As Long, ByRef IconColorDepth As Long, _
                             ByRef DesiredIconCx As Long, ByRef DesiredIconCy As Long, _
                             ByRef KeepFormat As Boolean, _
                             ByRef pPicRef As PICREF) As StdPicture
@@ -795,7 +795,7 @@ Dim hFile As Long
     
     lRead = FILE_ATTRIBUTE_ARCHIVE Or FILE_ATTRIBUTE_HIDDEN Or FILE_ATTRIBUTE_NORMAL _
             Or FILE_ATTRIBUTE_READONLY Or FILE_ATTRIBUTE_SYSTEM
-    hFile = CreateFileW(StrPtr(FileName), GENERIC_READ, FILE_SHARE_READ, ByVal 0&, OPEN_EXISTING, lRead, 0&)
+    hFile = CreateFileW(StrPtr(Filename), GENERIC_READ, FILE_SHARE_READ, ByVal 0&, OPEN_EXISTING, lRead, 0&)
     If Not hFile = -1& Then
         lSize = GetFileSize(hFile, ByVal 0&)            ' load via array
         If lSize > 0& Then                              ' else > 2GB & not dealing with it
@@ -1315,7 +1315,7 @@ Private Function pvCvAnyToICO(ByRef Picture As StdPicture, ByRef pPicRef As PICR
     Dim BHI As BITMAPV5HEADER
 Dim icData() As Byte
 Dim icHdr() As Long
-Dim x As Long
+Dim X As Long
 
     Dim mskShift As Long
 Dim mskPtr As Long
@@ -1351,14 +1351,14 @@ Dim lAlpha As Long
         If BHI.biBitCount = 32 Then
             If pvValidateAlphaChannel(VarPtr(icData(62)), BHI.biWidth, BHI.biHeight) = PixelFormat32bppPremultiplied Then
                 mskShift = 128: mskPtr = 62& + BHI.biSizeImage
-                For x = 65& To mskPtr - 1& Step 4&
-                    lAlpha = icData(x)
+                For X = 65& To mskPtr - 1& Step 4&
+                    lAlpha = icData(X)
                     If lAlpha = 0& Then
                         mskBits = mskBits Or mskShift
                     ElseIf lAlpha < 255& Then
-                        icData(x - 1&) = (icData(x - 1&) * lAlpha) \ 255
-                        icData(x - 2&) = (icData(x - 2&) * lAlpha) \ 255
-                        icData(x - 3&) = (icData(x - 2&) * lAlpha) \ 255
+                        icData(X - 1&) = (icData(X - 1&) * lAlpha) \ 255
+                        icData(X - 2&) = (icData(X - 2&) * lAlpha) \ 255
+                        icData(X - 3&) = (icData(X - 2&) * lAlpha) \ 255
                     End If
                     If mskShift = 1& Then
                         icData(mskPtr) = mskBits
@@ -1396,8 +1396,8 @@ Dim aMask() As Byte
 Dim hDIB As Long
 Dim hBits As Long
 
-    Dim x As Long
-Dim y As Long
+    Dim X As Long
+Dim Y As Long
 Dim dPtr As Long
 Dim hMask As Long
 
@@ -1447,28 +1447,28 @@ Dim mScanWidth As Long
                 If .biBitCount = 0& Then            ' no color bitmap; therefore, this is B&W icon
                     .biSize = 40: GetDIBits m_hDC, hMask, 0&, 0&, ByVal 0&, BIH, 0&
                     If .biBitCount = 0 Then GoTo ExitRoutine
-                    y = .biHeight \ 2&              ' prepare a 32bpp format for DIB creation
+                    Y = .biHeight \ 2&              ' prepare a 32bpp format for DIB creation
                     .biBitCount = 32: .biClrImportant = 0: .biClrUsed = 0&
-                    .biSizeImage = 0&: .biCompression = 0: .biHeight = y
+                    .biSizeImage = 0&: .biCompression = 0: .biHeight = Y
                     hDIB = CreateDIBSection(m_hDC, BIH, 0&, hBits, 0&, 0&)
                     If hDIB = 0& Then GoTo ExitRoutine ' create the DIB
-                    .biHeight = y + y: x = y        ' transfer top 1/2 of mask to our DIB
-                    GetDIBits m_hDC, hMask, 0&, y, ByVal hBits, BIH, 0&
+                    .biHeight = Y + Y: X = Y        ' transfer top 1/2 of mask to our DIB
+                    GetDIBits m_hDC, hMask, 0&, Y, ByVal hBits, BIH, 0&
                 Else
-                    y = .biHeight: x = 0&
+                    Y = .biHeight: X = 0&
                 End If                              ' get the mask bits
                 .biBitCount = 8: .biClrImportant = 0: .biClrUsed = 256: .biSizeImage = 0
                 mScanWidth = pvDWordAlign(.biBitCount, .biWidth)
-                ReDim aMask(0 To mScanWidth * y - 1&)
+                ReDim aMask(0 To mScanWidth * Y - 1&)
                 CopyMemory ICI(0), BIH, 40&: ICI(11) = vbWhite
-                GetDIBits m_hDC, hMask, x, y, aMask(0), ICI(0), 0&
+                GetDIBits m_hDC, hMask, X, Y, aMask(0), ICI(0), 0&
                 Erase ICI()
             End With
             DeleteObject hMask: ICI(3) = 0&
-            dPtr = 3&: For y = 0& To y - 1&         ' apply the mask to our bitmap
-                x = y * mScanWidth
-                For x = x To x + BIH.biWidth - 1&
-                    If aMask(x) = 0& Then
+            dPtr = 3&: For Y = 0& To Y - 1&         ' apply the mask to our bitmap
+                X = Y * mScanWidth
+                For X = X To X + BIH.biWidth - 1&
+                    If aMask(X) = 0& Then
                         CopyMemory ByVal pvSafePointerAdd(hBits, dPtr), 255, 1&
                     Else
                         hMask = 0&                  ' contains simple transparency
@@ -1505,7 +1505,7 @@ Private Function pvCvMetaFileToAny(ByRef Picture As StdPicture, ByRef pPicRef As
     
     Dim hDIB As Long
     Dim hBits As Long
-    Dim x As Long
+    Dim X As Long
     
     Dim bAlpha As Byte
     Dim dPtr As Long
@@ -1548,14 +1548,14 @@ Private Function pvCvMetaFileToAny(ByRef Picture As StdPicture, ByRef pPicRef As
    
     If PicType = vbPicTypeBitmap Then                   ' loop thru alpha bytes & toggle them
         If BIH.biBitCount = 32& Then
-            For x = 3& To BIH.biSizeImage - 1& Step 4
-                dPtr = pvSafePointerAdd(hBits, x)
+            For X = 3& To BIH.biSizeImage - 1& Step 4
+                dPtr = pvSafePointerAdd(hBits, X)
                 CopyMemory bAlpha, ByVal dPtr, 1
                 bAlpha = bAlpha Xor 255
                 If bAlpha = 255 Then
                     CopyMemory ByVal dPtr, bAlpha, 1
                 Else
-                    CopyMemory ByVal pvSafePointerAdd(hBits, x - 3&), 0&, 4&
+                    CopyMemory ByVal pvSafePointerAdd(hBits, X - 3&), 0&, 4&
                 End If
             Next
             pPicRef.flags = PicType
@@ -1582,9 +1582,9 @@ Private Function pvCvMetaFileToAny(ByRef Picture As StdPicture, ByRef pPicRef As
         DeleteObject hDIB
         If BIH.biBitCount = 32& Then                        ' loop and toggle alpha + build icon mask
             mskPtr = BIH.biSizeImage + 62&: mskShift = 128&
-            For x = 65& To mskPtr - 1& Step 4&
-                icData(x) = icData(x) Xor 255
-                If icData(x) = 0 Then mskBits = mskBits Or mskShift
+            For X = 65& To mskPtr - 1& Step 4&
+                icData(X) = icData(X) Xor 255
+                If icData(X) = 0 Then mskBits = mskBits Or mskShift
                 If mskShift = 1& Then
                     icData(mskPtr) = mskBits
                     mskBits = 0&: mskShift = 128&
@@ -1734,12 +1734,12 @@ Dim hHandle As Long
             If hLock Then                                       ' transfer bits, offsetting for placeable header
                 If GdipEmfToWmfBits(hHandle, paramCount, pvSafePointerAdd(hLock, 22&), 8&, 0&) Then
                     DeleteEnhMetaFile hHandle: hHandle = 0&
-                    If Screen.Width > Screen.Height Then
+                    If screenWidthTwips > Screen.Height Then
                         rBounds.nWidth = 256& * Screen.TwipsPerPixelX
-                        rBounds.nHeight = (Screen.Height / Screen.Width) * rBounds.nWidth
+                        rBounds.nHeight = (Screen.Height / screenWidthTwips) * rBounds.nWidth
                     Else
                         rBounds.nHeight = 256& * Screen.TwipsPerPixelY
-                        rBounds.nWidth = (Screen.Width / Screen.Height) * rBounds.nHeight
+                        rBounds.nWidth = (screenWidthTwips / Screen.Height) * rBounds.nHeight
                     End If                                                              ' add placeable header
                     CopyMemory ByVal hLock, &H9AC6CDD7, 4&                              ' WMF magic number
                     CopyMemory ByVal pvSafePointerAdd(hLock, 4&), 0@, 6&                ' Handle, Left, Top
@@ -1986,8 +1986,8 @@ Dim lFormat As Long
 Dim lPrevColor As Long
 
     Dim bScanLine() As Long
-Dim y As Long
-Dim x As Long
+Dim Y As Long
+Dim X As Long
 
     Const ZEROES As Long = 256&
    
@@ -2005,11 +2005,11 @@ Dim x As Long
     CopyMemory lPrevColor, ByVal PixelPointer, 4&
     lPrevColor = lPrevColor Xor 1&
    
-    For y = 0& To Height - 1&
-        x = Width * 4&
-        CopyMemory bScanLine(0), ByVal pvSafePointerAdd(PixelPointer, x * y), x
-        For x = 0& To Width - 1&
-            lColor = bScanLine(x)               ' get 32bit color
+    For Y = 0& To Height - 1&
+        X = Width * 4&
+        CopyMemory bScanLine(0), ByVal pvSafePointerAdd(PixelPointer, X * Y), X
+        For X = 0& To Width - 1&
+            lColor = bScanLine(X)               ' get 32bit color
             If Not lColor = lPrevColor Then     ' and extact the alpha byte
                 If lColor = 0& Then
                     lFormat = lFormat Or ZEROES ' entire value is zero
@@ -2022,24 +2022,24 @@ Dim x As Long
                             If (lFormat And Not ZEROES) > 2& Then
                                 ' at least one other alpha value was > 0 and < 255
                                 ' since this alpha is zero & RGB non-zero. Done:
-                                lFormat = 8&: y = Height: Exit For
+                                lFormat = 8&: Y = Height: Exit For
                             End If
                             lFormat = lFormat Or 1& ' keep going, maybe all alphas are zero
                         End If
                     ElseIf bAlpha = 255& Then
                         If (lFormat And 1&) Then
                             ' already seen alpha zero & non-zero RGB. Here we have 255 alpha. Done:
-                            lFormat = 8&: y = Height: Exit For
+                            lFormat = 8&: Y = Height: Exit For
                         End If
                         lFormat = lFormat Or 2&
                        
                     ' else if any RGB values > alpha then not-premultiplied
                     ElseIf bAlpha < (lColor And &HFF&) Then
-                        lFormat = 8&: y = Height: Exit For ' definitly ARGB
+                        lFormat = 8&: Y = Height: Exit For ' definitly ARGB
                     ElseIf bAlpha < (lColor And &HFF00&) \ &H100& Then
-                        lFormat = 8&: y = Height: Exit For ' definitly ARGB
+                        lFormat = 8&: Y = Height: Exit For ' definitly ARGB
                     ElseIf bAlpha < (lColor And &HFF0000) \ &H10000 Then
-                        lFormat = 8&: y = Height: Exit For ' definitly ARGB
+                        lFormat = 8&: Y = Height: Exit For ' definitly ARGB
                     Else
                         lFormat = lFormat Or 16& ' likely pARGB, but not sure yet
                     End If
@@ -2363,28 +2363,28 @@ Private Function zAddressOf(ByVal oCallback As Object, ByVal nOrdinal As Long) A
   Dim bSub  As Byte                                                         'Value we expect to find pointed at by a vTable method entry
   Dim bVal  As Byte
   Dim nAddr As Long                                                         'Address of the vTable
-  Dim I     As Long                                                         'Loop index
-  Dim J     As Long                                                         'Loop limit
+  Dim i     As Long                                                         'Loop index
+  Dim j     As Long                                                         'Loop limit
  
   CopyMemory nAddr, ByVal ObjPtr(oCallback), 4&                             'Get the address of the callback object's instance
-  If zProbe(nAddr + &H1C, I, bSub) = False Then Exit Function               'Probe for a Class method
+  If zProbe(nAddr + &H1C, i, bSub) = False Then Exit Function               'Probe for a Class method
  
-  I = pvSafePointerAdd(I, 4&)                                               'Bump to the next entry
-  Do While J < 256                                                          'Set a reasonable limit, scan 256 vTable entries
-    CopyMemory nAddr, ByVal I, 4&                                           'Get the address stored in this vTable entry
+  i = pvSafePointerAdd(i, 4&)                                               'Bump to the next entry
+  Do While j < 256                                                          'Set a reasonable limit, scan 256 vTable entries
+    CopyMemory nAddr, ByVal i, 4&                                           'Get the address stored in this vTable entry
    
     If IsBadCodePtr(nAddr) Then                                             'Is the entry an invalid code address?
-      CopyMemory zAddressOf, ByVal pvSafePointerAdd(I, -(nOrdinal * 4&)), 4& 'Return the specified vTable entry address
+      CopyMemory zAddressOf, ByVal pvSafePointerAdd(i, -(nOrdinal * 4&)), 4& 'Return the specified vTable entry address
       Exit Do                                                               'Bad method signature, quit loop
     End If
 
     CopyMemory bVal, ByVal nAddr, 1&                                        'Get the byte pointed to by the vTable entry
     If bVal <> bSub Then                                                    'If the byte doesn't match the expected value...
-      CopyMemory zAddressOf, ByVal pvSafePointerAdd(I, -(nOrdinal * 4&)), 4& 'Return the specified vTable entry address
+      CopyMemory zAddressOf, ByVal pvSafePointerAdd(i, -(nOrdinal * 4&)), 4& 'Return the specified vTable entry address
       Exit Do                                                               'Bad method signature, quit loop
     End If
-    J = J + 1&
-    I = pvSafePointerAdd(I, 4&)                                             'Next vTable entry
+    j = j + 1&
+    i = pvSafePointerAdd(i, 4&)                                             'Next vTable entry
   Loop
 End Function
 

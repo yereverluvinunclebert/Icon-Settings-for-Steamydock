@@ -72,10 +72,10 @@ Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" (ByRef Pt
 'Private Declare Function SetFilePointer Lib "kernel32.dll" (ByVal hFile As Long, ByVal lDistanceToMove As Long, ByRef lpDistanceToMoveHigh As Long, ByVal dwMoveMethod As Long) As Long
 'Private Const INVALID_HANDLE_VALUE = -1
 
-Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
-Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hDC As Long, ByVal hObject As Long) As Long
-Private Declare Function BitBlt Lib "gdi32.dll" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hdc As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hdc As Long) As Long
+Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hdc As Long, ByVal hObject As Long) As Long
+Private Declare Function BitBlt Lib "gdi32.dll" (ByVal hDestDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function GetDIBits Lib "gdi32.dll" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, ByRef lpBits As Any, ByRef lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
 
 Public Function LoadStream(ByRef inStream() As Byte, ByRef cHost As c32bppDIB, _
@@ -104,8 +104,8 @@ Public Function LoadStream(ByRef inStream() As Byte, ByRef cHost As c32bppDIB, _
     Dim lValue As Long
 Dim iValue As Integer
 
-    Dim x As Long
-Dim y As Long
+    Dim X As Long
+Dim Y As Long
 Dim lScanWidth As Long
 
     Dim Offset As Long
@@ -123,17 +123,17 @@ Dim tSA As SafeArray
     CopyMemory iValue, inStream(streamOffset), 2&   ' get 1st 2 bytes of the stream
     If iValue = &H4D42 Then                         ' is it a bmp magic number
         CopyMemory iBitCount, inStream(streamOffset + 28), 2& ' bit count
-        CopyMemory x, inStream(streamOffset + 18), 4& ' width
-        CopyMemory y, inStream(streamOffset + 22), 4& ' height
+        CopyMemory X, inStream(streamOffset + 18), 4& ' width
+        CopyMemory Y, inStream(streamOffset + 22), 4& ' height
         
         ' validate size
         ' width must be at least 1 pixel & height must be a least 1 pixel
-        If x < 1 Or y = 0& Then Exit Function ' -Y indicates top down DIB
+        If X < 1 Or Y = 0& Then Exit Function ' -Y indicates top down DIB
         
         On Error Resume Next
         CopyMemory Offset, inStream(streamOffset + 10), 4& ' start of image
         ' validate enough bytes exist for the image
-        lValue = (streamOffset + streamLength) - (iparseByteAlignOnWord(iBitCount, x) * Abs(y) + Offset)
+        lValue = (streamOffset + streamLength) - (iparseByteAlignOnWord(iBitCount, X) * Abs(Y) + Offset)
         If Err Then     ' should some overflow occur
             Err.Clear
             lValue = -1&
@@ -144,7 +144,7 @@ Dim tSA As SafeArray
                 CopyMemory lValue, inStream(streamOffset + 30&), 4& ' compression
                 If lValue = 0& Then         ' manually handle no-compression bitmaps
                                             ' else allow VB to convert the bitmap
-                    cHost.InitializeDIB x, Abs(y)
+                    cHost.InitializeDIB X, Abs(Y)
                     With tSA
                         .cbElements = 1
                         .cDims = 2
@@ -155,14 +155,14 @@ Dim tSA As SafeArray
                     CopyMemory ByVal VarPtrArray(aDIB), VarPtr(tSA), 4&
                     
                     lScanWidth = cHost.scanWidth
-                    If y < 0& Then ' the dib is top down vs bottom up
+                    If Y < 0& Then ' the dib is top down vs bottom up
                         ' flip the DIB
-                        y = -y
-                        For lValue = 0& To y - 1&
+                        Y = -Y
+                        For lValue = 0& To Y - 1&
                             ' start of scan line in source image
-                            x = lScanWidth * (y - lValue - 1&) + Offset
+                            X = lScanWidth * (Y - lValue - 1&) + Offset
                             ' copy to upside down scan line on our DIB
-                            CopyMemory aDIB(0&, lValue), inStream(x), lScanWidth
+                            CopyMemory aDIB(0&, lValue), inStream(X), lScanWidth
                         Next
                     Else    ' bottom up dib; simply copy bits
                         CopyMemory ByVal cHost.BitsPointer, inStream(streamOffset + Offset), cHost.Height * lScanWidth
@@ -182,7 +182,7 @@ Dim tSA As SafeArray
     End If
     On Error GoTo 0
     
-    If cHost.Handle = 0& Then ' we didn't process the image above, try VB's LoadPicture
+    If cHost.handle = 0& Then ' we didn't process the image above, try VB's LoadPicture
     
         On Error Resume Next
         Dim tPic As StdPicture
@@ -197,7 +197,7 @@ Dim tSA As SafeArray
 
 End Function
 
-Public Function ConvertstdPicTo32bpp(ByRef stdPic As StdPicture, ByVal Handle As Long, ByRef cHost As c32bppDIB, ByVal bitCount As Integer) As Boolean
+Public Function ConvertstdPicTo32bpp(ByRef stdPic As StdPicture, ByVal handle As Long, ByRef cHost As c32bppDIB, ByVal bitCount As Integer) As Boolean
 
     ' stdPic is passed from cHost.LoadPicture_StdPicture and Handle=0&
     '   in this case stdPic can be a bmp, jpg, gif, wmf, emf
@@ -221,8 +221,8 @@ Dim bmpOld As Long
 
 
     If stdPic Is Nothing Then
-        If Handle = 0& Then Exit Function ' couldn't convert image
-        If GetGDIObject(Handle, Len(tObj), tObj) = 0& Then Exit Function
+        If handle = 0& Then Exit Function ' couldn't convert image
+        If GetGDIObject(handle, Len(tObj), tObj) = 0& Then Exit Function
         Cx = tObj.bmWidth
         Cy = Abs(tObj.bmHeight)
     ElseIf stdPic.Type = vbPicTypeNone Then
@@ -231,7 +231,7 @@ Dim bmpOld As Long
         ' get the picture's width & height & initialize DIB
         Cx = ConvertHimetrix2Pixels(stdPic.Width, True)
         Cy = ConvertHimetrix2Pixels(stdPic.Height, False)
-        Handle = 0&
+        handle = 0&
     End If
     
     cHost.InitializeDIB Cx, Cy
@@ -241,7 +241,7 @@ Dim bmpOld As Long
     ' has transparency. Fill the entire image with white, then when it is
     ' rendered, any "transparent" areas that were not drawn over, left the
     ' alpha byte as 255. Those areas that are drawn over are changed to zero.
-    If Handle = 0& Then
+    If handle = 0& Then
         If stdPic.Type = vbPicTypeEMetafile Or stdPic.Type = vbPicTypeMetafile Then
             FillMemory ByVal cHost.BitsPointer, Cy * cHost.scanWidth, 255
         End If
@@ -261,7 +261,7 @@ Dim bmpOld As Long
                     .biPlanes = 1
                     .biSize = 40
                 End With
-                If GetDIBits(tDC, Handle, 0, tBMPI.bmiHeader.biHeight, ByVal cHost.BitsPointer, tBMPI, 0) = 0 Then
+                If GetDIBits(tDC, handle, 0, tBMPI.bmiHeader.biHeight, ByVal cHost.BitsPointer, tBMPI, 0) = 0 Then
                     tObj.bmBitsPixel = 0&   ' flag to allow BitBlt if this failed
                 End If
             Else                ' if we have a bits pointer, simply copy data
@@ -270,7 +270,7 @@ Dim bmpOld As Long
         End If
         If Not tObj.bmBitsPixel = 32& Then          ' use BitBlt
             bmpDC = CreateCompatibleDC(tDC)         ' create a dc & blt, image is not 32bpp
-            bmpOld = SelectObject(bmpDC, Handle)
+            bmpOld = SelectObject(bmpDC, handle)
             BitBlt tDC, 0, 0, Cx, Cy, bmpDC, 0, 0, vbSrcCopy
             SelectObject bmpDC, bmpOld
             DeleteDC bmpDC
@@ -289,7 +289,7 @@ Dim bmpOld As Long
     End With
     CopyMemory ByVal VarPtrArray(aDIB), VarPtr(tSA), 4& ' apply overlay
     
-    If Handle = 0& Then  ' processing wmf, emf
+    If handle = 0& Then  ' processing wmf, emf
         If stdPic.Type = vbPicTypeEMetafile Or stdPic.Type = vbPicTypeMetafile Then
             ' as mentioned above, any transparent pixels will have alpha value = 255
             For Cy = 0& To cHost.Height - 1&
@@ -308,7 +308,7 @@ Dim bmpOld As Long
             If bitCount = 0 Then
                 ' when called from cHost.LoadPicture_Resource then no BitCount is known
                 Dim tBMP As BITMAP
-                GetGDIObject stdPic.Handle, Len(tBMP), tBMP
+                GetGDIObject stdPic.handle, Len(tBMP), tBMP
                 bitCount = tBMP.bmBitsPixel
             End If
             ' Note: I have experienced 32bpp & 24bpp stdPicture.Rendering onto a 32bpp DIB
@@ -335,9 +335,9 @@ End Function
 Private Function ConvertHimetrix2Pixels(ByVal vHiMetrix As Long, ByVal Horizontally As Boolean) As Long
     ' conversion from Himetrics to Pixels when ScaleX/Y is not available
     If Horizontally Then
-        ConvertHimetrix2Pixels = vHiMetrix * 1440 / 2540 / Screen.TwipsPerPixelX
+        ConvertHimetrix2Pixels = vHiMetrix * 1440 / 2540 / Screen.twipsPerPixelX
     Else
-        ConvertHimetrix2Pixels = vHiMetrix * 1440 / 2540 / Screen.TwipsPerPixelY
+        ConvertHimetrix2Pixels = vHiMetrix * 1440 / 2540 / Screen.twipsPerPixelY
     End If
 End Function
 

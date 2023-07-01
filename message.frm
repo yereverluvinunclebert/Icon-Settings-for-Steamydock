@@ -4,29 +4,29 @@ Begin VB.Form frmMessage
    ClientHeight    =   2100
    ClientLeft      =   4845
    ClientTop       =   4800
-   ClientWidth     =   5700
+   ClientWidth     =   5985
    ControlBox      =   0   'False
    Icon            =   "message.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   2100
-   ScaleWidth      =   5700
+   ScaleWidth      =   5985
    StartUpPosition =   1  'CenterOwner
    Begin VB.Frame fraMessage 
       BackColor       =   &H00FFFFFF&
       BorderStyle     =   0  'None
       Height          =   1410
       Left            =   -30
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   0
-      Width           =   5775
+      Width           =   5970
       Begin VB.Frame fraPicVB 
          BackColor       =   &H00FFFFFF&
          BorderStyle     =   0  'None
          Height          =   780
          Left            =   195
-         TabIndex        =   5
+         TabIndex        =   4
          Top             =   270
          Width           =   735
          Begin VB.Image picVBInformation 
@@ -50,7 +50,6 @@ Begin VB.Form frmMessage
             Left            =   0
             Picture         =   "message.frx":26DC
             Top             =   0
-            Visible         =   0   'False
             Width           =   720
          End
          Begin VB.Image picVBQuestion 
@@ -68,7 +67,7 @@ Begin VB.Form frmMessage
          Caption         =   "*"
          Height          =   195
          Left            =   1110
-         TabIndex        =   4
+         TabIndex        =   3
          Top             =   570
          Width           =   4455
          WordWrap        =   -1  'True
@@ -77,26 +76,27 @@ Begin VB.Form frmMessage
    Begin VB.CommandButton btnButtonTwo 
       Caption         =   "&No"
       Height          =   372
-      Left            =   4620
-      TabIndex        =   2
+      Left            =   4980
+      TabIndex        =   1
       Top             =   1620
       Width           =   972
    End
    Begin VB.CommandButton btnButtonOne 
       Caption         =   "&Yes"
       Height          =   372
-      Left            =   3525
-      TabIndex        =   1
+      Left            =   3885
+      TabIndex        =   0
       Top             =   1620
       Width           =   972
    End
    Begin VB.CheckBox chkShowAgain 
-      Caption         =   "&Don't show this message again"
-      Height          =   255
-      Left            =   225
-      TabIndex        =   0
-      Top             =   1680
-      Width           =   2655
+      Caption         =   "&Hide this message for the rest of this session"
+      Height          =   420
+      Left            =   75
+      TabIndex        =   5
+      Top             =   1560
+      Visible         =   0   'False
+      Width           =   3435
    End
 End
 Attribute VB_Name = "frmMessage"
@@ -106,19 +106,21 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 ' .74 DAEB 22/05/2022 rDIConConfig.frm Msgbox replacement that can be placed on top of the form instead as the middle of the screen STARTS
 Option Explicit
-Private mintMsgNumber As Integer
 Private mintLabelHeight As Integer
-Private ynReturnValue As Integer
+Private yesNoReturnValue As Integer
+Private formMsgContext As String
+Private formShowAgainChkBox As Boolean
 
 Private Sub btnButtonTwo_Click()
-    ynReturnValue = 7
+    If formShowAgainChkBox = True Then SaveSetting App.EXEName, "Options", "Show message" & formMsgContext, chkShowAgain.Value
+    yesNoReturnValue = 7
     Unload Me
 End Sub
 
 Private Sub btnButtonOne_Click()
     Me.Visible = False
-    SaveSetting App.EXEName, "Options", "Show message", chkShowAgain.Value
-    ynReturnValue = 6
+    If formShowAgainChkBox = True Then SaveSetting App.EXEName, "Options", "Show message" & formMsgContext, chkShowAgain.Value
+    yesNoReturnValue = 6
     Unload Me
 End Sub
 
@@ -126,9 +128,16 @@ Public Sub Display()
 
     Dim intShow As Integer
     
-    intShow = GetSetting(App.EXEName, "Options", "Show message", vbUnchecked)
+    If formShowAgainChkBox = True Then
     
-    If intShow = vbUnchecked Then
+        chkShowAgain.Visible = True
+        ' Returns a key setting value from an application's entry in the Windows registry
+        intShow = GetSetting(App.EXEName, "Options", "Show message" & formMsgContext, vbUnchecked)
+        
+        If intShow = vbUnchecked Then
+            Me.Show vbModal
+        End If
+    Else
         Me.Show vbModal
     End If
 
@@ -161,13 +170,17 @@ Public Property Let propTitle(ByVal strTitle As String)
     End If
 End Property
 
-Public Property Let propShowAgain(ByVal showAgainVis As Boolean)
-    chkShowAgain.Visible = showAgainVis
+Public Property Let propMsgContext(ByVal thisContext As String)
+    formMsgContext = thisContext
+End Property
+
+Public Property Let propShowAgainChkBox(ByVal showAgainVis As Boolean)
+    formShowAgainChkBox = showAgainVis
 End Property
 
 Public Property Let propButtonVal(ByVal buttonVal As Integer)
     
-    Dim fileToPlay As String
+    Dim fileToPlay As String: fileToPlay = vbNullString
 
     btnButtonOne.Visible = False
     btnButtonTwo.Visible = False
@@ -178,7 +191,7 @@ Public Property Let propButtonVal(ByVal buttonVal As Integer)
     picVBExclamation.Visible = False
     picVBQuestion.Visible = False
 
-    btnButtonOne.Left = 3525
+    btnButtonOne.Left = 3885
 
     If buttonVal >= 64 Then ' vbInformation
        buttonVal = buttonVal - 64
@@ -257,8 +270,11 @@ Public Property Let propButtonVal(ByVal buttonVal As Integer)
 End Property
 
 Public Property Get propReturnedValue()
-    propReturnedValue = ynReturnValue
+
+    propReturnedValue = yesNoReturnValue
+    
 End Property
+
 
 Private Sub Form_Load()
 
@@ -270,12 +286,14 @@ Private Sub Form_Load()
     '                       as each instance of the form is new, the font modification must be here.
     For Each Ctrl In Controls
          If (TypeOf Ctrl Is CommandButton) Or (TypeOf Ctrl Is TextBox) Or (TypeOf Ctrl Is FileListBox) Or (TypeOf Ctrl Is Label) Or (TypeOf Ctrl Is ComboBox) Or (TypeOf Ctrl Is CheckBox) Or (TypeOf Ctrl Is OptionButton) Or (TypeOf Ctrl Is Frame) Or (TypeOf Ctrl Is ListBox) Then
-           If SDSuppliedFont <> "" Then Ctrl.Font.name = SDSuppliedFont
+           If SDSuppliedFont <> "" Then Ctrl.Font.Name = SDSuppliedFont
            If Val(SDSuppliedFontSize) > 0 Then Ctrl.Font.Size = Val(SDSuppliedFontSize)
                        'Ctrl.Font.Italic = CBool(SDSuppliedFontItalics) TBD
            'If suppliedStyle <> "" Then Ctrl.Font.Style = suppliedStyle
         End If
     Next
 
+    chkShowAgain.Visible = False
+    
 End Sub
 ' .74 DAEB 22/05/2022 rDIConConfig.frm Msgbox replacement that can be placed on top of the form instead as the middle of the screen ENDS

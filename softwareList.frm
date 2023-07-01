@@ -4,11 +4,11 @@ Begin VB.Form formSoftwareList
    ClientHeight    =   8565
    ClientLeft      =   165
    ClientTop       =   450
-   ClientWidth     =   16020
+   ClientWidth     =   16725
    Icon            =   "softwareList.frx":0000
    LinkTopic       =   "Form1"
    ScaleHeight     =   8565
-   ScaleWidth      =   16020
+   ScaleWidth      =   16725
    StartUpPosition =   3  'Windows Default
    Begin VB.PictureBox picBinaryImgStore 
       Appearance      =   0  'Flat
@@ -44,6 +44,7 @@ Begin VB.Form formSoftwareList
       Caption         =   "De-select Items"
       Height          =   435
       Left            =   9090
+      Style           =   1  'Graphical
       TabIndex        =   19
       ToolTipText     =   "Deselect the items in the software list above"
       Top             =   6810
@@ -58,7 +59,8 @@ Begin VB.Form formSoftwareList
    Begin VB.CommandButton btnHelp 
       Caption         =   "Help"
       Height          =   435
-      Left            =   12720
+      Left            =   13470
+      Style           =   1  'Graphical
       TabIndex        =   15
       ToolTipText     =   "Get some help on how to operate this utility"
       Top             =   8040
@@ -68,6 +70,7 @@ Begin VB.Form formSoftwareList
       Caption         =   "Clear"
       Height          =   435
       Left            =   10695
+      Style           =   1  'Graphical
       TabIndex        =   14
       ToolTipText     =   "Clear the above list"
       Top             =   7305
@@ -76,7 +79,8 @@ Begin VB.Form formSoftwareList
    Begin VB.CommandButton btnGenerateDock 
       Caption         =   "Generate Dock"
       Height          =   480
-      Left            =   14385
+      Left            =   15135
+      Style           =   1  'Graphical
       TabIndex        =   12
       ToolTipText     =   "Generate the new dock"
       Top             =   7305
@@ -88,7 +92,7 @@ Begin VB.Form formSoftwareList
       Left            =   10680
       TabIndex        =   11
       Top             =   495
-      Width           =   5220
+      Width           =   5970
    End
    Begin VB.TextBox txtSizeOfFiles 
       Height          =   345
@@ -128,6 +132,7 @@ Begin VB.Form formSoftwareList
       Caption         =   "Copy Items >"
       Height          =   435
       Left            =   9090
+      Style           =   1  'Graphical
       TabIndex        =   5
       ToolTipText     =   "Copy selected items from the program list to the  list that will be used to generate the dock"
       Top             =   7305
@@ -136,7 +141,8 @@ Begin VB.Form formSoftwareList
    Begin VB.CommandButton btnCloseSoft 
       Caption         =   "Close"
       Height          =   435
-      Left            =   14400
+      Left            =   15150
+      Style           =   1  'Graphical
       TabIndex        =   4
       ToolTipText     =   "Close this utility"
       Top             =   8025
@@ -309,10 +315,22 @@ Private m_FormHgt As Single
 
 Private genDragTimerCounter As Integer
 
+'------------------------------------------------------ STARTS
+' Constants for hiding/adding horizontal scrollbars to the listboxes
+Private Const LB_SETHORIZONTALEXTENT As Long = &H194
+Private Const SB_VERT As Long = 1
+
+' APIs for hiding/adding horizontal scrollbars to the listboxes
+Private Declare Function SendMessageByNum Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function ShowScrollBar Lib "user32" (ByVal hwnd As Long, ByVal wBar As Long, ByVal bShow As Long) As Long
+'------------------------------------------------------ ENDS
+
+
+
 Private Sub btnDeselectItems_Click()
 
-    Dim k As Integer
-    Dim deselectedCount As Integer
+    Dim k As Integer: k = 0
+    Dim deselectedCount As Integer: deselectedCount = 0
     
     k = 0
     deselectedCount = 0
@@ -343,26 +361,8 @@ Private Sub Form_Load()
 
    On Error GoTo Form_Load_Error
 
-    Dim storedFont As String
-    
-    Dim fntFont As String
-    Dim fntSize As Integer
-    Dim fntWeight As Integer
-    Dim fntStyle As Boolean
-    Dim fntColour As Long
-    Dim fntItalics As Boolean
-    Dim fntUnderline As Boolean
-    Dim fntFontResult As Boolean
-
-    'storedFont = txtTextFont.Text 'TBD
-    
-    fntFont = SDSuppliedFont
-    fntSize = SDSuppliedFontSize
-    fntItalics = CBool(SDSuppliedFontItalics)
-    fntColour = CLng(SDSuppliedFontColour)
-    
-    ' .TBD DAEB 26/05/2022 rdIconConfig.frm Call the font tool for this form
-    Call changeFont(Me, False, fntFont, fntSize, fntWeight, fntStyle, fntColour, fntItalics, fntUnderline, fntFontResult)
+    ' set the theme colour on startup
+    Call setThemeSkin(Me)
   
     txtPathToTest.Text = "C:\Users\beededea\AppData\Roaming\Microsoft\Windows\Start Menu\Programs"
     txtFileFilter.Text = "*.lnk"
@@ -395,6 +395,32 @@ Private Sub Form_Activate()
 
     formSoftwareList.Refresh
     rdbProgramData.Value = True 'this causes a rdbProgramData_Click
+    
+    Dim storedFont As String: storedFont = vbNullString
+    
+    Dim fntFont As String: fntFont = vbNullString
+    Dim fntSize As Integer: fntSize = 0
+    Dim fntWeight As Integer: fntWeight = 0
+    Dim fntStyle As Boolean: fntStyle = False
+    Dim fntColour As Long: fntColour = 0
+    Dim fntItalics As Boolean: fntItalics = False
+    Dim fntUnderline As Boolean: fntUnderline = False
+    Dim fntFontResult As Boolean: fntFontResult = False
+    
+    Dim lLength As Long
+
+    'storedFont = txtTextFont.Text 'TBD
+    
+    fntFont = SDSuppliedFont
+    fntSize = SDSuppliedFontSize
+    fntItalics = CBool(SDSuppliedFontItalics)
+    fntColour = CLng(SDSuppliedFontColour)
+    
+    ' .TBD DAEB 26/05/2022 rdIconConfig.frm Call the font tool for this form
+    Call changeFont(formSoftwareList, False, fntFont, fntSize, fntWeight, fntStyle, fntColour, fntItalics, fntUnderline, fntFontResult)
+  
+    ' set the theme colour on startup
+    Call setThemeSkin(Me)
 
    On Error GoTo 0
    Exit Sub
@@ -518,19 +544,11 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Function fCheckStartup() As Integer
-    Dim SearchPath As String
-    Dim FindStr As String
-    Dim FileSize As Long
-    Dim NumFiles As Integer
-    Dim NumDirs As Integer
-    
-    'initialise the vars
-    
-    SearchPath = ""
-    FindStr = ""
-    FileSize = 0
-    NumFiles = 0
-    NumDirs = 0
+    Dim SearchPath As String: SearchPath = vbNullString
+    Dim FindStr As String: FindStr = vbNullString
+    Dim FileSize As Long: FileSize = 0
+    Dim NumFiles As Integer: NumFiles = 0
+    Dim NumDirs As Integer: NumDirs = 0
     
     On Error GoTo fCheckStartup_Error
 
@@ -566,18 +584,11 @@ End Function
 '
 Private Sub btnCopyItems_Click()
 
-    Dim k As Long
-    Dim strItem As String
-    Dim selectedCount As Integer
-    Dim startPoint As Integer
+    Dim k As Long: k = 0
+    Dim strItem As String: strItem = vbNullString
+    Dim selectedCount As Integer: selectedCount = 0
+    Dim startPoint As Integer: startPoint = 0
         
-    'initialise the vars
-    
-    k = 0
-    strItem = ""
-    selectedCount = 0
-    startPoint = 0
-    
     On Error GoTo btnCopyItems_Click_Error
 
     'lbxApprovedList.Clear
@@ -649,16 +660,12 @@ End Sub
 Private Sub btnHelp_Click()
    On Error GoTo btnHelp_Click_Error
    
-   Dim answer As VbMsgBoxResult
-   
-    'initialise the vars
-    
-    answer = vbNo
+   Dim answer As VbMsgBoxResult: answer = vbNo
 
     answer = msgBoxA("This option opens a browser window and displays this tool's help. Proceed?", vbQuestion + vbYesNo)
     If answer = vbYes Then
         If FExists(App.Path & "\help\Rocketdock Enhanced Settings.html") Then
-            Call ShellExecute(Me.hWnd, "Open", App.Path & "\help\generate documentation.html", vbNullString, App.Path, 1)
+            Call ShellExecute(Me.hwnd, "Open", App.Path & "\help\generate documentation.html", vbNullString, App.Path, 1)
         Else
             msgBoxA ("The help file -Rocketdock Enhanced Settings.html- is missing from the help folder."), vbExclamation + vbOKOnly, ""
         End If
@@ -681,49 +688,26 @@ End Sub
 '---------------------------------------------------------------------------------------
 ' CREDIT: IT researcher https://www.vbforums.com/showthread.php?784053-Get-installed-programs-list-both-32-and-64-bit-programs from the vbforums for the idea of extracting the keys
 Public Function readInstalledAppsRegistry(regLocation As Long, keyToSearch As String) As Integer
-    Dim hParentKey As Long
-    Dim hSubKey As Long
-    Dim lIndex As Long
-    Dim sAppID As String
-    Dim lAppID As Long
-    Dim sAppName As String
-    Dim sAppLocation As String
-    Dim sAppIcon As String
-    Dim appName As String
-    Dim AppLocation As String
-    Dim appIcon As String
-    Dim lAppName As Long
-    Dim lAppLocation As Long
-    Dim lAppIcon As Long
-    Dim ValueType As Long
+    Dim hParentKey As Long: hParentKey = 0
+    Dim hSubKey As Long: hSubKey = 0
+    Dim lIndex As Long: lIndex = 0
+    Dim sAppID As String: sAppID = vbNullString
+    Dim lAppID As Long: lAppID = 0
+    Dim sAppName As String: sAppName = vbNullString
+    Dim sAppLocation As String: sAppLocation = vbNullString
+    Dim sAppIcon As String: sAppIcon = vbNullString
+    Dim appName As String: appName = vbNullString
+    Dim AppLocation As String: AppLocation = vbNullString
+    Dim appIcon As String: appIcon = vbNullString
+    Dim lAppName As Long: lAppName = 0
+    Dim lAppLocation As Long: lAppLocation = 0
+    Dim lAppIcon As Long: lAppIcon = 0
+    Dim ValueType As Long: ValueType = 0
     Dim DummyTime As FILETIME
-    Dim sTmp As String
-    Dim entryCount As Integer
-    Dim textVersion As String
-    Dim testFileName As String
-        
-    'initialise the vars
-    
-    hParentKey = 0
-    hSubKey = 0
-    lIndex = 0
-    sAppID = ""
-    lAppID = 0
-    sAppName = ""
-    sAppLocation = ""
-    sAppIcon = ""
-    appName = ""
-    AppLocation = ""
-    appIcon = ""
-    lAppName = 0
-    lAppLocation = 0
-    lAppIcon = 0
-    ValueType = 0
-    'DummyTime
-    sTmp = ""
-    entryCount = 0
-    textVersion = ""
-    testFileName = ""
+    Dim sTmp As String: sTmp = vbNullString
+    Dim entryCount As Integer: entryCount = 0
+    Dim textVersion As String: textVersion = vbNullString
+    Dim testFileName As String: testFileName = vbNullString
     
     On Error GoTo readInstalledAppsRegistry_Error
     
@@ -903,24 +887,14 @@ End Function
 '
 Function FindFilesAPI(Path As String, SearchStr As String, FileCount As Integer, DirCount As Integer)
  
-    Dim Filename As String ' Walking filename variable...
-    Dim DirName As String ' SubDirectory Name
+    Dim Filename As String: Filename = vbNullString ' Walking filename variable...
+    Dim DirName As String: DirName = vbNullString ' SubDirectory Name
     Dim dirNames() As String ' Buffer for directory name entries
-    Dim nDir As Integer ' Number of directories in this path
-    Dim i As Integer ' For-loop counter...
-    Dim hSearch As Long ' Search Handle
+    Dim nDir As Integer: nDir = 0 ' Number of directories in this path
+    Dim i As Integer: i = 0 ' For-loop counter...
+    Dim hSearch As Long: hSearch = 0 ' Search Handle
     Dim WFD As WIN32_FIND_DATA
-    Dim Cont As Integer
-    
-    ' initialise the vars
-    Filename = "" ' Walking filename variable...
-    DirName = "" ' SubDirectory Name
-    'dirNames() = "" ' VB6 can't initialise an array without running a routine to do so
-    nDir = 0 ' Number of directories in this path
-    i = 0 ' For-loop counter...
-    hSearch = 0 ' Search Handle
-    'WFD
-    Cont = 0
+    Dim Cont As Integer: Cont = 0
     
     On Error GoTo FindFilesAPI_Error
 
@@ -979,8 +953,8 @@ FindFilesAPI_Error:
 End Function
 
 
-Private Sub fraLinkSource_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLinkSource.hWnd, "Select the location to search from, choose either the registry or the start menu links.", _
+Private Sub fraLinkSource_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+    If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLinkSource.hwnd, "Select the location to search from, choose either the registry or the start menu links.", _
                   TTIconInfo, "Help on the Link Source radio buttons", , , , True
 End Sub
 
@@ -1002,18 +976,12 @@ End Sub
 
 
 ' .06 DAEB 30/05/2022 formSoftwareList.frm Add drag and drop to the generate dock utility
-Private Sub lbxApprovedList_DragDrop(Source As Control, X As Single, Y As Single)
-    Dim k As Long
-    Dim strItem As String
-    Dim selectedCount As Integer
-    Dim startPoint As Integer
-    
-    'initialise the vars
-    
-    k = 0
-    strItem = ""
-    selectedCount = 0
-    startPoint = 0
+Private Sub lbxApprovedList_DragDrop(Source As Control, x As Single, y As Single)
+    Dim k As Long: k = 0
+    Dim strItem As String: strItem = vbNullString
+    Dim selectedCount As Integer: selectedCount = 0
+    Dim startPoint As Integer: startPoint = 0
+
     
     lbxSoftwareList.Drag vbEndDrag
     
@@ -1036,19 +1004,19 @@ Private Sub lbxApprovedList_DragDrop(Source As Control, X As Single, Y As Single
     
     'Screen.MousePointer = vbDefault
     
-    If selectedCount <= 0 Then
-        msgBoxA "Program items not yet selected, select required programs from the left hand list one by one.", vbInformation + vbOKOnly, "Dock Generation Tool"
-    End If
+'    If selectedCount <= 0 Then
+'        msgBoxA "Program items not yet selected, select required programs from the left hand list one by one.", vbInformation + vbOKOnly, "Dock Generation Tool"
+'    End If
 
 End Sub
 
-Private Sub lbxApprovedList_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lbxApprovedList_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     lbxApprovedList.ToolTipText = lbxApprovedList.List(lbxApprovedList.ListIndex)
     'lbxSoftwareList.Drag vbEndDrag
 End Sub
 
-Private Sub lbxApprovedList_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-   If rDEnableBalloonTooltips = "1" Then CreateToolTip lbxApprovedList.hWnd, "To generate a dock full of entries, this listbox must be populated with a list of your chosen software links. Drag and drop from the lists on the left which populate from the registry or the start menu..", _
+Private Sub lbxApprovedList_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+   If rDEnableBalloonTooltips = "1" Then CreateToolTip lbxApprovedList.hwnd, "To generate a dock full of entries, this listbox must be populated with a list of your chosen software links. Drag and drop from the lists on the left which populate from the registry or the start menu..", _
                   TTIconInfo, "Help on the Chosen Links List", , , , True
 End Sub
 
@@ -1074,7 +1042,7 @@ lbxSoftwareList_Click_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure lbxSoftwareList_Click of Form formSoftwareList"
 End Sub
 
-Private Sub lbxSoftwareList_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lbxSoftwareList_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     
     ' .08 DAEB 30/05/2022 formSoftwareList.frm dragging a binary from the registry should show the binary image instead of the link.
     If rdbProgramData.Value = True Then
@@ -1088,7 +1056,7 @@ Private Sub lbxSoftwareList_MouseDown(Button As Integer, Shift As Integer, X As 
 End Sub
 
 ' .06 DAEB 30/05/2022 formSoftwareList.frm Add drag and drop to the generate dock utility
-Private Sub lbxSoftwareList_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lbxSoftwareList_MouseUp(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     ' when clicking one more than one item in the listbox it is essential to deactivate the dragIcon timer as we don't want the dragicon appearing
     ' in a way that seems willy nilly to the end user.
     
@@ -1107,19 +1075,12 @@ End Sub
 '
 Private Sub rdbProgramData_Click()
 
-    Dim userprof As String ' %userprofile%
-    Dim ProgramData As String '
-    Dim s As Integer
-    Dim totalShortsFound As Integer
-    
-    ' initialise the vars above
+    Dim userprof As String: userprof = vbNullString ' %userprofile%
+    Dim ProgramData As String: ProgramData = vbNullString '
+    Dim s As Integer: s = 0
+    Dim totalShortsFound As Integer: totalShortsFound = 0
     
     On Error GoTo rdbProgramData_Click_Error
-
-    ProgramData = ""
-    userprof = ""
-    totalShortsFound = 0
-    s = 0
 
     ProgramData = Environ$("PROGRAMDATA")
     userprof = Environ$("USERPROFILE")
@@ -1150,8 +1111,8 @@ rdbProgramData_Click_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure rdbProgramData_Click of Form formSoftwareList"
 End Sub
 
-Private Sub rdbProgramData_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-   If rDEnableBalloonTooltips = "1" Then CreateToolTip rdbProgramData.hWnd, "Click here to select the program items found within the Start Menu .", _
+Private Sub rdbProgramData_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+   If rDEnableBalloonTooltips = "1" Then CreateToolTip rdbProgramData.hwnd, "Click here to select the program items found within the Start Menu .", _
                   TTIconInfo, "Help on the Start Menu", , , , True
 End Sub
 
@@ -1169,22 +1130,12 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub rdbRegistry_Click()
-    'Dim xFileName As String
-    Dim keyToSearch As String
-    Dim locationToSearch As Long
-    Dim totalKeysFound As Integer
-    Dim s As Integer
-    Dim textVersion As String
+    Dim keyToSearch As String: keyToSearch = vbNullString
+    Dim locationToSearch As Long: locationToSearch = 0
+    Dim totalKeysFound As Integer: totalKeysFound = 0
+    Dim s As Integer: s = 0
+    Dim textVersion As String: textVersion = vbNullString
     
-    ' initialise the vars above
-    
-    'xFileName = ""
-    keyToSearch = ""
-    locationToSearch = 0
-    totalKeysFound = 0
-    s = 0
-    textVersion = ""
-
     On Error GoTo rdbRegistry_Click_Error
 
     lbxSoftwareList.Clear
@@ -1248,16 +1199,9 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub SaveSizes()
-    Dim i As Integer
-    Dim a As Integer
+    Dim i As Integer: i = 0
+    Dim a As Integer: a = 0
     Dim Ctrl As Control
-    
-    ' initialise the vars above
-    
-    i = 0
-    a = 0
-    'ctrl
-
 
     ' Save the controls' positions and sizes.
     On Error GoTo SaveSizes_Error
@@ -1311,18 +1255,11 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub ResizeControls()
-    Dim i As Integer
+    Dim i As Integer: i = 0
     Dim Ctrl As Control
-    Dim x_scale As Single
-    Dim y_scale As Single
+    Dim x_scale As Single: x_scale = 0
+    Dim y_scale As Single: y_scale = 0
         
-    ' initialise the vars above
-    
-    i = 0
-    'ctrl As Control
-    x_scale = 0
-    y_scale = 0
-    
     ' Don't bother if we are minimized.
     On Error GoTo ResizeControls_Error
 
@@ -1369,52 +1306,52 @@ End Sub
 
 ' .05 DAEB 29/05/2022 formSoftwareList.frm Add balloon tooltips to the generate dock utility STARTS
 
-Private Sub rdbRegistry_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-   If rDEnableBalloonTooltips = "1" Then CreateToolTip rdbRegistry.hWnd, "Click here to select the program items found within the Registry.", _
+Private Sub rdbRegistry_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+   If rDEnableBalloonTooltips = "1" Then CreateToolTip rdbRegistry.hwnd, "Click here to select the program items found within the Registry.", _
                   TTIconInfo, "Help on the Registry", , , , True
 End Sub
 
-Private Sub txtFileFilter_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-   If rDEnableBalloonTooltips = "1" Then CreateToolTip txtFileFilter.hWnd, "This text box contains the types of items found in either the registry or in the start menu.", _
+Private Sub txtFileFilter_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+   If rDEnableBalloonTooltips = "1" Then CreateToolTip txtFileFilter.hwnd, "This text box contains the types of items found in either the registry or in the start menu.", _
                   TTIconInfo, "Help on the type of items found", , , , True
 End Sub
 
-Private Sub txtNumOfFiles_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-   If rDEnableBalloonTooltips = "1" Then CreateToolTip txtNumOfFiles.hWnd, "This text box contains the total number of items found in either the registry or in the start menu.", _
+Private Sub txtNumOfFiles_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+   If rDEnableBalloonTooltips = "1" Then CreateToolTip txtNumOfFiles.hwnd, "This text box contains the total number of items found in either the registry or in the start menu.", _
                   TTIconInfo, "Help on the Total Number of items found", , , , True
 End Sub
 
-Private Sub txtPathToTest_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-   If rDEnableBalloonTooltips = "1" Then CreateToolTip txtPathToTest.hWnd, "This text box contains the path that the utility will use to find and identify any programs installed on this system, located either in the registry or in the start menu.", _
+Private Sub txtPathToTest_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+   If rDEnableBalloonTooltips = "1" Then CreateToolTip txtPathToTest.hwnd, "This text box contains the path that the utility will use to find and identify any programs installed on this system, located either in the registry or in the start menu.", _
                   TTIconInfo, "Help on the Software Path", , , , True
 End Sub
-Private Sub btnCloseSoft_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If rDEnableBalloonTooltips = "1" Then CreateToolTip btnCloseSoft.hWnd, "This button cancels the current operation and closes the window.", _
+Private Sub btnCloseSoft_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+    If rDEnableBalloonTooltips = "1" Then CreateToolTip btnCloseSoft.hwnd, "This button cancels the current operation and closes the window.", _
                   TTIconInfo, "Help on the Cancel and Close Button", , , , True
 End Sub
 
-Private Sub btnGenerateDock_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If rDEnableBalloonTooltips = "1" Then CreateToolTip btnGenerateDock.hWnd, "This button will proceed to generate the new dock using the chosen application links above.", _
+Private Sub btnGenerateDock_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+    If rDEnableBalloonTooltips = "1" Then CreateToolTip btnGenerateDock.hwnd, "This button will proceed to generate the new dock using the chosen application links above.", _
                   TTIconInfo, "Help on the Generate Dock Button", , , , True
 End Sub
-Private Sub btnCopyItems_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If rDEnableBalloonTooltips = "1" Then CreateToolTip btnCopyItems.hWnd, "This button will copy any selected items from the above list to the chosen list on the right. You can also use drag and drop for individual links.", _
+Private Sub btnCopyItems_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+    If rDEnableBalloonTooltips = "1" Then CreateToolTip btnCopyItems.hwnd, "This button will copy any selected items from the above list to the chosen list on the right. You can also use drag and drop for individual links.", _
                   TTIconInfo, "Help on the Copy Items Button", , , , True
 End Sub
-Private Sub btnClear_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If rDEnableBalloonTooltips = "1" Then CreateToolTip btnClear.hWnd, "This button will clear the above list of your chosen links.", _
+Private Sub btnClear_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+    If rDEnableBalloonTooltips = "1" Then CreateToolTip btnClear.hwnd, "This button will clear the above list of your chosen links.", _
                   TTIconInfo, "Help on the Clear Chosen Links Button", , , , True
 End Sub
-Private Sub btnHelp_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If rDEnableBalloonTooltips = "1" Then CreateToolTip btnHelp.hWnd, "This button opens the help page in your default browser.", _
+Private Sub btnHelp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+    If rDEnableBalloonTooltips = "1" Then CreateToolTip btnHelp.hwnd, "This button opens the help page in your default browser.", _
                   TTIconInfo, "Help on the Help Button", , , , True
 End Sub
-Private Sub lbxSoftwareList_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-   If rDEnableBalloonTooltips = "1" Then CreateToolTip lbxSoftwareList.hWnd, "This listbox contains a complete list of the software that is recognised by your Windows installation. Ths consists of entries extracted from the registry or the start menu. Any items that you want to appear in your dock, click on them. When you have selected those you want, press the Copy Items button. Each of your choices will be placed upon the list on the right hand side. You can also drag and drop individual items.", _
+Private Sub lbxSoftwareList_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+   If rDEnableBalloonTooltips = "1" Then CreateToolTip lbxSoftwareList.hwnd, "This listbox contains a complete list of the software that is recognised by your Windows installation. Ths consists of entries extracted from the registry or the start menu. Any items that you want to appear in your dock, click on them. When you have selected those you want, press the Copy Items button. Each of your choices will be placed upon the list on the right hand side. You can also drag and drop individual items.", _
                   TTIconInfo, "Help on the Available Software List", , , , True
 End Sub
-Private Sub btnDeselectItems_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-   If rDEnableBalloonTooltips = "1" Then CreateToolTip btnDeselectItems.hWnd, "This button removes all the selections in the box above, this avoids the chance of replication of items in the approved list.", _
+Private Sub btnDeselectItems_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
+   If rDEnableBalloonTooltips = "1" Then CreateToolTip btnDeselectItems.hwnd, "This button removes all the selections in the box above, this avoids the chance of replication of items in the approved list.", _
                   TTIconInfo, "Help on the De-Selecting items in the software list", , , , True
 End Sub
 
@@ -1428,41 +1365,26 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Public Sub generateDockInformation()
-    Dim useloop2 As Integer
-    Dim iconImage As String
-    Dim iconTitle As String
-    Dim iconFileName As String
-    Dim iconCommand As String
-    Dim iconArguments As String
-    Dim iconWorkingDirectory As String
-    Dim location As String
-    Dim newMaximum As Integer
-    Dim currentIcon As Integer
-    Dim testSettingsfile As String
-    Dim listCounter As Integer
-    Dim oldIconMaximum As Integer
-    Dim startIcon As Integer
-    Dim endIcon As Integer
-    
-    ' initialise the variables declared above
+    Dim useloop2 As Integer: useloop2 = 0
+    Dim iconImage As String: iconImage = vbNullString
+    Dim iconTitle As String: iconTitle = vbNullString
+    Dim iconFileName As String: iconFileName = vbNullString
+    Dim iconCommand As String: iconCommand = vbNullString
+    Dim iconArguments As String: iconArguments = vbNullString
+    Dim iconWorkingDirectory As String: iconWorkingDirectory = vbNullString
+    Dim location As String: location = vbNullString
+    Dim newMaximum As Integer: newMaximum = 0
+    Dim currentIcon As Integer: currentIcon = 0
+    Dim testSettingsfile As String: testSettingsfile = vbNullString
+    Dim listCounter As Integer: listCounter = 0
+    Dim oldIconMaximum As Integer: oldIconMaximum = 0
+    Dim startIcon As Integer: startIcon = 0
+    Dim endIcon As Integer: endIcon = 0
 
     On Error GoTo generateDockInformation_Error
-
-    useloop2 = 0
-    iconImage = ""
-    iconTitle = ""
-    iconFileName = ""
-    iconCommand = ""
-    iconArguments = ""
-    iconWorkingDirectory = ""
-    location = ""
-    newMaximum = 0
-    currentIcon = 0
-    listCounter = 0
-    oldIconMaximum = 0
-    startIcon = 0
-    endIcon = 0
     
+    PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
+
     location = "Software\SteamyDock\IconSettings"
     
     'testSettingsfile = App.Path & "\testDocksettings.ini"
@@ -1479,34 +1401,25 @@ Public Sub generateDockInformation()
         ' write the new data in a loop
         For useloop2 = 0 To lbxApprovedList.ListCount - 1 ' the dock is zero-based but a list is 1-based
 
+            Call zeroAllIconCharacteristics
+            
             Call checkTheLink(useloop2, iconImage, iconTitle, iconFileName, iconCommand, iconArguments, iconWorkingDirectory)
 
             sFilename = iconImage
-            sFileName2 = ""
             sTitle = iconTitle
             sCommand = iconCommand
             sArguments = iconArguments
             sWorkingDirectory = iconWorkingDirectory
-            sShowCmd = ""
-            sOpenRunning = ""
-            sIsSeparator = ""
-            sUseContext = ""
-            sDockletFile = ""
-            sUseDialog = ""
-            sUseDialogAfter = ""
-            sQuickLaunch = ""
-            sAutoHideDock = ""
-            sSecondApp = ""
 
             ' write the settings.ini
-            Call writeIconSettingsIni("Software\SteamyDock\IconSettings" & "\Icons", useloop2, dockSettingsFile)
+            Call writeIconSettingsIni("Software\SteamyDock\IconSettings" & "\Icons", useloop2, interimSettingsFile)
     
         Next useloop2
         
         rdIconMaximum = lbxApprovedList.ListCount - 1
         
         'amend the count to one more than the max as 0- is a valid icon
-        PutINISetting location & "\Icons", "count", rdIconMaximum + 1, dockSettingsFile
+        PutINISetting location & "\Icons", "count", rdIconMaximum + 1, interimSettingsFile
     
     ElseIf frmConfirmDock.rdbAppend = True Then ' is the option append? If so, write the new icons to the end.
         
@@ -1515,28 +1428,17 @@ Public Sub generateDockInformation()
         
         listCounter = 0 ' the approved list starts at zero
         For useloop2 = rdIconMaximum + 1 To newMaximum
-
+            Call zeroAllIconCharacteristics
             Call checkTheLink(listCounter, iconImage, iconTitle, iconFileName, iconCommand, iconArguments, iconWorkingDirectory)
 
             sFilename = iconImage
-            sFileName2 = ""
             sTitle = iconTitle
             sCommand = iconCommand
             sArguments = iconArguments
             sWorkingDirectory = iconWorkingDirectory
-            sShowCmd = ""
-            sOpenRunning = ""
-            sIsSeparator = ""
-            sUseContext = ""
-            sDockletFile = ""
-            sUseDialog = ""
-            sUseDialogAfter = ""
-            sQuickLaunch = ""
-            sAutoHideDock = ""
-            sSecondApp = ""
 
             ' write the alternative settings.ini
-            Call writeIconSettingsIni(location & "\Icons", useloop2, dockSettingsFile)
+            Call writeIconSettingsIni(location & "\Icons", useloop2, interimSettingsFile)
             listCounter = listCounter + 1
             
          Next useloop2
@@ -1544,7 +1446,7 @@ Public Sub generateDockInformation()
         rdIconMaximum = newMaximum
 
         'amend the count to one more than the max as 0- is a valid icon
-        PutINISetting location & "\Icons", "count", rdIconMaximum + 1, dockSettingsFile
+        PutINISetting location & "\Icons", "count", rdIconMaximum + 1, interimSettingsFile
     
     ElseIf frmConfirmDock.rdbPrepend = True Then ' is the option prepend?
 
@@ -1554,44 +1456,35 @@ Public Sub generateDockInformation()
         For useloop2 = rdIconMaximum To 0 Step -1
             
             ' write the alternative settings.ini
-            Call readIconSettingsIni(location & "\Icons", useloop2, dockSettingsFile)
+            Call readIconSettingsIni(location & "\Icons", useloop2, interimSettingsFile)
 
             ' write the alternative settings.ini
-            Call writeIconSettingsIni(location & "\Icons", useloop2 + lbxApprovedList.ListCount, dockSettingsFile)
+            Call writeIconSettingsIni(location & "\Icons", useloop2 + lbxApprovedList.ListCount, interimSettingsFile)
 
         Next useloop2
 
         ' write the new icons to the dock at the beginning
         For useloop2 = 0 To lbxApprovedList.ListCount - 1
 
+            Call zeroAllIconCharacteristics
             Call checkTheLink(useloop2, iconImage, iconTitle, iconFileName, iconCommand, iconArguments, iconWorkingDirectory)
 
             sFilename = iconImage
-            sFileName2 = ""
             sTitle = iconTitle
             sCommand = iconCommand
             sArguments = iconArguments
             sWorkingDirectory = iconWorkingDirectory
-            sShowCmd = ""
-            sOpenRunning = ""
-            sIsSeparator = ""
-            sUseContext = ""
-            sDockletFile = ""
-            sUseDialog = ""
-            sUseDialogAfter = ""
-            sQuickLaunch = ""
-            sAutoHideDock = ""
-            sSecondApp = ""
 
+            
             ' write the settings.ini
-            Call writeIconSettingsIni(location & "\Icons", useloop2, dockSettingsFile)
+            Call writeIconSettingsIni(location & "\Icons", useloop2, interimSettingsFile)
 
         Next useloop2
 
         rdIconMaximum = newMaximum
 
         ' amend the count to one more than the max as 0- is a valid icon
-        PutINISetting location & "\Icons", "count", rdIconMaximum + 1, dockSettingsFile
+        PutINISetting location & "\Icons", "count", rdIconMaximum + 1, interimSettingsFile
     
     ElseIf frmConfirmDock.rdbCurrent = True Then     ' is the option at current icon?
 
@@ -1603,37 +1496,27 @@ Public Sub generateDockInformation()
         For useloop2 = rdIconMaximum To startIcon Step -1
 
         '   read the old icons from the current dock position one at a time from the end to the current position.
-            Call readIconSettingsIni(location & "\Icons", useloop2, dockSettingsFile)
+            Call readIconSettingsIni(location & "\Icons", useloop2, interimSettingsFile)
 
             ' write them at their new location
-            Call writeIconSettingsIni(location & "\Icons", useloop2 + lbxApprovedList.ListCount, dockSettingsFile)
+            Call writeIconSettingsIni(location & "\Icons", useloop2 + lbxApprovedList.ListCount, interimSettingsFile)
 
         Next useloop2
 
         listCounter = 0
         For useloop2 = startIcon To endIcon
-
+            Call zeroAllIconCharacteristics
             Call checkTheLink(listCounter, iconImage, iconTitle, iconFileName, iconCommand, iconArguments, iconWorkingDirectory)
 
             sFilename = iconImage
-            sFileName2 = ""
             sTitle = iconTitle
             sCommand = iconCommand
             sArguments = iconArguments
             sWorkingDirectory = iconWorkingDirectory
-            sShowCmd = ""
-            sOpenRunning = ""
-            sIsSeparator = ""
-            sUseContext = ""
-            sDockletFile = ""
-            sUseDialog = ""
-            sUseDialogAfter = ""
-            sQuickLaunch = ""
-            sAutoHideDock = ""
-            sSecondApp = ""
+
 
             ' write the approved icon list to the settings.ini
-            Call writeIconSettingsIni(location & "\Icons", useloop2, dockSettingsFile)
+            Call writeIconSettingsIni(location & "\Icons", useloop2, interimSettingsFile)
             listCounter = listCounter + 1
             
         Next useloop2
@@ -1641,7 +1524,7 @@ Public Sub generateDockInformation()
         rdIconMaximum = newMaximum
 
         'amend the count
-        PutINISetting location & "\Icons", "count", rdIconMaximum + 1, dockSettingsFile
+        PutINISetting location & "\Icons", "count", rdIconMaximum + 1, interimSettingsFile
 
     End If
 
@@ -1690,33 +1573,16 @@ Private Sub checkTheLink(ByVal listNo As Integer _
     , ByRef iconArguments As String _
     , ByRef iconWorkingDirectory As String)
     
-    Dim thisLink As String
-    Dim suffix As String
-    Dim nname As String
-    Dim npath As String
-    Dim ndesc As String
-    Dim nwork As String
-    Dim nargs As String
+    Dim thisLink As String: thisLink = vbNullString
+    Dim suffix As String: suffix = vbNullString
+    Dim nname As String: nname = vbNullString
+    Dim npath As String: npath = vbNullString
+    Dim ndesc As String: ndesc = vbNullString
+    Dim nwork As String: nwork = vbNullString
+    Dim nargs As String: nargs = vbNullString
     Dim thisShortcut As Link
 
-    ' initialise the variables declared above
-
     On Error GoTo checkTheLink_Error
-
-    thisLink = ""
-    suffix = ""
-    'Filename = ""
-    iconImage = ""
-    iconTitle = ""
-    iconFileName = ""
-    iconCommand = ""
-    iconArguments = ""
-    iconWorkingDirectory = ""
-    nname = ""
-    npath = ""
-    ndesc = ""
-    nwork = ""
-    nargs = ""
         
     thisLink = lbxApprovedList.List(listNo)
     suffix = LCase$(ExtractSuffixWithDot(thisLink))
@@ -1731,7 +1597,7 @@ Private Sub checkTheLink(ByVal listNo As Integer _
 
             Call GetShortcutInfo(iconCommand, thisShortcut) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
 
-            iconTitle = GetFileNameFromPath(thisShortcut.Filename)
+            iconTitle = getFileNameFromPath(thisShortcut.Filename)
 
             If Not thisShortcut.Filename = "" Then
                 iconCommand = LCase$(thisShortcut.Filename)
@@ -1772,7 +1638,7 @@ Private Sub checkTheLink(ByVal listNo As Integer _
     Else ' it is a binary
         ' take the name from the filename
         If FExists(iconCommand) Then
-            iconTitle = GetFileNameFromPath(iconCommand)
+            iconTitle = getFileNameFromPath(iconCommand)
             iconArguments = ""
             iconWorkingDirectory = ""
             ' extract the icon from the exe or dll

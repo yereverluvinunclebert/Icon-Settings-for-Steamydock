@@ -28,6 +28,12 @@
 
 
 
+
+
+
+  
+  
+  
   
   
   
@@ -81,6 +87,12 @@
 
 
 
+
+
+
+  
+  
+  
   
   
   
@@ -139,7 +151,13 @@
 
 
 
+
+
+
 <h3>SteamyDock Enhanced Setting Utility</h3>
+
+
+
 
 
 
@@ -166,6 +184,9 @@
 
 
 
+
+
+
 <span style="font-weight: bold;">
 
 
@@ -173,7 +194,10 @@
 
 
 
-Fig 01. The SteamyDock/Rocketdock Enhanced Setting Utility.</span><br>
+Fig 01. The SteamyDock Enhanced Setting Utility.</span><br>
+
+
+
 
 
 
@@ -216,6 +240,9 @@ Fig 01. The SteamyDock/Rocketdock Enhanced Setting Utility.</span><br>
 
 
 
+
+
+
 This utility is a functional reproduction of the original
 settings screen that came from Rocketdock. Please note that the design is limited to enhancing what Rocketdock
 already provides in order to make the utility familiar to Rocketdock
@@ -223,40 +250,10 @@ users. <span style="font-weight: bold;"></span>If you hover your mouse cursor on
 components that comprise the utility a tooltip will appear that will
 give more information on each item. There is a help button on the
 bottom right that will provide further detail at any time. Presing CTRL+H will give you an instant  HELP pop up.
+<h3><a name="Startup"></a>Startup</h3>
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<p>The tool is designed to operate with both legacy Rocketdock and new SteamyDock, the
-open source replacement for Rocketdock. SteamyDock is a work in
-progress so please bear that in mind when any reference to SteamyDock
-is made in this documentation.</p>
-
-
-
-
-
-
-
-
-
-<h3>Startup</h3>
 
 
 
@@ -302,7 +299,13 @@ initiated by the dock itself.&nbsp;</span></small></h3>
 
 
 
+
+
+
 <img style="width: 631px; height: 362px;" alt="instance" src="instance.png"><br>
+
+
+
 
 
 
@@ -320,203 +323,15 @@ initiated by the dock itself.&nbsp;</span></small></h3>
 
 
 Fig 02. SteamyDock showing the right click menu.</span>
-<h3><small><span style="font-weight: normal;">When using the
-Steamydock, if
+<h3><small><span style="font-weight: normal;">When using dock, if
 you hover over an icon and select the right-click menu, you will see
 "Edit Icon Properties". Choosing that&nbsp;will open the&nbsp; icon
 settings
-utility and display the current icon and its properties. When using
-Rocketdock you just run the binary from the desktop shortcut&nbsp;or
-you can add an icon&nbsp;manually to your dock.</span></small></h3>
+utility and display the current icon and its properties.&nbsp;</span></small></h3>
+<h2><a name="Icon_Settings_Tool_Operation"></a>Icon Settings Tool Operation</h2>
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h2>Administrator Rights</h2>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<p>This utility must run as administrator in order to access the registry settings for 
-Rocketdock. A
-recent Windows feature has been introduced
-that prevents normal processes from accessing and modifying another
-tool's registry
-settings. If you run it without admin rights then due to this Windows
-bug/feature,
-some of the saved values may be incorrect and therefore the dock may
-look and
-start to act rather strange - due to corruption of configuration data
-where values are only partially saved. This will only affect
-Rocketdock/Steamydock.&nbsp;Run it as administrator and it will work as
-expected. Right click on the iconsettings.exe file and under the
-compatibility tab,
-enable "Run this program as administrator". When Steamydock coding is
-finished this requirement may to go away but for the moment, to
-access
-Rocketdock's data, <span style="text-decoration: underline;">admin access is required</span>.</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<p><img style="width: 367px; height: 502px;" alt="Running as admin" title="Running as admin" src="../../dockSettings/help/docksAdmin.jpg"><br>
-
-
-
-
-
-
-
-
-
-<span style="font-weight: bold;">
-
-
-
-
-
-
-Fig 03. The administrator compatibility utility setting the SteamyDock privilege level.</span></p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<p>In addition to resolving the above bug/feature, admin access is required as SteamyDock does
-things that are fairly low level and fundamental. It does the sort of
-things that the Windows taskbar
-itself does. Stopping and starting applications, checking whether the
-processes it has initialised are running - these actions require admin
-access in order to function. When the dock program is complete and released it
-will be bundled
-with a manifest that will specify the admin requirement and it should
-then install complete with admin rights without any requirement for
-user intervention.</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<p>If you don't like running with administrator rights then my advice
-is, remove this tool now, it cannot run without. If you don't trust my
-software, don't run it To allay any of your fears the source code is
-available on github and you can view it, download it and compile it
-yourself at any
-time.&nbsp;</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h2>Icon Settings Tool Operation</h2>
 
 
 
@@ -545,6 +360,9 @@ time.&nbsp;</p>
 
 
 
+
+
+
 <span style="font-weight: bold;">
 
 
@@ -552,7 +370,7 @@ time.&nbsp;</p>
 
 
 
-Fig 04. The SteamyDock/Rocketdock Enhanced Setting Utility.</span>
+Fig 04. The SteamyDock Enhanced Setting Utility.</span>
 
 
 
@@ -589,8 +407,14 @@ Various buttons and controls allow the user to select icons and to save any icon
 
 
 
-<h3>
+
+
+
+<h3><a name="Folder_Panel"></a>
 Folder Panel</h3>
+
+
+
 
 
 
@@ -634,6 +458,9 @@ Folder Panel</h3>
 
 
 
+
+
+
 <span style="font-weight: bold;">
 
 
@@ -642,6 +469,9 @@ Folder Panel</h3>
 
 
 Fig 05. The Folder Panel showing&nbsp;available folders.</span><br>
+
+
+
 
 
 
@@ -697,12 +527,16 @@ Fig 05. The Folder Panel showing&nbsp;available folders.</span><br>
 
 
 
+
+
+
 <div class="indent">
 <p>At the top left&nbsp;you will see a list of all the
 folders you currently have
-available for displaying icons within the dock. This display is called a treeview. The top folder is
-named 'icons'. If you are using this utility in conjunction with Rocketdock than that folder is typically located at:<em> C:\Program Files (x86)\RocketDock\Icons</em>
-(default location). For Steamydock it is typically: <em>C:\Program Files (x86)\SteamyDock\Icons.</em></p>
+available for displaying icons within the dock. This display is called a treeview. For Steamydock it is typically: <em>C:\Program Files (x86)\SteamyDock\Icons.</em></p>
+
+
+
 
 
 
@@ -831,6 +665,9 @@ folders containing various steampunk icon sets, listed below:</p>
 
 
 
+
+
+
 <p><span style="font-weight: bold;">steampunk icons MKI</span>
 &nbsp;&nbsp;&nbsp; This folder has many icons in .ICO format. Many are
 multiple size icons that contain all the icons from 16x16 to 256x256.
@@ -854,7 +691,13 @@ creations and may just be one size.&nbsp;<br>
 
 
 
+
+
+
 <span style="font-weight: bold;">steampunk icons MKII</span>&nbsp;&nbsp;&nbsp; This folder contains folder and document icons mostly square or rectangular, mostly in PNG form.<br>
+
+
+
 
 
 
@@ -894,9 +737,15 @@ systems, mixed shapes and sizes, mostly in PNG form.<br>
 
 
 
+
+
+
 <span style="font-weight: bold;">steampunk icons MKIV</span>&nbsp;&nbsp;&nbsp;
 This folder contains file and folder icons suitable for various system
 functions, mixed shapes and sizes, mostly in PNG form.<br>
+
+
+
 
 
 
@@ -936,6 +785,9 @@ common is that they are all round, mostly in PNG form.<br>
 
 
 
+
+
+
 <span style="font-weight: bold;">steampunk icons MKVI&nbsp;</span>&nbsp;&nbsp; This folder contains more recent folder and document icons mostly square or rectangular, mostly in PNG form.<br>
 
 
@@ -955,7 +807,13 @@ common is that they are all round, mostly in PNG form.<br>
 
 
 
+
+
+
 <span style="font-weight: bold;">steampunk letter text icons</span>&nbsp;&nbsp;&nbsp; This folder contains useful letter and number icons in PNG format.<br>
+
+
+
 
 
 
@@ -997,7 +855,13 @@ multiple sizes, some combined.<br>
 
 
 
+
+
+
 <span style="font-weight: bold;">steampunk </span><span style="font-weight: bold;">general icons&nbsp;</span>&nbsp; &nbsp;This folder contains steampunk alternatives to the Windows "General Icons", all in PNG form.<br>
+
+
+
 
 
 
@@ -1033,7 +897,13 @@ multiple sizes, some combined.<br>
 
 
 
+
+
+
 <p><img style="width: 1040px; height: 424px;" alt="general icons" src="windowsGeneralIcons.png"><br>
+
+
+
 
 
 
@@ -1051,6 +921,9 @@ multiple sizes, some combined.<br>
 
 
 Fig 06. Some of SteamyDock's bundled icons.</span></p>
+
+
+
 
 The icons vary in quality, the earliest icons being creations from the
 small screen XP era, tend to have less detail, are smaller in size and
@@ -1083,7 +956,13 @@ Deviantart.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -1133,7 +1012,13 @@ and display any folders beneath.</p>
 
 
 
+
+
+
 <p><img style="width: 274px; height: 261px;" alt="customFolders.png" src="customFolders.png">&nbsp;<img style="width: 278px; height: 263px;" alt="customFolders2.png" src="customFolders2.png"></p>
+
+
+
 
 
 
@@ -1169,6 +1054,9 @@ and display any folders beneath.</p>
 
 
 
+
+
+
 <p>The small drop down button with an arrow symbol, if pressed, will
 display a pop up box that contains small tick boxes that indicate how
 the selected dock is currently
@@ -1176,110 +1064,10 @@ saving its
 settings, either to a file, the registry or to the user data area, this
 box is displayed&nbsp;for information
 only. These settings can only be selected in the 'dock' settings utility.</p>
+<h3><a name="Icons_Panel"></a>Icons Panel</h3>
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-<p><img style="width: 34px; height: 18px;" alt="down" src="down.png"> &nbsp; <img style="width: 182px; height: 98px;" alt="data-configuration.png" src="data-configuration.png"></p>
-
-
-
-
-
-
-
-
-
-<span style="font-weight: bold;">
-
-
-
-
-
-
-Fig 08. Configuration data location.</span><br>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<br>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-The current dock selected, either Steamydock or Rocketdock is also
-displayed for information purposes only. The default dock can only be
-selected in the 'dock' settings utility.<br clear="all">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h3>Icons Panel</h3>
 
 
 
@@ -1308,6 +1096,9 @@ selected in the 'dock' settings utility.<br clear="all">
 
 
 <p><img style="width: 403px; height: 298px;" alt="thumbnail view" src="rdIconView01.jpg"><br>
+
+
+
 
 
 
@@ -1352,7 +1143,13 @@ Fig 09. The icon view panel displaying some of the icons in 'my collection'.</sp
 
 
 
+
+
+
 </div>
+
+
+
 
 
 
@@ -1411,6 +1208,9 @@ complain if certain icons are removed.</p>
 
 
 
+
+
+
 <p>A click on the small
 filelist button (top right) selects the file list view. On
 the icon pane you can select two other types of view, the
@@ -1419,6 +1219,9 @@ is not dynamic and if you add an icon to a folder then there
 is a
 refresh button to the right that will cause the icon list to be re-read
 from the folder you have selected.</p>
+
+
+
 
 
 
@@ -1470,7 +1273,13 @@ to navigate through the icon thumbnails in the map.</p>
 
 
 
+
+
+
 <img style="width: 278px; height: 306px;" alt="preview" src="rdpreview01.jpg"><br>
+
+
+
 
 
 
@@ -1547,7 +1356,13 @@ configuration file.&nbsp;</p>
 
 
 
-<h3><span style="font-weight: bold;">Get More</span></h3>
+
+
+
+<h3><span style="font-weight: bold;"><a name="Get_More"></a>Get More</span></h3>
+
+
+
 
 
 
@@ -1589,6 +1404,9 @@ by users too.<br>
 
 
 
+
+
+
 <br>
 
 
@@ -1608,7 +1426,13 @@ by users too.<br>
 
 
 
+
+
+
 &nbsp;<img style="width: 148px; height: 51px;" alt="get more" src="get-More.png"><br>
+
+
+
 
 
 
@@ -1640,7 +1464,13 @@ Fig 10. The Get More Button</span><br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -1677,6 +1507,9 @@ Windows.<br>
 
 
 
+
+
+
 <br>
 
 
@@ -1692,7 +1525,13 @@ Windows.<br>
 
 
 
+
+
+
 <img style="width: 800px; height: 560px;" alt="deviantart" src="deviantart.png"><br>
+
+
+
 
 
 
@@ -1728,7 +1567,13 @@ Fig 11. Deviantart - the current location for more icons.</span><br>
 
 
 
-<h3><span style="font-weight: bold;">Icon Map</span></h3>
+
+
+
+<h3><span style="font-weight: bold;"><a name="Icon_Map"></a>Icon Map</span></h3>
+
+
+
 
 
 
@@ -1789,6 +1634,9 @@ appear. <br>
 
 
 
+
+
+
 <br>
 
 
@@ -1810,7 +1658,13 @@ appear. <br>
 
 
 
+
+
+
 <img style="width: 148px; height: 51px;" alt="map down" src="mapdown.png"><br>
+
+
+
 
 
 
@@ -1848,7 +1702,13 @@ Fig 12. The Icon Map button.</span><br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -1900,7 +1760,13 @@ re-order the icons as you see fit. <br>
 
 
 
+
+
+
 <p><img style="width: 682px; height: 51px;" alt="the map" src="rdiconmap01.jpg"><br>
+
+
+
 
 
 
@@ -1918,6 +1784,9 @@ re-order the icons as you see fit. <br>
 
 
 Fig 13. The Icon Map showing all the icons in the current dock.</span><br>
+
+
+
 
 
 
@@ -1973,6 +1842,9 @@ Fig 13. The Icon Map showing all the icons in the current dock.</span><br>
 
 
 
+
+
+
 You can navigate the icon map using the large left and right buttons,
 the slider or using the keyboard cursor movement keys as well as
 HOME/END. Other controls
@@ -1989,6 +1861,9 @@ existing location in the dock map.<br>
 
 
 
+
+
+
 <br>
 
 
@@ -1997,7 +1872,13 @@ existing location in the dock map.<br>
 
 
 
+
+
+
 <img style="width: 403px; height: 298px;" alt="thumbnail view" src="rdIconView01.jpg"><br>
+
+
+
 
 
 
@@ -2030,7 +1911,13 @@ Fig 14. The Thumbnail View of Available Icons in the Collection</span><br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2055,7 +1942,13 @@ changes.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2066,12 +1959,21 @@ you to confirm your recent task, similar to the following: <br>
 
 
 
+
+
+
 <br>
 
 
 
 
+
+
+
 <img style="width: 388px; height: 168px;" alt="buttons" title="buttons" src="confirmation.png"><br>
+
+
+
 
 
 
@@ -2104,7 +2006,13 @@ Fig 14a. Confirmation Pop-up </span><br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2133,6 +2041,9 @@ When that is un-ticked the pop-up messages will no longer appear.<br>
 
 
 
+
+
+
 <br>
 
 
@@ -2154,7 +2065,13 @@ When that is un-ticked the pop-up messages will no longer appear.<br>
 
 
 
+
+
+
 <img style="width: 410px; height: 56px;" alt="buttons" title="buttons" src="rdbuttton01.jpg"><br>
+
+
+
 
 
 
@@ -2183,12 +2100,21 @@ Fig 14b.Toggle Information Dialogs</span><br>
 
 
 
+
+
+
 <br>
 
 
 
 
+
+
+
 <span style="font-weight: bold;"><br>
+
+
+
 
 
 
@@ -2221,6 +2147,9 @@ Map Right Click</span><br>
 
 
 
+
+
+
 <br>
 
 
@@ -2243,7 +2172,13 @@ Map Right Click</span><br>
 
 
 
+
+
+
 <img style="width: 151px; height: 114px;" alt="dock menu" src="dockMenu.jpg"><br>
+
+
+
 
 
 
@@ -2279,7 +2214,13 @@ Fig 14b. The Icon Map right-click menu</span><br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2321,7 +2262,13 @@ allow you to add, delete, clone or re-order an icon in the map<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2354,7 +2301,13 @@ allow you to add, delete, clone or re-order an icon in the map<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2389,7 +2342,13 @@ will run the associated application just as it would in the dock.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2422,7 +2381,13 @@ will run the associated application just as it would in the dock.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2455,7 +2420,13 @@ Deleting an item from the map will remove the icon from the map permanently.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2488,7 +2459,13 @@ Deleting an item from the map will remove the icon from the map permanently.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2521,7 +2498,13 @@ This will allow you to make a duplicate of the currently selected icon.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2554,7 +2537,13 @@ This will allow you to make a duplicate of the currently selected icon.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2580,7 +2569,13 @@ in the map to any other position.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2613,7 +2608,13 @@ in the map to any other position.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2643,7 +2644,13 @@ item in the map to any other position.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2677,7 +2684,13 @@ item in the map to any other position.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2714,6 +2727,9 @@ sub menu, shown below. Selecting one of these will add the appropriate icon and 
 
 
 
+
+
+
 <br>
 
 
@@ -2736,7 +2752,13 @@ sub menu, shown below. Selecting one of these will add the appropriate icon and 
 
 
 
+
+
+
 <img style="width: 326px; height: 527px;" alt="adding icons" src="menuoptions01.jpg"><br>
+
+
+
 
 
 
@@ -2780,6 +2802,9 @@ Fig 15. The Icon Map right-click then "add icon" option.</span><br>
 
 
 
+
+
+
 <br>
 
 
@@ -2802,7 +2827,13 @@ Fig 15. The Icon Map right-click then "add icon" option.</span><br>
 
 
 
-<h3>Preview Panel</h3>
+
+
+
+<h3><a name="Preview_Panel"></a>Preview Panel</h3>
+
+
+
 
 
 
@@ -2858,7 +2889,13 @@ Fig 15. The Icon Map right-click then "add icon" option.</span><br>
 
 
 
+
+
+
 <img style="width: 278px; height: 306px;" alt="preview" src="rdpreview01.jpg"><br>
+
+
+
 
 
 
@@ -2914,7 +2951,13 @@ displaying a VB6 icon in multiple .ICO form in larger size
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -2974,7 +3017,13 @@ of the image is displayed where it is appropriate to do so.
 
 
 
-<h3>Properties Panel</h3>
+
+
+
+<h3><a name="Properties_Panel"></a>Properties Panel</h3>
+
+
+
 
 
 
@@ -3003,6 +3052,9 @@ of the image is displayed where it is appropriate to do so.
 
 
 <p><img style="width: 404px; height: 245px;" alt="properties" title="properties" src="propertiesPanel.png"><br>
+
+
+
 
 
 
@@ -3068,7 +3120,13 @@ displaying the properties for a Quake icon.</span><br>
 
 
 
+
+
+
 </p>
+
+
+
 
 
 
@@ -3124,6 +3182,9 @@ displaying the properties for a Quake icon.</span><br>
 
 
 
+
+
+
 <p>Here is where you change the item title, the target and other
 special actions that are available. There is a large number on
 the right hand side, that corresponds to the location of the icon in
@@ -3140,7 +3201,13 @@ also change.&nbsp;<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -3172,6 +3239,9 @@ also change.&nbsp;<br>
 
 
 
+
+
+
 <span style="font-weight: bold;">
 
 
@@ -3179,6 +3249,9 @@ also change.&nbsp;<br>
 
 
 Fig 17a. The "Set Button" greyed out as no changes have been made to any of the icon's properties.</span></p>
+
+
+
 
 
 
@@ -3207,7 +3280,13 @@ pressed. <br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -3247,8 +3326,14 @@ The following fields can be changed in the properties panel.
 
 
 
+
+
+
   <li><strong>Name:</strong> Set the label that will
 appear above your icon when your mouse cursor is hovering over the dock.</li>
+
+
+
 
 
 
@@ -3309,6 +3394,9 @@ the icon pane above.&nbsp;</li>
 
 
 
+
+
+
   <li><strong>Target:</strong> Set
 the target
 location
@@ -3328,7 +3416,13 @@ choice..</li>
 
 
 
+
+
+
 </ul>
+
+
+
 
 
 
@@ -3358,7 +3452,13 @@ ignore this bit and nothing will suffer for it.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -3386,7 +3486,13 @@ handle and resolve the path to the user's own profile, eg.
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -3428,6 +3534,9 @@ alternative target options such as&nbsp;folder, network &amp;c.<br>
 
 
 
+
+
+
 <img style="width: 213px; height: 335px;" alt="target right click" src="target01.jpg"><br>
 
 
@@ -3438,7 +3547,13 @@ alternative target options such as&nbsp;folder, network &amp;c.<br>
 
 
 
+
+
+
 <div style="text-align: left;"><span style="font-weight: bold;">Fig 18a. The Target Menu opened by a right click on the target button.</span></div>
+
+
+
 
 
 
@@ -3461,7 +3576,13 @@ alternative target options such as&nbsp;folder, network &amp;c.<br>
 
 
 
+
+
+
 <ul>
+
+
+
 
 
 
@@ -3498,7 +3619,13 @@ requires a default folder to operate within.</li>
 
 
 
+
+
+
 </ul>
+
+
+
 
 
 
@@ -3525,7 +3652,13 @@ handle and resolve the path to the user's own profile, eg.&nbsp;<small style="fo
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -3547,6 +3680,9 @@ program or image.&nbsp;
 
 
 <strong></strong></div>
+
+
+
 
 
 
@@ -3588,72 +3724,16 @@ program or image.&nbsp;
 
 
 
+
+
+
   <li><strong>Arguments:</strong> Sets optional
 parameters for the target application.</li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  <li><strong>Run:</strong> This sets the
-minimised/maximised
-state of the window when the item is launched from RocketDock. SteamyDock does not support this just yet.</li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  <li><strong>Open Running:</strong> This
+  <li><strong>Window State:</strong> This
 drop down
-menu allows you to override the "Open Running Application Instance" on
-a per icon basis. You get the choice of: "Use Global Setting,"
-"Always," and "Never". This option only operates for Rocketdock as
-Steamydock does not need this option, already having extra options on the right
-click menu to control any running apps. </li>
+menu allows you to select the opening window state of the chosen app.
+It can be forced to start minimised, as a normal window or maximised to
+fill the current monitor. </li>
 
 
 
@@ -3681,10 +3761,17 @@ click menu to control any running apps. </li>
 
 
 
-  <li><strong>Extra Menu:</strong> This enables
-additional&nbsp;actions to be displayed in the dock context
-menu for the specific icon. Only available for Rocketdock as Steamydock
-already has extra menu options, so this choice is not required.</li>
+
+
+
+  <li><strong>New Instance:</strong>
+This can be used to force this app to always create a new instance.
+This overrides the global setting that is configured in the dock
+settings utility.</li>
+  <li><strong>Run Unelevated:</strong> Some apps prefer to be run in an unelevated fashion. Set this check box to reduce the level of authorisation for this app.</li>
+
+
+
 
 
 
@@ -3710,6 +3797,9 @@ already has extra menu options, so this choice is not required.</li>
 This causes a confirmation box to appear prior to the application being
 run.&nbsp;Only available for Steamydock. Very useful for preventing
 accidental keypresses on important icons, eg. shutdown, log off &amp;c.</li>
+
+
+
 
 
 
@@ -3763,6 +3853,9 @@ complete are particulalry worrisome. This option will help.</li>
 
 
 
+
+
+
 </ul>
 
 
@@ -3775,7 +3868,13 @@ complete are particulalry worrisome. This option will help.</li>
 
 
 
+
+
+
 <img style="width: 404px; height: 245px;" alt="properties" title="properties" src="propertiesPanelButton.png"><br>
+
+
+
 
 
 
@@ -3803,7 +3902,13 @@ Fig 18b. The icon Properties Panel showing the expand button.</span><br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -3828,6 +3933,9 @@ will be displayed. Clicking the same expand button again will roll the panel bac
 
 
 
+
+
+
 <br>
 
 
@@ -3840,7 +3948,13 @@ will be displayed. Clicking the same expand button again will roll the panel bac
 
 
 
-<img style="width: 407px; height: 306px;" alt="properties" title="properties" src="propertiesPanelLarge.png"><br>
+
+
+
+<img style="width: 405px; height: 352px;" alt="properties" title="properties" src="propertiesPanelLarge.png"><br>
+
+
+
 
 
 
@@ -3868,6 +3982,9 @@ Fig 18c. The icon Properties Panel showing the expand panel.</span><br>
 
 
 
+
+
+
 <ul>
 
 
@@ -3880,7 +3997,13 @@ Fig 18c. The icon Properties Panel showing the expand panel.</span><br>
 
 
 
-  <li><span style="font-weight: bold;">Quick Launch:</span> This causes the application to start sooner before fully completing the dock 'bounce'.&nbsp;<span style="font-weight: bold;">Only available for Steamydock.</span></li>
+
+
+
+  <li><span style="font-weight: bold;">Quick Launch:</span> This causes the application to start sooner before fully completing the dock 'bounce'.<span style="font-weight: bold;"></span></li>
+
+
+
 
 
 
@@ -3912,8 +4035,22 @@ available for Steamydock.</span></li>
 
 
 
-  <li><span style="font-weight: bold;">Second App to run.</span> When an application has been set within this field SteamyDock will run this program after the main program has started.&nbsp;<span style="font-weight: bold;">Option only
-available for Steamydock.</span></li>
+
+
+
+  <li><span style="font-weight: bold;">Second App to run.</span> When an application has been set within this field SteamyDock will run this program after the main program has started.<span style="font-weight: bold;">&nbsp;</span></li>
+
+
+  <li><span style="font-weight: bold;">Terminate App.</span> When an
+application has been set within this field, SteamyDock will attempt to
+terminate the named program prior to the main program&nbsp;starting. The full valid path is required for this to operate. <span style="font-weight: bold;">Killing The Same Application</span>. If you place the same path as that for the main <span style="font-weight: bold;">Target</span>
+app then Steamydock will terminate any previous instance of your
+program running and then initiate your new instance immediately
+afterwards. This can be useful when you only want to run one copy of a
+program at any time.<span style="font-weight: bold;"></span></li>
+
+
+
 
 
 
@@ -3936,9 +4073,13 @@ available for Steamydock.</span></li>
 
 
 
-<span style="font-weight: bold;">
 
-IMPORTANT</span>&nbsp;<br>
+
+
+<span style="font-weight: bold;"><a name="Save__Restart"></a>Save &amp; Restart</span><br>
+
+
+
 
 
 
@@ -3950,30 +4091,21 @@ IMPORTANT</span>&nbsp;<br>
 
 
 <br>
-
-
-
-
-
-
-
-
-If you are using Rocketdock then none of your changes will yet appear
-in the Rocketdock dock itself until you
+None of your changes will yet appear
+in the dock itself until you
 press
 the "Save &amp; Restart" button. The reason for this is that the
-changes need to be transmitted into the dock. The original
-Rocketdock did
-not
-read its own settings configuration file except on startup so we have
-to force this to occur. A press on the save and restart button causes
-Rocketdock to close and after a restart it will read the new config.
+changes need to be transmitted into the dock's configuration file. A
+press on the save and restart button causes the dock to close and after
+a restart it will read the new config.
 All you have to remember is that any changes you make
 in this tool
 must at some point be followed by a "save &amp; restart". The
 restart is very quick and causes your new
-icons to appear in the dock straight away. The same process is also
-followed when using Steamydock.<br>
+icons to appear in the dock straight away.<br>
+
+
+
 
 
 
@@ -4002,6 +4134,9 @@ followed when using Steamydock.<br>
 
 
 <br>
+
+
+
 
 
 
@@ -4030,6 +4165,9 @@ followed when using Steamydock.<br>
 
 
 <img style="width: 410px; height: 56px;" alt="buttons" title="buttons" src="rdbuttton01.jpg"><br>
+
+
+
 
 
 
@@ -4073,7 +4211,13 @@ Fig 20. The Button Panel showing the main buttons for this utility.</span><br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -4109,7 +4253,13 @@ Fig 20. The Button Panel showing the main buttons for this utility.</span><br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -4126,6 +4276,9 @@ Fig 20. The Button Panel showing the main buttons for this utility.</span><br>
 </span>A check box toggles the information dialog on/off. When it is selected
 confirmation messages will be given before any radical change takes
 place. Turn it on or&nbsp;off as you require but to be aware that if you do the utility will not stop you doing silly things.<br>
+
+
+
 
 
 
@@ -4169,6 +4322,9 @@ place. Turn it on or&nbsp;off as you require but to be aware that if you do the 
 
 
 
+
+
+
 Backup<br>
 
 
@@ -4183,7 +4339,13 @@ Backup<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -4204,7 +4366,10 @@ where the bkpSettings.ini
 backups are stored. It then allows you to select a specific file to
 restore. Once done, you can then press the "save &amp; restart"
 button and the
-restored icon settings will re-appear in the Rocketdock.<br>
+restored icon settings will re-appear in the dock.<br>
+
+
+
 
 
 
@@ -4233,6 +4398,9 @@ restored icon settings will re-appear in the Rocketdock.<br>
 
 
 <br>
+
+
+
 
 
 
@@ -4268,7 +4436,13 @@ restored icon settings will re-appear in the Rocketdock.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -4312,7 +4486,13 @@ required. Once the save is done the button text will revert to 'close'.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -4354,7 +4534,13 @@ required. Once the save is done the button text will revert to 'close'.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -4386,7 +4572,13 @@ required. Once the save is done the button text will revert to 'close'.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -4422,6 +4614,9 @@ In addition a press of CTRL followed by H (CTRL/H ) reveals a momentary graphica
 
 
 
+
+
+
 <br>
 
 
@@ -4440,7 +4635,13 @@ In addition a press of CTRL followed by H (CTRL/H ) reveals a momentary graphica
 
 
 
+
+
+
 <img style="width: 698px; height: 543px;" alt="rocketdockSettings.jpg" title="rocketdockSettings.jpg" src="rocketdockSettings.jpg"><br>
+
+
+
 
 
 
@@ -4489,6 +4690,9 @@ Fig 21. The Instant Help pop up. </span><br>
 
 
 
+
+
+
 <br>
 
 
@@ -4511,7 +4715,13 @@ Fig 21. The Instant Help pop up. </span><br>
 
 
 
-<span style="font-weight: bold;">Generate Dock<br>
+
+
+
+<span style="font-weight: bold;"><a name="Generate_Dock"></a>Generate Dock<br>
+
+
+
 
 
 
@@ -4564,7 +4774,14 @@ utility.<br>
 
 
 
+
+
+
+<a name="Menus__Other_Options"></a>
 <h3>Menus &amp; Other Options</h3>
+
+
+
 
 
 
@@ -4620,7 +4837,13 @@ A right click here and there will bring up other menu options.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -4676,7 +4899,13 @@ The main menu is disclosed when right-clicking on everywhere else.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -4714,6 +4943,9 @@ The main menu is disclosed when right-clicking on everywhere else.<br>
 
 
 
+
+
+
 <span style="font-weight: bold;">
 
 
@@ -4741,42 +4973,54 @@ Fig 22. The general right click menu. </span><br>
 
 
 
-<br>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<span style="font-weight: bold;">Themeing<br>
-
-
-
-
-
-
-
-
-
-
 
 
 
 <br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<a name="Themeing"></a><span style="font-weight: bold;">Themeing<br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br>
+
+
+
 
 
 
@@ -4798,7 +5042,13 @@ Fig 22. The general right click menu. </span><br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -4833,7 +5083,13 @@ allow it to sport a high contrast look and feel. <br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -4857,7 +5113,13 @@ programs will still display the washed out theme - I can't fix everything :)<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -4891,7 +5153,13 @@ lower image shows the classic or high contrast theme enabled on Win10.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -4933,7 +5201,13 @@ lower image shows the classic or high contrast theme enabled on Win10.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -4970,6 +5244,9 @@ Fig 23. The tool in the default low-contrast "washed-out" mode on Windows 10.</s
 
 
 
+
+
+
 <br>
 
 
@@ -4991,7 +5268,13 @@ Fig 23. The tool in the default low-contrast "washed-out" mode on Windows 10.</s
 
 
 
+
+
+
 <img style="width: 688px; height: 663px;" alt="Fig 04. The tool in high-contrast mode on Windows 10" title="Fig 04. The tool in high-contrast mode on Windows 10" src="highContrast.png"><br>
+
+
+
 
 
 
@@ -5034,7 +5317,13 @@ The tool in high-contrast mode on Windows 10.</span><br>
 
 
 
+
+
+
 <p style="page-break-before: always;"><span style="font-weight: bold;"><img style="width: 1190px; height: 669px;" alt="app on Windows 10" src="desktop1.jpg"></span></p>
+
+
+
 
 
 
@@ -5076,7 +5365,6 @@ The tool in high-contrast mode on Windows 10.</span><br>
 
 
 
-<p style="page-break-before: always;"><span style="font-weight: bold;">Note: Rocketdock is installed on the system above so it shows Rocketdock's default icons.</span></p>
 
 
 
@@ -5087,7 +5375,16 @@ The tool in high-contrast mode on Windows 10.</span><br>
 
 
 
-<p style="page-break-before: always;"><span style="font-weight: bold;">Debugging</span></p>
+
+
+
+
+
+
+<p style="page-break-before: always;"><span style="font-weight: bold;"><a name="Debugging"></a>Debugging</span></p>
+
+
+
 
 
 
@@ -5120,6 +5417,9 @@ The tool in high-contrast mode on Windows 10.</span><br>
 
 
 <p style="page-break-before: always;">The final option &nbsp;in the right click menu is to turn Debugging ON</p>
+
+
+
 
 
 
@@ -5204,6 +5504,9 @@ shared memory. The combination is bound to generate a false positive.&nbsp;
 
 
 
+
+
+
 The code for the&nbsp;persistentDebug program was provided by Elroy on
 the VBforums and you can have a look at the source any time. For the
 moment, if you want it to run, bring it back from quarantine and add an
@@ -5223,7 +5526,13 @@ exclusion to your anti-malware tool!<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -5284,6 +5593,9 @@ any error message that the program displays.<br>
 
 
 
+
+
+
 <br>
 
 
@@ -5312,7 +5624,13 @@ any error message that the program displays.<br>
 
 
 
+
+
+
 <img style="width: 485px; height: 488px;" alt="runtime debugger" title="runtime debugger" src="../../dockSettings/help/docksDebug.jpg"><br>
+
+
+
 
 
 
@@ -5356,7 +5674,13 @@ Fig 26. The Debug Window that is shown when you select debug mode.</span><br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -5408,63 +5732,75 @@ To close the debug window simply select the same debug option in the right click
 
 
 
-<br>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<span style="font-weight: bold;">Licence<br>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 <br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<a name="Licence"></a><span style="font-weight: bold;"><big>Licence Window</big><br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br>
+
+
+
 
 
 
@@ -5508,7 +5844,13 @@ To close the debug window simply select the same debug option in the right click
 
 
 
+
+
+
 Fig 27. The Licence Window.</span><br>
+
+
+
 
 
 
@@ -5537,6 +5879,9 @@ Fig 27. The Licence Window.</span><br>
 
 
 <br>
+
+
+
 
 
 
@@ -5598,7 +5943,13 @@ strictly forbidden.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -5627,6 +5978,9 @@ strictly forbidden.<br>
 
 
 Font Selection</p>
+
+
+
 
 
 
@@ -5684,7 +6038,13 @@ shown throughout all the various screenshots you will see here.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -5722,6 +6082,9 @@ shown throughout all the various screenshots you will see here.<br>
 
 
 
+
+
+
 <span style="font-weight: bold;">
 
 
@@ -5746,7 +6109,13 @@ Fig 28. The Font Window.</span><br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -5793,57 +6162,69 @@ be ignored.<br>
 
 
 
-<br>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<span style="font-weight: bold;">The About Screen.</span><br>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 <br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<big><span style="font-weight: bold;"><a name="The_About_Screen."></a>The About Screen.</span></big><br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br>
+
+
+
 
 
 
@@ -5872,6 +6253,9 @@ be ignored.<br>
 
 
 <img style="width: 346px; height: 363px;" alt="about" src="rdSetting_about.jpg"><br>
+
+
+
 
 
 
@@ -5915,7 +6299,13 @@ Fig 29. The About Window.</span><br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -5974,6 +6364,9 @@ provide information and social-media URLs.<br>
 
 
 
+
+
+
 <br>
 
 
@@ -5996,7 +6389,13 @@ provide information and social-media URLs.<br>
 
 
 
-<h3>Technology:&nbsp;</h3>
+
+
+
+<h3><a name="Technology:_"></a>Technology:&nbsp;</h3>
+
+
+
 
 
 
@@ -6054,6 +6453,9 @@ applies to either version as they will be functionally identical.<br>
 
 
 
+
+
+
 <h3>VB6 Version Credits:</h3>
 
 
@@ -6082,7 +6484,13 @@ applies to either version as they will be functionally identical.<br>
 
 
 
+
+
+
 <ul>
+
+
+
 
 
 
@@ -6140,9 +6548,15 @@ applies to either version as they will be functionally identical.<br>
 
 
 
+
+
+
   <li>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 &nbsp;LA Volpe (VB Forums) for his transparent PNG image
 handling.</li>
+
+
+
 
 
 
@@ -6199,8 +6613,14 @@ KillApp code from an unknown, untraceable source, possibly on MSN.</li>
 
 
 
+
+
+
   <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 Registry reading code from ALLAPI.COM.</li>
+
+
+
 
 
 
@@ -6258,9 +6678,15 @@ particular.</li>
 
 
 
+
+
+
   <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 Active VB Germany for information on the undocumented
 PrivateExtractIcons API.</li>
+
+
+
 
 
 
@@ -6317,9 +6743,15 @@ Elroy on VB forums for his Persistent debug window</li>
 
 
 
+
+
+
   <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 Rxbagain on codeguru for his Open File common dialog code without
 dependent OCX</li>
+
+
+
 
 
 
@@ -6347,7 +6779,13 @@ dependent OCX</li>
 Krool on the VBForums for his impressive common control replacements</li>
 
 
+
+
+
   <li>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Rod Stephens&nbsp; Resize controls to fit when a form resizes</li>
+
+
+
 
 
   <li>' KPD-Team 1999 http://www.allapi.net/&nbsp; Recursive search</li>
@@ -6378,7 +6816,13 @@ Krool on the VBForums for his impressive common control replacements</li>
 
 
 
+
+
+
 </ul>
+
+
+
 
 
 
@@ -6436,7 +6880,13 @@ Built using: VB6, MZ-TOOLS 3.0, CodeHelp Core IDE Extender Framework
 
 
 
+
+
+
 <ul>
+
+
+
 
 
 
@@ -6493,10 +6943,16 @@ Ali (codeguru.com) for his settings.ini code.</li>
 
 
 
+
+
+
   
 
   <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Punklabs
-for the original inspiration and for Rocketdock, Skunkie in particular.</li>
+for the original inspiration and for s, Skunkie in particular.</li>
+
+
+
 
 
 
@@ -6560,6 +7016,9 @@ for the original inspiration and for Rocketdock, Skunkie in particular.</li>
 
 
 
+
+
+
 Built using: VB.NET 2010, initially migrated from VB6 using VB Express (.NET 2008).<br>
 
 
@@ -6588,7 +7047,13 @@ Built using: VB.NET 2010, initially migrated from VB6 using VB Express (.NET 200
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -6646,7 +7111,13 @@ but a few who have responded or commented.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -6704,7 +7175,13 @@ as he is my programming Yoda and my inspiration to do better.<br>
 
 
 
+
+
+
 <h3>Links</h3>
+
+
+
 
 
 
@@ -6760,8 +7237,14 @@ as he is my programming Yoda and my inspiration to do better.<br>
 
 
 
+
+
+
   <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &nbsp;&nbsp;MZ-TOOLS <font size="-1"><span style="font-family: Courier New;"><br>
+
+
+
 
 
 
@@ -6798,7 +7281,13 @@ as he is my programming Yoda and my inspiration to do better.<br>
 
 
 
+
+
+
     </span></font></li>
+
+
+
 
 
 
@@ -6828,6 +7317,9 @@ as he is my programming Yoda and my inspiration to do better.<br>
 
   <li>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 CodeHelp&nbsp;<font size="-1"><span style="font-family: Courier New;"><br>
+
+
+
 
 
 
@@ -6864,7 +7356,13 @@ CodeHelp&nbsp;<font size="-1"><span style="font-family: Courier New;"><br>
 
 
 
+
+
+
     </span></font></li>
+
+
+
 
 
 
@@ -6894,6 +7392,9 @@ CodeHelp&nbsp;<font size="-1"><span style="font-family: Courier New;"><br>
 
   <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rubberduck
     <br>
+
+
+
 
 
 
@@ -6930,7 +7431,13 @@ CodeHelp&nbsp;<font size="-1"><span style="font-family: Courier New;"><br>
 
 
 
+
+
+
     </span></font></li>
+
+
+
 
 
 
@@ -6986,6 +7493,9 @@ CodeHelp&nbsp;<font size="-1"><span style="font-family: Courier New;"><br>
 
 
 
+
+
+
     <font size="-1"><span style="font-family: Courier New;"><span style="font-weight: bold;">&nbsp; &nbsp; &nbsp;https://punklabs.com/</span><br>
 
 
@@ -6996,7 +7506,13 @@ CodeHelp&nbsp;<font size="-1"><span style="font-family: Courier New;"><br>
 
 
 
+
+
+
     </span></font></li>
+
+
+
 
 
 
@@ -7053,6 +7569,9 @@ CodeHelp&nbsp;<font size="-1"><span style="font-family: Courier New;"><br>
 
 
 
+
+
+
     <font size="-1"><span style="font-family: Courier New;"><span style="font-weight: bold;">&nbsp; &nbsp; &nbsp;http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=67466&amp;lngWId=1</span><br>
 
 
@@ -7063,7 +7582,13 @@ CodeHelp&nbsp;<font size="-1"><span style="font-family: Courier New;"><br>
 
 
 
+
+
+
     </span></font></li>
+
+
+
 
 
 
@@ -7119,6 +7644,9 @@ code <br>
 
 
 
+
+
+
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <font size="-1"><span style="font-family: Courier New;"><span style="font-weight: bold;">http://www.activevb.de/rubriken/</span><br>
 
 
@@ -7129,7 +7657,13 @@ code <br>
 
 
 
+
+
+
     </span></font></li>
+
+
+
 
 
 
@@ -7185,6 +7719,9 @@ debug code <br>
 
 
 
+
+
+
     <font size="-1"><span style="font-family: Courier New;"><span style="font-weight: bold;">&nbsp; &nbsp; &nbsp;http://www.vbforums.com/member.php?234143-Elroy</span><br>
 
 
@@ -7195,7 +7732,13 @@ debug code <br>
 
 
 
+
+
+
     </span></font></li>
+
+
+
 
 
 
@@ -7235,6 +7778,9 @@ dependent OCX- &nbsp; &nbsp;<br>
 
 
 
+
+
+
     <span style="font-weight: bold;">
 
 
@@ -7264,7 +7810,13 @@ dependent OCX- &nbsp; &nbsp;<br>
 
 
 
+
+
+
     </span></font></li>
+
+
+
 
 
 
@@ -7317,11 +7869,17 @@ font dialog code without dependent OCX<br>
 
 
 
+
+
+
     <small><span style="font-family: Courier New,Courier,monospace;"><span style="font-weight: bold;">
 
 
 
 &nbsp; &nbsp; &nbsp;URL unknown</span><br>
+
+
+
 
 
 
@@ -7355,7 +7913,13 @@ font dialog code without dependent OCX<br>
 
 
 
+
+
+
   <li style="text-align: left;">
+    
+    
+    
     
     
     
@@ -7387,38 +7951,74 @@ font dialog code without dependent OCX<br>
 &nbsp; <small><span style="font-family: Courier New,Courier,monospace;">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="font-weight: bold;">&nbsp;<br>
 
 
+
+
+
 &nbsp; &nbsp; &nbsp;http://www.vbforums.com/showthread.php?698563-CommonControls-%28Replacement-of-the-MS-common-controls%29</span></span></small></div>
 
 
+
+
+
   </li>
+
+
+
 
 
   <li style="text-align: left;">
     
     
+    
+    
+    
     <div>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; Resize controls to fit when a form resizes<br>
+
+
+
 
 
     <small><span style="font-family: Courier New;">&nbsp;&nbsp;&nbsp; &nbsp;<span style="font-weight: bold;">vb-helper.com&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></small></div>
 
 
+
+
+
   </li>
+
+
+
 
 
   <li style="text-align: left;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Recursive search KPD-Team 1999<br>
 
 
+
+
+
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;http://www.allapi.net/&nbsp;&nbsp;</li>
 
 
+
+
+
   <li style="text-align: left;">&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;For the idea of extracting the uninstall keys from the registry&nbsp;<br>
+
+
+
 
 
 &nbsp; &nbsp; &nbsp; &nbsp;
 &nbsp;&nbsp;https://www.vbforums.com/showthread.php?784053-Get-installed-programs-list-both-32-and-64-bit-programs<br>
 
 
+
+
+
   </li>
+
+
+
 
 
 
@@ -7449,7 +8049,13 @@ font dialog code without dependent OCX<br>
 </ul>
 
 
-<h3><span style="font-weight: bold;">Background:</span><br>
+
+
+
+<h3><span style="font-weight: bold;"><a name="Background"></a>Background:</span><br>
+
+
+
 
 
 
@@ -7460,6 +8066,9 @@ font dialog code without dependent OCX<br>
 
 
 </h3>
+
+
+
 
 
 
@@ -7498,7 +8107,13 @@ icon, a delay here impedes your use of the tool. <br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -7518,6 +8133,9 @@ icon, a delay here impedes your use of the tool. <br>
 
 
 
+
+
+
 <span style="font-weight: bold;">Fig 30. Showing Steamydock opening a folder of PNG files.</span><br>
 
 
@@ -7528,7 +8146,13 @@ icon, a delay here impedes your use of the tool. <br>
 
 
 
+
+
+
 <span style="font-weight: bold;"></span><br style="font-weight: normal;">
+
+
+
 
 
 
@@ -7597,7 +8221,13 @@ created and the results stored in the image view.</span><br style="font-weight: 
 
 
 
+
+
+
 <br style="font-weight: normal;">
+
+
+
 
 
 
@@ -7615,7 +8245,13 @@ a serious bug that affected Rocketdock's usability. In fact, I set out
 to
 re-write Rocketdock's settings screen just to resolve this single bug.
 In so doing I started to enhance what the utility provides in general <br>
+
+
+
 <br>
+
+
+
 </span><span style="font-weight: normal;">SteamyDock's Enhanced Icon
 Settings Utility takes a different approach. It only displays 12 icons
 at a time and then reads the next few only when you scroll down the
@@ -7623,11 +8259,17 @@ icon list. It stores these icons in a memory cache so that when you
 access the icons a second time, they load quickly. This cacheing method
 is only really needed on systems built prior to 2010 with slow drives.
 Modern systems with SSDs and fast access can read the images quickly in
-both RocketDock and &nbsp;SteamyDock.</span><span style="font-weight: normal;"></span><span style="font-weight: normal;">
+both RocketDock and&nbsp;SteamyDock.</span><span style="font-weight: normal;"></span><span style="font-weight: normal;">
 The number of images in the cache is controlled by modifying the
 parameter&nbsp; 'thumbnailCacheCount' in settings.ini, the default
 value is 250.<br>
+
+
+
 <br>
+
+
+
 </span>
 
 
@@ -7683,6 +8325,9 @@ This utility improves upon the original in certain areas: <br>
 
 
 
+
+
+
 <ul>
 
 
@@ -7693,7 +8338,10 @@ This utility improves upon the original in certain areas: <br>
 
 
 
-  <li>You can flip to the next Rocketdock item without having to
+
+
+
+  <li>You can flip to the next dock item without having to
 leave the settings screen completely, as you had to before.</li>
 
 
@@ -7704,8 +8352,14 @@ leave the settings screen completely, as you had to before.</li>
 
 
 
-  <li>It indicates by number which Rocketdock item is currently
+
+
+
+  <li>It indicates by number which&nbsp;dock item is currently
 selected.</li>
+
+
+
 
 
 
@@ -7726,8 +8380,14 @@ thumbnail display.</li>
 
 
 
+
+
+
   <li>The icon preview can be resized so the user can see how the
 icon will look in the dock at different sizes.</li>
+
+
+
 
 
 
@@ -7748,7 +8408,13 @@ none).</li>
 
 
 
+
+
+
   <li>There is now a readily available help facility - you are reading it.</li>
+
+
+
 
 
 
@@ -7769,8 +8435,14 @@ none).</li>
 
 
 
+
+
+
   <li>The user can flip between the new file list mode and a thumbnail view as
 it suits.</li>
+
+
+
 
 
 
@@ -7792,8 +8464,14 @@ user to download.&nbsp;</li>
 
 
 
+
+
+
   <li>There is a working icon type filter allowing you to select
 just one type of icon. The old drop-down was non-functional.</li>
+
+
+
 
 
 
@@ -7814,8 +8492,14 @@ have been any changes to a folder.</li>
 
 
 
+
+
+
   <li>The utility saves copies of the settings.ini file so that
 you can always revert your dock back to an earlier state.</li>
+
+
+
 
 
 
@@ -7836,7 +8520,13 @@ icon entries.</li>
 
 
 
+
+
+
   <li>It provides a steampunk library of various unique icons.</li>
+
+
+
 
 
 
@@ -7857,6 +8547,9 @@ operating.</li>
 
 
 
+
+
+
   <li>It runs many times faster on the critical icon thumbnail
 view, taking less than one second rather than 2-3 secs or much more.</li>
 
@@ -7868,7 +8561,13 @@ view, taking less than one second rather than 2-3 secs or much more.</li>
 
 
 
+
+
+
   <li>There is now an icon 'map' so the user can change the dock icon order within the settings tool.</li>
+
+
+
 
 
 
@@ -7889,18 +8588,12 @@ utility themselves.</li>
 
 
 
+
+
+
 </ul>
-
-
-
-
-
-
-
-
-
-In addition to providing those enhancements to Rocketdock, the Enhanced
-Icon Settings Utility also works with SteamyDock the FOSS equivalent of
+The Enhanced
+Icon Settings Utility&nbsp;works with SteamyDock the FOSS equivalent of
 Rocketdock. See SteamyDock in operation below.<br>
 
 
@@ -7929,8 +8622,14 @@ Rocketdock. See SteamyDock in operation below.<br>
 
 
 
+
+
+
 <img style="width: 1280px; height: 248px;" title="Showing Steamydock in operation on Windows 10" src="../../SteamyDock/help/steamydock.jpg" alt="Showing Steamydock in operation on Windows 10"><span style="font-weight: bold;">Fig 31. Showing Steamydock in operation on Windows 10.</span>
-<h3>Licence:</h3>
+<h3><a name="Licence_"></a>Licence:</h3>
+
+
+
 
 
 
@@ -7980,7 +8679,13 @@ Copyright&nbsp;&copy;2019 Dean Beedell<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -8032,7 +8737,13 @@ option) any later version.<br>
 
 
 
+
+
+
 <br>
+
+
+
 
 
 
@@ -8093,6 +8804,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 
+
+
+
 <br>
 
 
@@ -8121,7 +8835,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 
+
+
+
 </div>
+
+
+
 
 
 

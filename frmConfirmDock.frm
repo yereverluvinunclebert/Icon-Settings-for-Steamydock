@@ -27,6 +27,7 @@ Begin VB.Form frmConfirmDock
       Caption         =   "Cancel"
       Height          =   435
       Left            =   1905
+      Style           =   1  'Graphical
       TabIndex        =   6
       Top             =   60
       Width           =   975
@@ -35,6 +36,7 @@ Begin VB.Form frmConfirmDock
       Caption         =   "Generate"
       Height          =   435
       Left            =   1890
+      Style           =   1  'Graphical
       TabIndex        =   5
       Top             =   1305
       Width           =   975
@@ -121,16 +123,16 @@ Private Sub Form_Activate()
 End Sub
 
 Private Sub Form_Load()
-    Dim storedFont As String
+    Dim storedFont As String: storedFont = vbNullString
     
-    Dim fntFont As String
-    Dim fntSize As Integer
-    Dim fntWeight As Integer
-    Dim fntStyle As Boolean
-    Dim fntColour As Long
-    Dim fntItalics As Boolean
-    Dim fntUnderline As Boolean
-    Dim fntFontResult As Boolean
+    Dim fntFont As String: fntFont = vbNullString
+    Dim fntSize As Integer: fntSize = 0
+    Dim fntWeight As Integer: fntWeight = 0
+    Dim fntStyle As Boolean: fntStyle = False
+    Dim fntColour As Long: fntColour = 0
+    Dim fntItalics As Boolean: fntItalics = False
+    Dim fntUnderline As Boolean: fntUnderline = False
+    Dim fntFontResult As Boolean: fntFontResult = False
 
     'storedFont = txtTextFont.Text 'TBD
     
@@ -142,6 +144,9 @@ Private Sub Form_Load()
     ' .TBD DAEB 26/05/2022 rdIconConfig.frm Call the font tool for this form
     Call changeFont(Me, False, fntFont, fntSize, fntWeight, fntStyle, fntColour, fntItalics, fntUnderline, fntFontResult)
 
+    ' set the theme colour on startup
+    Call setThemeSkin(Me)
+    
     rdbCurrent.Value = True
     
 
@@ -163,23 +168,23 @@ End Sub
 
 ' .02 DAEB 29/05/2022 frmConfirmDock.frm Add balloon tooltips to the generate dock utility STARTS
 
-Private Sub btnGenerate_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub btnGenerate_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
    If rDEnableBalloonTooltips = "1" Then CreateToolTip btnGenerate.hwnd, "This button generates the new dock. Take care, this is the final step!", _
                   TTIconInfo, "Help on the Final Generate Dock button", , , , True
 End Sub
 
-Private Sub rdbAppend_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub rdbAppend_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
 If rDEnableBalloonTooltips = "1" Then CreateToolTip rdbAppend.hwnd, "This radio box selects the append option when generating the new dock. Your current dock will added to on the right...", _
                   TTIconInfo, "Help on the append button", , , , True
 End Sub
 
-Private Sub rdbCurrent_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub rdbCurrent_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
 If rDEnableBalloonTooltips = "1" Then CreateToolTip rdbCurrent.hwnd, "This radio box the new dock items to be added to the currently selected dock map position - go check the icon settings tool and see which has been selected...", _
                   TTIconInfo, "Help on the current position button", , , , True
 End Sub
 
 
-Private Sub rdbOverwrite_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub rdbOverwrite_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
 If rDEnableBalloonTooltips = "1" Then CreateToolTip rdbOverwrite.hwnd, "This radio box selects the overwrite option when generating the new dock. Your current dock will be lost!", _
                   TTIconInfo, "Help on the overwrite button", , , , True
 End Sub
@@ -189,12 +194,12 @@ Private Sub rdbPrepend_Click()
 
 End Sub
 
-Private Sub rdbPrepend_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub rdbPrepend_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
 If rDEnableBalloonTooltips = "1" Then CreateToolTip rdbPrepend.hwnd, "This radio box selects the prepend option when generating the new dock. Your current dock will be added to from the left...", _
                   TTIconInfo, "Help on the prepend button", , , , True
 End Sub
 
-Private Sub btnCancel_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub btnCancel_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
 If rDEnableBalloonTooltips = "1" Then CreateToolTip btnCancel.hwnd, "This button cancels the generation of the new dock.", _
                   TTIconInfo, "Help on the Cancel button", , , , True
 
