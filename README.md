@@ -99,9 +99,9 @@ an adjacent folder as some of the BAS modules are common and shared.
 
 Example folder structure:
 	
-	E:\VB6\steamydock
-	E:\VB6\docksettings
-	E:\VB6\rocketdock
+	E:\VB6\steamydock    ! from https://github.com/yereverluvinunclebert/SteamyDock
+	E:\VB6\docksettings	! from https://github.com/yereverluvinunclebert/dockSettings
+	E:\VB6\rocketdock		! this repo.
 
 o Krools replacement for the Microsoft Windows Common Controls found in
 mscomctl.ocx (treeview, slider) are replicated by the addition of two
