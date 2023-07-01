@@ -3,11 +3,17 @@
 ICON SETTINGS for Steamydock, written in VB6. A WoW64 dock settings
 utility for Reactos, XP, Win7, 8 and 10+.
 
+![rocketdock-embeddedIcons](https://github.com/yereverluvinunclebert/rocketdock/assets/2788342/a525e0e1-50fc-42c9-8cb5-d578e3a9efaf)
+
 This utility is for use with SteamyDock, is Beta-grade software, under
 development, not yet ready to use on a production system - use at your
 own risk.
 
 This utility is a functional reproduction of the original settings screen that came from Rocketdock. Please note that the design is limited to enhancing what Rocketdock already provides in order to make the utility familiar to Rocketdock users. If you hover your mouse cursor on the various components that comprise the utility a tooltip will appear that will give more information on each item. There is a help button on the bottom right that will provide further detail at any time. Presing CTRL+H will give you an instant HELP pop up.
+
+![lowContrasr](https://github.com/yereverluvinunclebert/rocketdock/assets/2788342/8fee79a9-bb0a-4338-bc83-e251ba6de562)
+
+
 The tool is designed to operate with SteamyDock, the open source replacement for Rocketdock. SteamyDock is a work in progress so please bear that in mind when any reference to SteamyDock is made in this documentation.
 
 Credits : Standing on the shoulders of the following giants:
@@ -112,3 +118,6 @@ permission. In all other non-commercial cases I require a credit to the
 original artist using my name or one of my pseudonyms and a link to my site.
 With regard to the commercial use of incorporated images, permission and a
 licence would need to be obtained from the original owner and creator, ie. me.
+
+
+![desktop1](https://github.com/yereverluvinunclebert/rocketdock/assets/2788342/f2d3be1e-c98f-4597-9c8d-503486cf5afb)
