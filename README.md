@@ -9,11 +9,35 @@ This utility is for use with SteamyDock, is Beta-grade software, under
 development, not yet ready to use on a production system - use at your
 own risk.
 
-This utility is a functional reproduction of the original settings screen that came from Rocketdock. Please note that the design is limited to enhancing what Rocketdock already provides in order to make the utility familiar to Rocketdock users. If you hover your mouse cursor on the various components that comprise the utility a tooltip will appear that will give more information on each item. There is a help button on the bottom right that will provide further detail at any time. Presing CTRL+H will give you an instant HELP pop up.
+This utility is a functional reproduction of the original settings screen that 
+came from Rocketdock. Please note that the design is limited to enhancing what 
+Rocketdock already provides in order to make the utility familiar to Rocketdock 
+users. If you hover your mouse cursor on the various components that comprise 
+the utility a tooltip will appear that will give more information on each item. 
+There is a help button on the bottom right that will provide further detail at 
+any time. Presing CTRL+H will give you an instant HELP pop up.
 
 ![lowContrasr](https://github.com/yereverluvinunclebert/rocketdock/assets/2788342/8fee79a9-bb0a-4338-bc83-e251ba6de562)
 
-The tool is designed to operate with SteamyDock, the open source replacement for Rocketdock. SteamyDock is a work in progress so please bear that in mind when any reference to SteamyDock is made in this documentation.
+The tool is designed to operate with SteamyDock, the open source replacement for 
+Rocketdock. SteamyDock is a work in progress so please bear that in mind when 
+any reference to SteamyDock is made in this documentation.
+
+This tool was developed on Windows 7 using 32 bit VisualBasic 6 as a FOSS 
+project creating a WoW64 program for the desktop. 
+
+It is open source to allow easy configuration, bug-fixing, enhancement and 
+community contribution towards free-and-useful VB6 utilities that can be created
+by anyone. The first step was the creation of this template program to form the 
+basis for the conversion of other desktop utilities or widgets. A future step 
+is conversion to RADBasic/TwinBasic for future-proofing and 64bit-ness. 
+
+This utility is one of a set of steampunk and dieselpunk desktop widgets. That 
+you can find here on Deviantart: https://www.deviantart.com/yereverluvinuncleber/gallery
+
+I do hope you enjoy using this utility and others. Your own software 
+enhancements and contributions will be gratefully received if you choose to 
+contribute.
 
 Credits : Standing on the shoulders of the following giants:
 
