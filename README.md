@@ -17,38 +17,38 @@ The tool is designed to operate with SteamyDock, the open source replacement for
 
 Credits : Standing on the shoulders of the following giants:
 
-LA Volpe (VB Forums) for his transparent picture handling.
-Shuja Ali (codeguru.com) for his settings.ini code.
-KillApp code from an unknown, untraceable source, possibly on MSN.
+LA Volpe (VB Forums) for his transparent picture handling.  
+Shuja Ali (codeguru.com) for his settings.ini code.  
+KillApp code from an unknown, untraceable source, possibly on MSN.  
 Registry reading code from ALLAPI.COM.
 
-Punklabs for the original inspiration and for Rocketdock, Skunkie in particular.
-Active VB Germany for information on the undocumented PrivateExtractIcons API.
-Elroy on VB forums for his Persistent debug window
-Rxbagain on codeguru for his Open File common dialog code without dependent OCX
-Krool on the VBForums for his impressive common control replacements
-si_the_geek for his special folder code
-KPD-Team for the code to trawl a folder recursively KPDTeam@Allapi.net http://www.allapi.net
-Elroy on the VBForums for the balloon tooltips
-Rod Stephens vb-helper.com Resize controls to fit when a form resizes
-KPD-Team 1999 http://www.allapi.net/ Recursive search
-IT researcher https://www.vbforums.com/showthread.php?784053-Get-installed-programs-list-both-32-and-64-bit-programs
-For the idea of extracting the ununinstall keys from the registry
+Punklabs for the original inspiration and for Rocketdock, Skunkie in particular.  
+Active VB Germany for information on the undocumented PrivateExtractIcons API.  
+Elroy on VB forums for his Persistent debug window  
+Rxbagain on codeguru for his Open File common dialog code without dependent OCX  
+Krool on the VBForums for his impressive common control replacements  
+si_the_geek for his special folder code  
+KPD-Team for the code to trawl a folder recursively KPDTeam@Allapi.net http://www.allapi.net  
+Elroy on the VBForums for the balloon tooltips  
+Rod Stephens vb-helper.com Resize controls to fit when a form resizes  
+KPD-Team 1999 http://www.allapi.net/ Recursive search  
+IT researcher https://www.vbforums.com/showthread.php?784053-Get-installed-programs-list-both-32-and-64-bit-programs  
+For the idea of extracting the ununinstall keys from the registry  
 CREDIT Jacques Lebrun http://www.vb-helper.com/howto_get_shortcut_info.html
 
 Built using: VB6, MZ-TOOLS 3.0, CodeHelp Core IDE Extender Framework 2.2 & Rubberduck 2.4.1
 
-MZ-TOOLS https://www.mztools.com/
-CodeHelp http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=62468&lngWId=1
-Rubberduck http://rubberduckvba.com/
-Rocketdock https://punklabs.com/
-VBAdvance https://classicvb.net/tools/vbAdvance/
-Registry code ALLAPI.COM
-La Volpe http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=67466&lngWId=1
-PrivateExtractIcons code http://www.activevb.de/rubriken/
-Persistent debug code http://www.vbforums.com/member.php?234143-Elroy
-Open File common dialog code without dependent OCX - http://forums.codeguru.com/member.php?92278-rxbagain
-Open font dialog code without dependent OCX - unknown URL
+MZ-TOOLS https://www.mztools.com/  
+CodeHelp http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=62468&lngWId=1  
+Rubberduck http://rubberduckvba.com/  
+Rocketdock https://punklabs.com/  
+VBAdvance https://classicvb.net/tools/vbAdvance/  
+Registry code ALLAPI.COM  
+La Volpe http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=67466&lngWId=1  
+PrivateExtractIcons code http://www.activevb.de/rubriken/  
+Persistent debug code http://www.vbforums.com/member.php?234143-Elroy  
+Open File common dialog code without dependent OCX - http://forums.codeguru.com/member.php?92278-rxbagain  
+Open font dialog code without dependent OCX - unknown URL  
 Krools replacement Controls http://www.vbforums.com/showthread.php?698563-CommonControls-%28Replacement-of-the-MS-common-controls%29
 
 Tested on :
