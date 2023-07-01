@@ -8,10 +8,7 @@ development, not yet ready to use on a production system - use at your
 own risk.
 
 This utility is a functional reproduction of the original settings screen that came from Rocketdock. Please note that the design is limited to enhancing what Rocketdock already provides in order to make the utility familiar to Rocketdock users. If you hover your mouse cursor on the various components that comprise the utility a tooltip will appear that will give more information on each item. There is a help button on the bottom right that will provide further detail at any time. Presing CTRL+H will give you an instant HELP pop up.
-
 The tool is designed to operate with SteamyDock, the open source replacement for Rocketdock. SteamyDock is a work in progress so please bear that in mind when any reference to SteamyDock is made in this documentation.
-
-![rocketdock-embeddedIcons](https://github.com/yereverluvinunclebert/rocketdock/assets/2788342/513587e5-4a15-4c24-8e2c-a2c6fe34b1d5)
 
 Credits : Standing on the shoulders of the following giants:
 
@@ -61,6 +58,8 @@ Windows 10 Home 64bit on AMD
 Windows 11 64bit on Intel
 
 Dependencies:
+
+Requires the SteamyDock program to be installed.
 
 The program runs without any additional Microsoft plugins.
 
@@ -113,6 +112,3 @@ permission. In all other non-commercial cases I require a credit to the
 original artist using my name or one of my pseudonyms and a link to my site.
 With regard to the commercial use of incorporated images, permission and a
 licence would need to be obtained from the original owner and creator, ie. me.
-
-![windowsGeneralIcons](https://github.com/yereverluvinunclebert/rocketdock/assets/2788342/b5730f8c-f8d9-4007-930b-f398a41450d9)
-
