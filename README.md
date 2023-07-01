@@ -52,13 +52,13 @@ Open font dialog code without dependent OCX - unknown URL
 Krools replacement Controls http://www.vbforums.com/showthread.php?698563-CommonControls-%28Replacement-of-the-MS-common-controls%29
 
 Tested on :
-ReactOS 0.4.14 32bit on virtualBox
-Windows 7 Professional 32bit on Intel
-Windows 7 Ultimate 64bit on Intel
-Windows 7 Professional 64bit on Intel
-Windows XP SP3 32bit on Intel
-Windows 10 Home 64bit on Intel
-Windows 10 Home 64bit on AMD
+ReactOS 0.4.14 32bit on virtualBox  
+Windows 7 Professional 32bit on Intel  
+Windows 7 Ultimate 64bit on Intel  
+Windows 7 Professional 64bit on Intel  
+Windows XP SP3 32bit on Intel  
+Windows 10 Home 64bit on Intel  
+Windows 10 Home 64bit on AMD  
 Windows 11 64bit on Intel
 
 Dependencies:
@@ -98,11 +98,11 @@ In the VB6 IDE - project - references - browse - select the OLEGuids.tlb
 Building a Manifest:
 Using La Volpes program
 
-Project References:
-VisualBasic for Applications
-VisualBasic Runtime Objects and Procedures
-VisualBasic Objects and Procedures
-OLE Automation - drag and drop
+Project References:  
+VisualBasic for Applications  
+VisualBasic Runtime Objects and Procedures  
+VisualBasic Objects and Procedures  
+OLE Automation - drag and drop  
 Microsoft Shell Controls and Automation
 
 LICENCE AGREEMENTS:
