@@ -7893,9 +7893,9 @@ Private Sub postButtonClick()
     Call displayIconElement(rdIconNumber, picPreview, True, icoSizePreset, True, False)
     
     'remove and reset the highlighting on the Rocket dock map
-    
     picRdMap(rdIconNumber - 1).BorderStyle = 0
-    picRdMap(rdIconNumber + 1).BorderStyle = 0
+    ' should not attempt to style above the number of icons we actually have
+    If rdIconNumber < rdIconMaximum Then picRdMap(rdIconNumber + 1).BorderStyle = 0
     picRdMap(rdIconNumber).BorderStyle = 1
     
     previewFrameGotFocus = True
