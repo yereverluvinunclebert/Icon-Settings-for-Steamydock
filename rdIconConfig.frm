@@ -1882,6 +1882,9 @@ Begin VB.Form rDIconConfigForm
       Begin VB.Menu mnuseparator1 
          Caption         =   ""
       End
+      Begin VB.Menu mnuEditWidget 
+         Caption         =   "Edit Program Using..."
+      End
       Begin VB.Menu mnuDebug 
          Caption         =   "Turn Debugging ON"
       End
@@ -2037,10 +2040,12 @@ Attribute VB_Exposed = False
 ' Messagebox msgBoxA module to save the context of the message to allow specific msgboxes to go away
 ' pulled the map prev/next button code together so it shares the same code
 ' test for the folderTreeView.DropHighlight.Key and checking that (folderTreeView.SelectedItem Is Nothing) to determine which item in the folder tree to open.
+' no longer attempts to style above the number of icons we actually have
 
 ' Current Task:
 ' =============
 
+' form sizing on Windows 10
 ' remove persistentDebug.exe and replace with logging to a file as per FCW.
 ' test for the height of the window using the titlebar size to properly size the main form as per the Pz Earth VB6 widget prefs that size incorrectly on Win 10/11.
 
@@ -3679,7 +3684,7 @@ Private Sub Form_Load()
     validIconTypes = "*.jpg;*.jpeg;*.bmp;*.ico;*.png;*.tif;*.tiff;*.gif" ' add any remaining types that Rocketdock's code supports
     filesIconList.Pattern = validIconTypes ' set the filter pattern to only show the icon types supported by Rocketdock
     programStatus = "startup"
-
+    rDDefaultEditor = "E:\vb6\rocketdock\iconsettings.vbp"
     
     ' theme variables
     
@@ -3751,6 +3756,9 @@ Private Sub Form_Load()
 
     ' various elements need to have their visibility and size modified prior to display
     Call makeVisibleFormElements
+    
+    ' sets other characteristics of the form and menus
+    Call adjustMainControls
         
     ' dynamically create thumbnail picboxes and sort the captions
     Call createThumbnailLayout
@@ -3801,7 +3809,6 @@ Private Sub Form_Load()
     btnClose.Visible = True
     btnCancel.Visible = False
 
-        
     ' Creates an incrementally named backup of the settings.ini
     Call fbackupSettings
             
@@ -4209,7 +4216,33 @@ makeVisibleFormElements_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure makeVisibleFormElements of Form rDIconConfigForm"
 End Sub
+'---------------------------------------------------------------------------------------
+' Procedure : adjustMainControls
+' Author    : beededea
+' Date      : 27/04/2023
+' Purpose   : called at runtime and on restart, sets the characteristics of the gauge, individual controls and menus
+'---------------------------------------------------------------------------------------
+'
+Public Sub adjustMainControls()
+   
+   On Error GoTo adjustMainControls_Error
+   
+    If rDDefaultEditor <> vbNullString Then 'And PzGDebug = "1" Then
+        mnuEditWidget.Caption = "Edit Program using " & rDDefaultEditor
+        mnuEditWidget.Visible = True
+    Else
+        mnuEditWidget.Visible = False
+    End If
+    
+   On Error GoTo 0
+   Exit Sub
 
+adjustMainControls_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure adjustMainControls of Module modMain"
+
+End Sub
+    
 '---------------------------------------------------------------------------------------
 ' Procedure : determineStartRecord
 ' Author    : beededea
@@ -12321,7 +12354,38 @@ mnuLicence_Click_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuLicence_Click of Form quartermaster"
     
 End Sub
+'---------------------------------------------------------------------------------------
+' Procedure : mnuEditWidget_Click
+' Author    : beededea
+' Date      : 05/05/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub mnuEditWidget_Click()
+    Dim editorPath As String: editorPath = vbNullString
+    Dim execStatus As Long: execStatus = 0
+    
+   On Error GoTo mnuEditWidget_Click_Error
 
+    editorPath = rDDefaultEditor
+    If FExists(editorPath) Then ' if it is a folder already
+        '''If debugflg = 1  Then msgBox "ShellExecute " & sCommand
+        
+            ' run the selected program
+        execStatus = ShellExecute(Me.hwnd, "open", editorPath, vbNullString, vbNullString, 1)
+        If execStatus <= 32 Then MsgBox "Attempt to open the IDE for this widget failed."
+    Else
+        MsgBox "Having a bit of a problem opening an IDE for this widgt - " & editorPath & " It doesn't seem to have a valid working directory set.", "Panzer Earth Gauge Confirmation Message", vbOKOnly + vbExclamation
+        'MessageBox Me.hWnd, "Having a bit of a problem opening a folder for that command - " & sCommand & " It doesn't seem to have a valid working directory set.", "Panzer Earth Gauge Confirmation Message", vbOKOnly + vbExclamation
+    End If
+
+   On Error GoTo 0
+   Exit Sub
+
+mnuEditWidget_Click_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuEditWidget_Click of Form menuForm"
+End Sub
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuSupport_Click
 ' Author    : beededea
@@ -12420,7 +12484,7 @@ Private Sub mnuClose_Click()
     On Error GoTo mnuClose_Click_Error
     If debugflg = 1 Then DebugPrint "%mnuDebug_Click"
     
-    Call btnCancel_Click
+    Call btnClose_Click
 
    On Error GoTo 0
    Exit Sub
