@@ -3684,7 +3684,7 @@ Private Sub Form_Load()
     validIconTypes = "*.jpg;*.jpeg;*.bmp;*.ico;*.png;*.tif;*.tiff;*.gif" ' add any remaining types that Rocketdock's code supports
     filesIconList.Pattern = validIconTypes ' set the filter pattern to only show the icon types supported by Rocketdock
     programStatus = "startup"
-    rDDefaultEditor = "E:\vb6\rocketdock\iconsettings.vbp"
+    rDDefaultEditor = "" ' "E:\vb6\rocketdock\iconsettings.vbp"
     
     ' theme variables
     
@@ -3701,10 +3701,13 @@ Private Sub Form_Load()
         
     ' Clear all the message box "show again" entries in the registry
     Call clearAllMessageBoxes
+    
+    ' initialise global vars - currently barely used
+    Call initialiseGlobalVars
         
     ' check for the existence of the rotating busy images
     Call checkBusyImageExistence
-        
+
     ' extracts all the known drive names using Windows APIs
     Call getAllDriveNames(sAllDrives)
                       
@@ -3713,6 +3716,12 @@ Private Sub Form_Load()
                
     ' get the location of this tool's settings file
     Call getToolSettingsFile
+        
+    ' read the dock settings from the new configuration file  - currently barely used
+    Call readSettingsFile
+    
+    ' validate the inputs of any data from the input settings file - currently barely used
+    Call validateInputs
     
     ' check the Windows version and where rocketdock is installed
     Call testWindowsVersion(classicThemeCapable)
@@ -5969,45 +5978,7 @@ Private Function addTargetProgram(ByVal targetText As String)
 
   Call getFileNameAndTitle(retFileName, retfileTitle) ' retfile will be buffered to 256 bytes
 
-' this is the code left over from the use of the common dialog OCX, left here for reference
-'
-'    rdDialogForm.CommonDialog.DialogTitle = "Select a File" 'titlebar
-'    If Not txtTarget.Text = vbNullString Then
-'        If FExists(txtTarget.Text) Then
-'            ' extract the folder name from the string
-'            iconPath = getFolderNameFromPath(txtTarget.Text)
-'            ' set the default folder to the existing reference
-'            rdDialogForm.CommonDialog.InitDir = iconPath 'start dir, might be "C:\" or so also
-'        ElseIf DirExists(txtTarget.Text) Then ' this caters for the entry being just a folder name
-'            ' set the default folder to the existing reference
-'            rdDialogForm.CommonDialog.InitDir = txtTarget.Text 'start dir, might be "C:\" or so also
-'        Else
-'            rdDialogForm.CommonDialog.InitDir = rdAppPath 'start dir, might be "C:\" or so also
-'        End If
-'    End If
-'    rdDialogForm.CommonDialog.FileName = "*.*"  'Something in filenamebox
-'    rdDialogForm.CommonDialog.CancelError = False 'allow escape key/cancel
-'    rdDialogForm.CommonDialog.Flags = cdlOFNNoValidate + cdlOFNHideReadOnly
-'    rdDialogForm.CommonDialog.ShowOpen
-'
-'l_err1:
-'    If rdDialogForm.CommonDialog.FileName = vbNullString Then
-'        txtTarget.Text = savLblTarget
-'        Exit Sub
-'    End If
-'
-'    If Err <> 32755 Then    ' User didn't chose Cancel.
-'        If rdDialogForm.CommonDialog.FileName = "*.*" Then
-'            txtTarget.Text = savLblTarget
-'        Else
-'            If txtLabelName.Text = vbNullString Then
-'                txtLabelName.Text = rdDialogForm.CommonDialog.FileTitle
-'            End If
-'            txtTarget.Text = rdDialogForm.CommonDialog.FileName
-'        End If
-'    End If
-
-    addTargetProgram = retFileName
+  addTargetProgram = retFileName
 
    On Error GoTo 0
    
@@ -6169,7 +6140,6 @@ Private Sub mnuAddProgram_Click()
     retFileName = addTargetProgram("")
        
     Refresh
-    
     
     ' .35 DAEB 20/04/2021 rdIconConfig.frm Added new function to identify an icon to assign to the entry
     
@@ -12362,21 +12332,23 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuEditWidget_Click()
-    Dim editorPath As String: editorPath = vbNullString
     Dim execStatus As Long: execStatus = 0
     
-   On Error GoTo mnuEditWidget_Click_Error
-
-    editorPath = rDDefaultEditor
-    If FExists(editorPath) Then ' if it is a folder already
-        '''If debugflg = 1  Then msgBox "ShellExecute " & sCommand
+    On Error GoTo mnuEditWidget_Click_Error
+    
+    If rDDefaultEditor = vbNullString Then
+        MsgBox "Select the .VBP file that is associated with the Icon Settings VB6 program."
+        rDDefaultEditor = addTargetProgram("")
+        If FExists(rDDefaultEditor) Then PutINISetting "Software\SteamyDock\IconSettings", "defaultEditor", rDDefaultEditor, toolSettingsFile
+    End If
+    
+    If FExists(rDDefaultEditor) Then
         
-            ' run the selected program
-        execStatus = ShellExecute(Me.hwnd, "open", editorPath, vbNullString, vbNullString, 1)
+        ' run the selected program
+        execStatus = ShellExecute(Me.hwnd, "open", rDDefaultEditor, vbNullString, vbNullString, 1)
         If execStatus <= 32 Then MsgBox "Attempt to open the IDE for this widget failed."
     Else
-        MsgBox "Having a bit of a problem opening an IDE for this widgt - " & editorPath & " It doesn't seem to have a valid working directory set.", "Panzer Earth Gauge Confirmation Message", vbOKOnly + vbExclamation
-        'MessageBox Me.hWnd, "Having a bit of a problem opening a folder for that command - " & sCommand & " It doesn't seem to have a valid working directory set.", "Panzer Earth Gauge Confirmation Message", vbOKOnly + vbExclamation
+        MsgBox "Having a bit of a problem opening an IDE for this widgt - " & rDDefaultEditor & " It doesn't seem to have a valid working directory set.", "Panzer Earth Gauge Confirmation Message", vbOKOnly + vbExclamation
     End If
 
    On Error GoTo 0
@@ -16830,3 +16802,73 @@ End Sub
 
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : initialiseGlobalVars
+' Author    : beededea
+' Date      : 12/05/2023
+' Purpose   : initialise global vars
+'---------------------------------------------------------------------------------------
+'
+Private Sub initialiseGlobalVars()
+      
+    On Error GoTo initialiseGlobalVars_Error
+
+
+
+   On Error GoTo 0
+   Exit Sub
+
+initialiseGlobalVars_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure initialiseGlobalVars of Module modMain"
+    
+End Sub
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : readSettingsFile
+' Author    : beededea
+' Date      : 12/05/2020
+' Purpose   : read the application's setting file and assign values to public vars
+'---------------------------------------------------------------------------------------
+'
+Public Sub readSettingsFile() '(ByVal location As String, ByVal PzGSettingsFile As String)
+    On Error GoTo readSettingsFile_Error
+
+    If FExists(toolSettingsFile) Then
+
+        rDDefaultEditor = GetINISetting("Software\SteamyDock\IconSettings", "defaultEditor", toolSettingsFile)
+
+    End If
+
+   On Error GoTo 0
+   Exit Sub
+
+readSettingsFile_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readSettingsFile of Module common2"
+
+End Sub
+    
+'---------------------------------------------------------------------------------------
+' Procedure : validateInputs
+' Author    : beededea
+' Date      : 17/06/2020
+' Purpose   : validate the relevant entries from the settings.ini file in user appdata
+'---------------------------------------------------------------------------------------
+'
+Public Sub validateInputs()
+    
+   On Error GoTo validateInputs_Error
+            
+        ' general
+        'If PzGGaugeFunctions = vbNullString Then PzGGaugeFunctions = "1" ' always turn
+
+        
+   On Error GoTo 0
+   Exit Sub
+
+validateInputs_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure validateInputs of form modMain"
+End Sub
