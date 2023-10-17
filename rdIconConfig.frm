@@ -1155,8 +1155,8 @@ Begin VB.Form rDIconConfigForm
          Begin VB.Timer settingsTimer 
             Enabled         =   0   'False
             Interval        =   2500
-            Left            =   2145
-            Top             =   270
+            Left            =   2115
+            Top             =   180
          End
          Begin VB.Timer positionTimer 
             Interval        =   3000
@@ -15369,7 +15369,7 @@ Private Sub menuRun_click()
         thisCommand = "C:\Program Files (x86)\SteamyDock\dockSettings\dockSettings.exe"
         If FExists(thisCommand) Then
             If debugflg = 1 Then Debug.Print "ShellExecute " & thisCommand
-            Call executeCommand("runas", thisCommand, vbNullString, vbNullString, intShowCmd) 'change to call new function as part of .16
+            Call executeCommand("open", thisCommand, vbNullString, vbNullString, intShowCmd) 'change to call new function as part of .16
         Else
             MsgBox "Cannot find " & thisCommand
         End If
