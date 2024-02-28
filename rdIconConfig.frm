@@ -2691,7 +2691,7 @@ Private Sub btnIconSelect_Click()
     
     ' set the default folder to the existing reference
     If Not txtCurrentIcon.Text = vbNullString Then
-        If FExists(txtCurrentIcon.Text) Then
+        If fFExists(txtCurrentIcon.Text) Then
             ' extract the folder name from the string
             iconPath = getFolderNameFromPath(txtCurrentIcon.Text)
             ' set the default folder to the existing reference
@@ -3023,7 +3023,7 @@ Private Sub selectApplication(ByVal inputFolderName As String, ByRef retFileName
     
     ' set the default folder to the existing reference
     If Not inputFolderName = vbNullString Then
-        If FExists(inputFolderName) Then
+        If fFExists(inputFolderName) Then
             ' extract the folder name from the string
             iconPath = getFolderNameFromPath(inputFolderName)
             ' set the default folder to the existing reference
@@ -3046,7 +3046,7 @@ Private Sub selectApplication(ByVal inputFolderName As String, ByRef retFileName
     End If
     
     If Not sDockletFile = vbNullString Then
-        If FExists(sDockletFile) Then
+        If fFExists(sDockletFile) Then
             ' extract the folder name from the string
             dllPath = getFolderNameFromPath(sDockletFile)
             ' set the default folder to the existing reference
@@ -3479,7 +3479,7 @@ Private Sub settingsTimer_Timer()
     If dockSettingsRunInterval < 2 Then Exit Sub
     dockSettingsRunInterval = 3
 
-    If Not FExists(dockSettingsFile) Then
+    If Not fFExists(dockSettingsFile) Then
         MsgBox ("%Err-I-ErrorNumber 13 - FCW was unable to access the dock settings ini file. " & vbCrLf & dockSettingsFile)
         Exit Sub
     End If
@@ -3845,7 +3845,7 @@ Private Sub Form_Load()
     ' check the registry for Rocketdock usage (mostly obsolete now)
     Call chkTheRegistry
     
-    If FExists(interimSettingsFile) Then '
+    If fFExists(interimSettingsFile) Then '
         'get the dockSettingsFile.ini for this icon alone
         readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", startRecordNumber, interimSettingsFile
     End If
@@ -3895,7 +3895,7 @@ Private Sub checkBusyImageExistence()
         
     For useloop = 1 To 6
         busyCounter = useloop
-        If Not FExists(App.Path & "\resources\busy-F" & busyCounter & "-32x32x24.jpg") Then
+        If Not fFExists(App.Path & "\resources\busy-F" & busyCounter & "-32x32x24.jpg") Then
             ans = msgBoxA("This file is missing - " & App.Path & "\resources\busy-F" & busyCounter & "-32x32x24.jpg", vbExclamation + vbOKOnly, "Checking certain files exist.")
             If ans = 6 Then
                 End
@@ -3905,7 +3905,7 @@ Private Sub checkBusyImageExistence()
 
     For useloop = 1 To 6
         busyCounter = useloop
-        If Not FExists(App.Path & "\resources\busy-A" & busyCounter & "-32x32x24.jpg") Then
+        If Not fFExists(App.Path & "\resources\busy-A" & busyCounter & "-32x32x24.jpg") Then
             ans = msgBoxA("This file is missing - " & App.Path & "\resources\busy-A" & busyCounter & "-32x32x24.jpg", vbExclamation + vbOKOnly, "Checking certain files exist.")
             If ans = 6 Then
                 End
@@ -4341,10 +4341,10 @@ End Sub
 '    ' read the tool settings file
 '   On Error GoTo setMnuPath_Error
 '
-'    If FExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
+'    If fFExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
 '        chkFolder = GetINISetting("Software\SteamyDockSettings", "rocketDockLocation", toolSettingsFile)
 '        If chkFolder <> vbNullString Then
-'            If FExists(chkFolder & "\rocketDock.exe") Then
+'            If fFExists(chkFolder & "\rocketDock.exe") Then
 '                rdAppPath = chkFolder
 '                mnuRocketDock.Caption = "Rocketdock location - " & chkFolder & " - click to change"
 '            End If
@@ -4777,7 +4777,7 @@ Private Sub determineFirstRun()
     If debugFlg = 1 Then debugLog "%" & "determineFirstRun"
     
    
-    If Not FExists(toolSettingsFile) Then Exit Sub ' does the tool's own settings.ini exist?
+    If Not fFExists(toolSettingsFile) Then Exit Sub ' does the tool's own settings.ini exist?
     
     'test to see if the tool has ever been run before
     sfirst = GetINISetting("Software\SteamyDockSettings", "First", toolSettingsFile)
@@ -4826,7 +4826,7 @@ Private Sub determineFirstRun()
     
 '        'filecopy the rocketdockSettings png to the rocketdock icons folder
 '        If defaultDock = 0 Then ' ' .19 DAEB 01/03/2021 rDIConConfigForm.frm Separated the Rocketdock/Steamydock specific actions
-'            If FExists(App.Path & "\" & "SteamyRocket.png") Then
+'            If fFExists(App.Path & "\" & "SteamyRocket.png") Then
 '                FileCopy App.Path & "\" & "SteamyRocket.png", rdAppPath & "\icons\" & "SteamyRocket.png"
 '            End If
 '        End If
@@ -4860,7 +4860,7 @@ Private Sub copyDockSettingsFile()
 
     interimSettingsFile = dockSettingsDir & "\interimSettings.ini" ' the third config option for steamydock alone
 
-    If FExists(dockSettingsFile) Then
+    If fFExists(dockSettingsFile) Then
         
         ' copy the original settings file to a duplicate that we will operate upon until saved
         FileCopy dockSettingsFile, interimSettingsFile
@@ -4896,7 +4896,7 @@ Private Sub readIconsAndConfiguration()
             
     On Error GoTo readIconsAndConfiguration_Error
       
-    If FExists(interimSettingsFile) Then
+    If fFExists(interimSettingsFile) Then
         rDGeneralReadConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralReadConfig", interimSettingsFile)
         rDGeneralWriteConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralWriteConfig", interimSettingsFile)
         'rDRunAppInterval = GetINISetting("Software\SteamyDock\DockSettings", "RunAppInterval", interimSettingsFile)
@@ -5030,7 +5030,7 @@ Private Sub readRocketDockSettings()
 
     origSettingsFile = rdAppPath & "\settings.ini" ' Rocketdock 's settings file
         
-    If FExists(origSettingsFile) Then ' does the original settings.ini exist?
+    If fFExists(origSettingsFile) Then ' does the original settings.ini exist?
         frmRegistry.chkReadRegistry.Value = 0
         frmRegistry.chkReadSettings.Value = 1
         frmRegistry.chkReadConfig.Value = 0
@@ -5260,14 +5260,14 @@ End Sub
 '    End If
 '
 '    'if the settings.ini does not exist then create the file by copying
-'    If Not FExists(dockSettingsFile) Then
-'        If FExists(App.Path & "\dockSettings.ini") Then
+'    If Not fFExists(dockSettingsFile) Then
+'        If fFExists(App.Path & "\dockSettings.ini") Then
 '            FileCopy App.Path & "\dockSettings.ini", dockSettingsFile
 '        End If
 '    End If
 '
 '    'confirm the settings file exists, if not use the version in the app itself
-'    If Not FExists(dockSettingsFile) Then
+'    If Not fFExists(dockSettingsFile) Then
 '            dockSettingsFile = App.Path & "\settings.ini"
 '    End If
 '
@@ -5379,12 +5379,12 @@ Private Sub getToolSettingsFile()
     End If
     
     'if the settings.ini does not exist then create the file by copying
-    If Not FExists(toolSettingsFile) Then
+    If Not fFExists(toolSettingsFile) Then
         FileCopy App.Path & "\settings.ini", toolSettingsFile
     End If
     
     'confirm the settings file exists, if not use the version in the app itself
-    If Not FExists(toolSettingsFile) Then
+    If Not fFExists(toolSettingsFile) Then
         toolSettingsFile = App.Path & "\settings.ini"
     End If
     
@@ -5411,7 +5411,7 @@ End Sub
 '    If debugFlg = 1 Then debugLog  "%" & "checkLicenceState"
 '
 '    ' read the tool's own settings file (
-'    If FExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
+'    If fFExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
 '        slicence = GetINISetting("Software\SteamyDockSettings", "Licence", toolSettingsFile)
 '        ' if the licence state is not already accepted then display the licence form
 '        If slicence = "0" Then
@@ -5699,7 +5699,7 @@ Private Sub btnSet_Click()
     End If
 
     ' save the current fields to the settings file or registry
-    If FExists(interimSettingsFile) Then '
+    If fFExists(interimSettingsFile) Then '
         ' write the rocketdock settings.ini
         'writeSettingsIni (rdIconNumber) ' the settings.ini only exists when RD is set to use it
         PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
@@ -5707,7 +5707,7 @@ Private Sub btnSet_Click()
     End If
     
     ' tell the user that all has been saved
-    If FExists(interimSettingsFile) Then '
+    If fFExists(interimSettingsFile) Then '
         If chkToggleDialogs.Value = 1 Then
             msgBoxA "This icon change has been stored," & vbCr & "You will need to press the ""save & restart"" button " & vbCr & "to make the changes 'stick' within Rocketdock", vbInformation + vbOKOnly, "Icon Settings Saved", True, "btnSet_Click"
         End If
@@ -5877,7 +5877,7 @@ Private Sub btnTarget_Click()
     ' .96 DAEB 26/06/2022 rDIConConfig.frm If the target text box is just a folder and not a full file path then a click on the select button should select also select a folder and not a file
 '    If txtTarget.Text = getFolderNameFromPath(txtTarget.Text) Then
     If txtTarget.Text <> vbNullString Then
-        If FExists(txtTarget.Text) Then
+        If fFExists(txtTarget.Text) Then
             Call getFileName
 
         ElseIf fDirExists(txtTarget.Text) Then
@@ -5944,7 +5944,7 @@ Private Function addTargetProgram(ByVal targetText As String)
     
     ' set the default folder to the existing reference
     If Not targetText = vbNullString Then
-        If FExists(targetText) Then
+        If fFExists(targetText) Then
             ' extract the folder name from the string
             iconPath = getFolderNameFromPath(targetText)
             ' set the default folder to the existing reference
@@ -5967,7 +5967,7 @@ Private Function addTargetProgram(ByVal targetText As String)
     End If
     
     If Not sDockletFile = vbNullString Then
-        If FExists(sDockletFile) Then
+        If fFExists(sDockletFile) Then
             ' extract the folder name from the string
             dllPath = getFolderNameFromPath(sDockletFile)
             ' set the default folder to the existing reference
@@ -6184,11 +6184,11 @@ Private Sub mnuAddProgram_Click()
     iconFileName = identifyAppIcons(retFileName) ' .35 DAEB 20/04/2021 rdIconConfig.frm Added new function to identify an icon to assign to the entry
     'MsgBox "2. iconFileName " & iconFileName
                 
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
       iconImage = iconFileName
     Else
         iconFileName = App.Path & "\my collection\steampunk icons MKVI" & "\document-EXE.png"
-        If FExists(iconFileName) Then
+        If fFExists(iconFileName) Then
             iconImage = iconFileName
         Else
             iconImage = App.Path & "\Icons\help.png"
@@ -6201,7 +6201,7 @@ Private Sub mnuAddProgram_Click()
 
     ' general tool to add an icon
 '    iconFileName = App.Path & "\my collection\steampunk icons MKVI" & "\document-EXE.png"
-'    If FExists(iconFileName) Then
+'    If fFExists(iconFileName) Then
 '        iconImage = iconFileName
 '    Else
 '        iconImage = App.Path & "\Icons\help.png"
@@ -6238,21 +6238,21 @@ Private Sub mnuRocketDock_click()
     getFolder = BrowseFolder(hwnd, dialogInitDir) ' show the dialog box to select a folder
     If getFolder <> vbNullString Then
         If defaultDock = 0 Then ' ' .19 DAEB 01/03/2021 rDIConConfigForm.frm Separated the Rocketdock/Steamydock specific actions
-            If FExists(getFolder & "\rocketdock.exe") Then
+            If fFExists(getFolder & "\rocketdock.exe") Then
                 rdAppPath = getFolder & "\rocketdock.exe"
                 'If fDirExists(getFolder) Then mnuRocketDock.Caption = "RocketDock Location - " & getFolder & " - click to change."
                 
-                If FExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
+                If fFExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
                     PutINISetting "Software\SteamyDockSettings", "rocketDockLocation", rdAppPath, toolSettingsFile
                 End If
                 
             End If
         Else
-            If FExists(getFolder & "\steamydock.exe") Then
+            If fFExists(getFolder & "\steamydock.exe") Then
                 sdAppPath = getFolder & "\steamydock.exe"
                 'If fDirExists(getFolder) Then mnuRocketDock.Caption = "Steamydock Location - " & getFolder & " - click to change."
                 
-                If FExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
+                If fFExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
                     ' write the default dock location to the SteamyDock settings file
                     PutINISetting "Software\SteamyDockSettings", "steamyDockLocation", sdAppPath, toolSettingsFile
                 End If
@@ -6286,7 +6286,7 @@ Private Sub mnuAddSeparator_click()
     If debugFlg = 1 Then debugLog "mnuAddSeparator_click"
            
     iconFileName = App.Path & "\my collection" & "\separator.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -6353,7 +6353,7 @@ Private Sub mnuaddFolder_click()
     If fDirExists(getFolder) Then
     
         iconFileName = App.Path & "\my collection" & "\folder-closed.png"
-        If FExists(iconFileName) Then
+        If fFExists(iconFileName) Then
             iconImage = iconFileName
         Else
             iconImage = "\Icons\help.png"
@@ -6387,7 +6387,7 @@ Private Sub mnuAddMyComputer_click()
    If debugFlg = 1 Then debugLog "%mnuAddMyComputer_click"
 
     iconFileName = App.Path & "\my collection" & "\my folder.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -6423,13 +6423,13 @@ Private Sub mnuAddMyDocuments_Click()
     
     ' check the icon exist
     iconFileName = App.Path & "\my collection" & "\folder-closed.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = App.Path & "\Icons\help.png"
     End If
        
-    If FExists(iconImage) Then
+    If fFExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         Call menuAddSomething(iconImage, "My Documents", "::{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}", vbNullString, vbNullString, vbNullString, vbNullString)
     Else
@@ -6465,7 +6465,7 @@ Private Sub mnuAddMyMusic_Click()
     If debugFlg = 1 Then debugLog "%mnuAddMyComputer_click"
 
     iconFileName = App.Path & "\my collection" & "\music.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = App.Path & "\Icons\help.png"
@@ -6473,7 +6473,7 @@ Private Sub mnuAddMyMusic_Click()
 
     userprof = Environ$("USERPROFILE")
     
-    If FExists(iconImage) Then
+    If fFExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         ' using the Special CLSID for the video folder this, in fact resolves to the my documents folder and not the video folder below.
         'Call menuAddSomething( iconImage, "My Music", "::{1CF1260C-4DD0-4ebb-811F-33C572699FDE}", vbNullString, vbNullString, vbNullString, vbNullString)
@@ -6512,7 +6512,7 @@ Private Sub mnuAddMyPictures_Click()
     If debugFlg = 1 Then debugLog "%mnuAddMyComputer_click"
 
     iconFileName = App.Path & "\my collection" & "\pictures.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = App.Path & "\Icons\help.png"
@@ -6520,7 +6520,7 @@ Private Sub mnuAddMyPictures_Click()
        
     userprof = Environ$("USERPROFILE")
 
-    If FExists(iconImage) Then
+    If fFExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         'Call menuAddSomething( iconImage, "My Pictures", "::{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}", vbNullString, vbNullString, vbNullString, vbNullString)
         Call menuAddSomething(iconImage, "My Pictures", userprof & "\Documents\Pictures", vbNullString, vbNullString, vbNullString, vbNullString)
@@ -6558,7 +6558,7 @@ Private Sub mnuAddMyVideos_Click()
     If debugFlg = 1 Then debugLog "%mnuAddMyComputer_click"
 
     iconFileName = App.Path & "\my collection" & "\video-folder.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = App.Path & "\Icons\help.png"
@@ -6566,7 +6566,7 @@ Private Sub mnuAddMyVideos_Click()
            
     userprof = Environ$("USERPROFILE")
        
-    If FExists(iconImage) Then
+    If fFExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         'Call menuAddSomething( iconImage, "My Videos", "::{A0953C92-50DC-43bf-BE83-3742FED03C9C}", vbNullString, vbNullString, vbNullString, vbNullString)
         Call menuAddSomething(iconImage, "My Videos", userprof & "\Documents\Videos", vbNullString, vbNullString, vbNullString, vbNullString)
@@ -6599,7 +6599,7 @@ Private Sub mnuAddEnhanced_click()
 
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\SteamyRocket.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -6927,7 +6927,7 @@ Private Sub btnCancel_Click()
         mapImageChanged = False
     End If
     
-    If FExists(interimSettingsFile) Then '
+    If fFExists(interimSettingsFile) Then '
         'get the rocketdock settings.ini for this icon alone
         readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", rdIconNumber, interimSettingsFile
     'Else
@@ -6993,7 +6993,7 @@ Private Sub btnAddFolder_Click()
     On Error GoTo btnAddFolder_Click_Error
     If debugFlg = 1 Then debugLog "%" & "btnAddFolder_Click"
    
-    If FExists(interimSettingsFile) Then
+    If fFExists(interimSettingsFile) Then
         rDCustomIconFolder = GetINISetting("Software\SteamyDock\DockSettings", "rDCustomIconFolder", interimSettingsFile)
     End If
     
@@ -7496,8 +7496,8 @@ Private Sub displayResizedImage(ByRef Filename As String, ByRef targetPicBox As 
     On Error GoTo displayResizedImage_Error
     If debugFlg = 1 Then debugLog "%" & "displayResizedImage"
     ' .36 DAEB 20/04/2021 rdIconConfig.frm Add a final check that the chosen image file actually exists
-    If Not FExists(Filename) Then
-        If FExists(App.Path() & "\my collection\" & "red-X.png") Then
+    If Not fFExists(Filename) Then
+        If fFExists(App.Path() & "\my collection\" & "red-X.png") Then
             Filename = App.Path() & "\my collection\" & "red-X.png"
         End If
         'Exit Sub    ' just a final check that the chosen image file actually exists
@@ -7564,11 +7564,11 @@ handleResizing_Error:
              ' Note: Lavolpe's code will still display icons that are considered damaged by Windows.
              
              targetPicBox.ToolTipText = "This icon is damaged - " & Filename
-             If FExists(App.Path() & "\my collection\" & "red-X.png") Then
+             If fFExists(App.Path() & "\my collection\" & "red-X.png") Then
                  Filename = App.Path() & "\my collection\" & "red-X.png"
-             ElseIf FExists(sdAppPath & "\icons\" & "help.png") Then
+             ElseIf fFExists(sdAppPath & "\icons\" & "help.png") Then
                  Filename = sdAppPath & "\icons\" & "help.png" '' .19 DAEB 01/03/2021 rDIConConfigForm.frm Separated the Rocketdock/Steamydock specific actions
-             ElseIf FExists(rdAppPath & "\icons\" & "help.png") Then
+             ElseIf fFExists(rdAppPath & "\icons\" & "help.png") Then
                  Filename = rdAppPath & "\icons\" & "help.png"
              End If
              
@@ -7967,7 +7967,7 @@ Private Sub displayIconElement(ByVal iconCount As Integer, ByRef picBox As Pictu
     On Error GoTo displayIconElement_Error
     If debugFlg = 1 Then debugLog "%" & "displayIconElement"
 
-    If FExists(interimSettingsFile) Then '
+    If fFExists(interimSettingsFile) Then '
         'get the rocketdock alternative settings.ini for this icon alone
         readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", iconCount, interimSettingsFile
     End If
@@ -8086,7 +8086,7 @@ Private Sub displayIconElement(ByVal iconCount As Integer, ByRef picBox As Pictu
     If InStr(sFilename, "?") Then
         Filename = sFilename
         lblFileInfo.Caption = ""
-    ElseIf FExists(sFilename) Then
+    ElseIf fFExists(sFilename) Then
         Filename = sFilename  ' a full valid path so leave it alone
         picSize = FileLen(Filename)
         lblFileInfo.Caption = "File Size: " & Format(picSize, "###,###,###") & " bytes (" & UCase$(suffix) & ")"
@@ -8096,7 +8096,7 @@ Private Sub displayIconElement(ByVal iconCount As Integer, ByRef picBox As Pictu
         Else
             Filename = sdAppPath & "\" & sFilename ' a relative path found as per Rocketdock
         End If
-        If FExists(Filename) Then
+        If fFExists(Filename) Then
             picSize = FileLen(Filename)
             lblFileInfo.Caption = "File Size: " & Format(picSize, "###,###,###") & " bytes (" & UCase$(suffix) & ")"
             txtCurrentIcon.Text = Filename
@@ -8119,7 +8119,7 @@ Private Sub displayIconElement(ByVal iconCount As Integer, ByRef picBox As Pictu
         End If
         
         ' test the resulting filestring exists
-        If FExists(filestring) Then
+        If fFExists(filestring) Then
             ' extract the suffix
             suffix = ExtractSuffix(filestring)
 
@@ -8358,8 +8358,8 @@ Private Sub populateThumbnails(ByVal imageSize As Integer, ByRef startItem As In
             shortFilename = filesIconList.List(useloop + startItem)
             fullFilePath = textCurrentFolder.Text & "\" & shortFilename ' changed from filelistbox.path to different path source for Vb.NET compatibility
             ' if any file does not exist
-            If FExists(fullFilePath) = False Then
-                If FExists(App.Path & "\resources\" & "blank.jpg") Then fullFilePath = App.Path & "\resources\" & "blank.jpg"
+            If fFExists(fullFilePath) = False Then
+                If fFExists(App.Path & "\resources\" & "blank.jpg") Then fullFilePath = App.Path & "\resources\" & "blank.jpg"
                 picThumbIcon(useloop).ToolTipText = vbNullString
                 lblThumbName(useloop).Caption = picThumbIcon(useloop).ToolTipText
                 picThumbIcon(useloop).Picture = LoadPicture(fullFilePath)
@@ -8519,7 +8519,7 @@ Private Sub populateThumbnails(ByVal imageSize As Integer, ByRef startItem As In
             
             picThumbIcon(useloop).ToolTipText = vbNullString
             lblThumbName(useloop).Caption = picThumbIcon(useloop).ToolTipText
-            If FExists(App.Path & "\resources\" & "blank.jpg") Then picThumbIcon(useloop).Picture = LoadPicture(App.Path & "\resources\" & "blank.jpg")
+            If fFExists(App.Path & "\resources\" & "blank.jpg") Then picThumbIcon(useloop).Picture = LoadPicture(App.Path & "\resources\" & "blank.jpg")
             
         End If
   
@@ -8926,7 +8926,7 @@ Private Sub mnuFont_Click()
     SDSuppliedFontItalics = CStr(fntItalics)
     SDSuppliedFontColour = CStr(fntColour)
 
-    If FExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
+    If fFExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
         PutINISetting "Software\SteamyDockSettings", "defaultFont", SDSuppliedFont, toolSettingsFile
         PutINISetting "Software\SteamyDockSettings", "defaultSize", SDSuppliedFontSize, toolSettingsFile
         PutINISetting "Software\SteamyDockSettings", "defaultItalics", SDSuppliedFontItalics, toolSettingsFile
@@ -8972,7 +8972,7 @@ Private Sub mnuFont_Click()
 '        'suppliedFont = dlgFontForm.dlgFont.FontName
 '    End If
     
-'    If FExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
+'    If fFExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
 '        PutINISetting "Software\SteamyDockSettings", "defaultFont", SDSuppliedFont, toolSettingsFile
 '        PutINISetting "Software\SteamyDockSettings", "defaultSize", SDSuppliedFontSize, toolSettingsFile
 'SDSuppliedFontItalics
@@ -9121,7 +9121,7 @@ Private Sub readTreeviewDefaultFolder()
     On Error GoTo readTreeviewDefaultFolder_Error
     If debugFlg = 1 Then debugLog "%" & "readTreeviewDefaultFolder"
 
-    If FExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
+    If fFExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
         defaultFolderNodeKey = GetINISetting("Software\SteamyDockSettings", "defaultFolderNodeKey", toolSettingsFile)
     End If
 
@@ -9227,7 +9227,7 @@ End Sub
 '        If fDirExists(folderString) = True Then
 '           'test for the yahoo widgets binary
 '            testAppPath = folderString
-'            If FExists(testAppPath & "\" & filename) Then
+'            If fFExists(testAppPath & "\" & filename) Then
 '                'MsgBox "YWE folder exists"
 '                driveCheck = testAppPath
 '                Exit Function
@@ -9414,7 +9414,7 @@ Private Sub readCustomLocation()
     On Error GoTo readCustomLocation_Error
     If debugFlg = 1 Then debugLog "%" & "rDCustomIconFolder"
 
-    If FExists(interimSettingsFile) Then
+    If fFExists(interimSettingsFile) Then
         rDCustomIconFolder = GetINISetting("Software\RocketDock", "rDCustomIconFolder", interimSettingsFile)
     End If
     
@@ -11871,7 +11871,7 @@ l_bypass_parent:
         
         defaultFolderNodeKey = folderTreeView.SelectedItem.Key
         'eg. defaultFolderNodeKey=?E:\dean\steampunk theme\icons\
-        If FExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
+        If fFExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
                 PutINISetting "Software\SteamyDockSettings", "defaultFolderNodeKey", defaultFolderNodeKey, toolSettingsFile
         End If
             
@@ -12232,7 +12232,7 @@ Private Sub mnuHelpPdf_click()
 
     answer = msgBoxA("This option opens a browser window and displays this tool's help. Proceed?", vbQuestion + vbYesNo, "Display Help for this tool? ", True, "mnuHelpPdf_click")
     If answer = vbYes Then
-        If FExists(App.Path & "\help\Rocketdock Enhanced Settings.html") Then
+        If fFExists(App.Path & "\help\Rocketdock Enhanced Settings.html") Then
             Call ShellExecute(Me.hwnd, "Open", App.Path & "\help\Rocketdock Enhanced Settings.html", vbNullString, App.Path, 1)
         Else
             MsgBox ("The help file -Rocketdock Enhanced Settings.html- is missing from the help folder.")
@@ -12363,10 +12363,10 @@ Private Sub mnuEditWidget_Click()
     If rDDefaultEditor = vbNullString Then
         MsgBox "Select the .VBP file that is associated with the Icon Settings VB6 program."
         rDDefaultEditor = addTargetProgram("")
-        If FExists(rDDefaultEditor) Then PutINISetting "Software\SteamyDock\IconSettings", "defaultEditor", rDDefaultEditor, toolSettingsFile
+        If fFExists(rDDefaultEditor) Then PutINISetting "Software\SteamyDock\IconSettings", "defaultEditor", rDDefaultEditor, toolSettingsFile
     End If
     
-    If FExists(rDDefaultEditor) Then
+    If fFExists(rDDefaultEditor) Then
         
         ' run the selected program
         execStatus = ShellExecute(Me.hwnd, "open", rDDefaultEditor, vbNullString, vbNullString, 1)
@@ -13026,7 +13026,7 @@ Private Sub mnuClearCache_Click()
       
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\recyclebin-full.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13091,7 +13091,7 @@ Private Sub mnuAddShutdown_click()
    
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\shutdown.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13125,7 +13125,7 @@ Private Sub mnuAddRestart_click()
    
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\Reboot.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13157,13 +13157,13 @@ Private Sub mnuAddSleep_click()
     On Error GoTo mnuAddSleep_click_Error
 
     iconFileName = App.Path & "\my collection" & "\sleep.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = App.Path & "\Icons\help.png"
     End If
            
-    If FExists(iconImage) Then
+    If fFExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         Call menuAddSomething(iconImage, "Sleep", Environ$("windir") & "\System32\RUNDLL32.exe", "powrprof.dll,SetSuspendState 0,1,0", vbNullString, vbNullString, vbNullString)
     Else
@@ -13194,7 +13194,7 @@ Private Sub mnuAddLog_click()
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\console-green-screen-logout.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13227,7 +13227,7 @@ Private Sub mnuAddLock_click()
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\padlockLockWorkstation.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13260,7 +13260,7 @@ Private Sub mnuAddNetwork_click()
    
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\big-globe(network).png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13294,7 +13294,7 @@ Private Sub mnuAddWorkgroup_click()
    
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\big-globe(network).png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13327,7 +13327,7 @@ Private Sub mnuAddPrinters_click()
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\printer.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13360,7 +13360,7 @@ Private Sub mnuAddTask_click()
     If debugFlg = 1 Then debugLog "%" & "mnuAddTask_click"
     
     iconFileName = App.Path & "\my collection" & "\task-manager(tskmgr).png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13370,7 +13370,7 @@ Private Sub mnuAddTask_click()
 
     If Is64bit() Then
         ' if a 32 bit application on a 64bit o/s, regardless of the command, the o/s calls C:\Windows\SysWOW64\taskmgr.exe
-        If FExists(iconImage) Then
+        If fFExists(iconImage) Then
             '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
             Call menuAddSomething(iconImage, "Task Manager", Environ$("windir") & "\SysWOW64\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString)
         Else
@@ -13378,7 +13378,7 @@ Private Sub mnuAddTask_click()
         End If
     Else
         ' if a 32 bit application on a 32bit o/s, regardless of the o/s calls C:\Windows\System32\taskmgr.exe
-        If FExists(iconImage) Then
+        If fFExists(iconImage) Then
             '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
             Call menuAddSomething(iconImage, "Task Manager", Environ$("windir") & "\System32\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString)
         Else
@@ -13410,7 +13410,7 @@ Private Sub mnuAddControl_click()
     If debugFlg = 1 Then debugLog "%" & "mnuAddControl_click"
 
     iconFileName = App.Path & "\my collection" & "\control-panel(control).png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13443,7 +13443,7 @@ Private Sub mnuAddPrograms_click()
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\programs and features.ico"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13476,7 +13476,7 @@ Private Sub mnuAddDiscMgmt_click()
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\discMgmt.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13508,7 +13508,7 @@ Private Sub mnuAddDevMgmt_click()
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\Administrative Tools(compmgmt.msc).png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13541,7 +13541,7 @@ Private Sub mnuAddEventViewer_click()
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\event-viewer(CEventVwr.msc).png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13574,7 +13574,7 @@ Private Sub mnuAddPerfMon_click()
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\perfmon.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13605,7 +13605,7 @@ Private Sub mnuAddServices_click()
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\Administrative Tools(compmgmt.msc).png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13636,7 +13636,7 @@ Private Sub mnuAddTaskSched_click()
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\glass-clipboard.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13667,7 +13667,7 @@ Private Sub mnuAddDock_click()
       If debugFlg = 1 Then debugLog "%" & "mnuAddDock_click"
 
     iconFileName = App.Path & "\my collection" & "\dock settings.ico"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13700,7 +13700,7 @@ Private Sub mnuAddAdministrative_click()
     If debugFlg = 1 Then debugLog "%" & "mnuAddAdministrative_click"
 
     iconFileName = App.Path & "\my collection" & "\Administrative Tools(compmgmt.msc).png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13732,7 +13732,7 @@ Private Sub mnuAddRecycle_click()
    
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\recyclebin-full.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13769,7 +13769,7 @@ Private Sub mnuAddClearCache_click()
    
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\recyclebin-full.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13805,7 +13805,7 @@ Private Sub mnuAddQuit_click()
     If debugFlg = 1 Then debugLog "%" & "mnuAddQuit_click"
    
     iconFileName = App.Path & "\my collection" & "\quit.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -13837,7 +13837,7 @@ Private Sub mnuAddProgramFiles_click()
     If debugFlg = 1 Then debugLog "%" & "mnuAddProgramFiles_click"
    
     iconFileName = App.Path & "\my collection" & "\hard-drive-indicator-D.png"
-    If FExists(iconFileName) Then
+    If fFExists(iconFileName) Then
         iconImage = iconFileName
     Else
         iconImage = "\Icons\help.png"
@@ -15423,7 +15423,7 @@ Private Sub menuRun_click()
     If thisCommand = "[Settings]" Then
         'thisCommand = App.Path & "\resources\dockSettings.exe"
         thisCommand = "C:\Program Files (x86)\SteamyDock\dockSettings\dockSettings.exe"
-        If FExists(thisCommand) Then
+        If fFExists(thisCommand) Then
             If debugFlg = 1 Then debugLog "ShellExecute " & thisCommand
             Call executeCommand("open", thisCommand, vbNullString, vbNullString, intShowCmd) 'change to call new function as part of .16
         Else
@@ -15437,7 +15437,7 @@ Private Sub menuRun_click()
 '        thisCommand = "C:\Program Files (x86)\SteamyDock\iconSettings\rocket1.exe"
 '
 '
-'        If FExists(thisCommand) Then
+'        If fFExists(thisCommand) Then
 '            If debugFlg = 1 Then debugLog "ShellExecute " & thisCommand
 '            Call executeCommand("runas", thisCommand, vbNullString, vbNullString, intShowCmd)
 '        Else
@@ -15492,7 +15492,7 @@ Private Sub menuRun_click()
     
     ' admin tools with msc suffix (management console controls) can be called from the command line
     If InStr(thisCommand, ".msc") <> 0 Then
-        If FExists(thisCommand) Then ' if the file exists and is valid - run it
+        If fFExists(thisCommand) Then ' if the file exists and is valid - run it
             Call executeCommand(userLevel, thisCommand, sArguments, vbNullString, intShowCmd)
             Exit Sub ' .89 DAEB 08/12/2022 frmMain.frm Fixed duplicate run of .msc files.
         Else
@@ -15540,7 +15540,7 @@ tryMSCFullPAth:
         If debugFlg = 1 Then debugLog "ShellExecute " & thisCommand
         thisCommand = """" & sCommand & """" ' put the command in quotes so it handles spaces in the path
         folderPath = getFolderNameFromPath(thisCommand)  ' extract the default folder from the batch full path
-        If FExists(thisCommand) Then
+        If fFExists(thisCommand) Then
             Call executeCommand("Open", thisCommand, vbNullString, folderPath, intShowCmd) 'change to call new function as part of .16
         Else
             MsgBox (thisCommand & " - this batch file does not exist")
@@ -15549,7 +15549,7 @@ tryMSCFullPAth:
     End If
     
     'anything else remaining
-    If FExists(thisCommand) Then ' checks the current folder for the named target
+    If fFExists(thisCommand) Then ' checks the current folder for the named target
         'If debugFlg = 1 Then debugLog "ShellExecute " & thisCommand
         If sWorkingDirectory <> vbNullString Then
             Call executeCommand(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
@@ -15572,7 +15572,7 @@ tryMSCFullPAth:
         
         For useloop = 0 To strCnt - 1
             userprof = Environ$("SYSTEMROOT") & "\system32\" & thisCommand & arrStr(useloop)
-            If FExists(userprof) Then ' ' checks the windows system 32 folder for the named target
+            If fFExists(userprof) Then ' ' checks the windows system 32 folder for the named target
                 Call executeCommand(userLevel, userprof, sArguments, sWorkingDirectory, intShowCmd)
                 Exit Sub
             ElseIf validURL = False Then
@@ -16584,7 +16584,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
         ' is it a folder, does the folder exist
         If fDirExists(iconTitle) Then
             iconFileName = App.Path & "\my collection\steampunk icons MKVI" & "\document-dir.png"
-            If FExists(iconFileName) Then
+            If fFExists(iconFileName) Then
                 iconImage = iconFileName
             End If
         Else ' otherwise it is a file
@@ -16616,7 +16616,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                        
                     iconFileName = identifyAppIcons(iconCommand) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
                        
-                    If FExists(iconFileName) Then
+                    If fFExists(iconFileName) Then
                       iconImage = iconFileName
                     Else
                       iconImage = App.Path & "\my collection\steampunk icons MKVI" & "\document-EXE.png"
@@ -16630,7 +16630,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                       ' if there is no icon embedded found then use the default icon
                        ' check the icon exists
                       iconFileName = App.Path & "\my collection\steampunk icons MKVI" & "\document-msc.png"
-                      If FExists(iconFileName) Then
+                      If fFExists(iconFileName) Then
                           iconImage = iconFileName
                       End If
                   End If
@@ -16641,7 +16641,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                       ' if there is no icon embedded found then use the default icon
                        ' check the icon exists
                       iconFileName = App.Path & "\my collection\steampunk icons MKVI" & "\document-bat.png"
-                      If FExists(iconFileName) Then
+                      If fFExists(iconFileName) Then
                           iconImage = iconFileName
                       End If
                   End If
@@ -16652,7 +16652,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                       ' if there is no icon embedded found then use the default icon
                        ' check the icon exists
                       iconFileName = App.Path & "\my collection\steampunk icons MKVI" & "\document-cpl.png"
-                      If FExists(iconFileName) Then
+                      If fFExists(iconFileName) Then
                           iconImage = iconFileName
                       End If
                   End If
@@ -16698,7 +16698,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                       
                       iconFileName = identifyAppIcons(iconCommand)
                        
-                      If FExists(iconFileName) Then
+                      If fFExists(iconFileName) Then
                         iconImage = iconFileName
                       Else
                         iconImage = App.Path & "\my collection\steampunk icons MKVI" & "\document-lnk.png"
@@ -16712,7 +16712,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                   Effect = vbDropEffectCopy
                   
                   iconImage = iconCommand
-                  If Not FExists(iconImage) Then
+                  If Not fFExists(iconImage) Then
                       Exit Sub
                   End If
               
@@ -16736,11 +16736,11 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                 suffix = LCase$(ExtractSuffix(Data.Files(1)))
                 iconImage = App.Path & "\my collection\steampunk icons MKVI\document-" & suffix & ".png"
                 iconCommand = Data.Files(1)
-                If Not FExists(iconImage) Then
+                If Not fFExists(iconImage) Then
                     iconImage = App.Path & "\my collection\steampunk icons MKVI" & "\document-zip.png"
                 End If
                 
-                If Not FExists(iconImage) Then
+                If Not fFExists(iconImage) Then
                     Exit Sub
                 End If
             
@@ -16756,7 +16756,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                   suffix = LCase$(ExtractSuffix(Data.Files(1)))
                   iconImage = App.Path & "\my collection\steampunk icons MKVI\document-" & suffix & ".png"
                   iconCommand = Data.Files(1)
-                  If Not FExists(iconImage) Then
+                  If Not fFExists(iconImage) Then
                       iconImage = App.Path & "\nixietubelargeQ.png"
                   End If
                       
@@ -16769,7 +16769,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
             iconImage = App.Path & "\nixietubelargeQ.png"
         End If
         
-        If FExists(iconImage) Then ' last check that the default ? image has not been deleted.
+        If fFExists(iconImage) Then ' last check that the default ? image has not been deleted.
             Call menuAddSomething(iconImage, iconTitle, iconCommand, iconArguments, iconWorkingDirectory, vbNullString, vbNullString)
         Else
             ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
@@ -16893,7 +16893,7 @@ End Sub
 Public Sub readSettingsFile() '(ByVal location As String, ByVal PzGSettingsFile As String)
     On Error GoTo readSettingsFile_Error
 
-    If FExists(toolSettingsFile) Then
+    If fFExists(toolSettingsFile) Then
 
         rDDefaultEditor = GetINISetting("Software\SteamyDock\IconSettings", "defaultEditor", toolSettingsFile)
         rDDebugFlg = GetINISetting("Software\SteamyDock\IconSettings", "debugFlg", toolSettingsFile)

@@ -626,7 +626,7 @@ Public Sub chkTheRegistry()
     
 '    If rocketDockInstalled = True And defaultDock = 0 Then
 '
-'        If FExists(origSettingsFile) Then ' does the original settings.ini exist?
+'        If fFExists(origSettingsFile) Then ' does the original settings.ini exist?
 '            frmRegistry.chkReadRegistry.Value = 0
 '            frmRegistry.chkReadSettings.Value = 1
 '            frmRegistry.chkReadConfig.Value = 0
@@ -649,11 +649,11 @@ Public Sub chkTheRegistry()
 
     If steamyDockInstalled = True And defaultDock = 1 Then  ' it will always exist even if not used
     
-'        If FExists(interimSettingsFile) Then
+'        If fFExists(interimSettingsFile) Then
 '            rDGeneralReadConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralReadConfig", interimSettingsFile)
 '            rDGeneralWriteConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralWriteConfig", interimSettingsFile)
 '        End If
-'        If FExists(origSettingsFile) Then ' does the original settings.ini exist?
+'        If fFExists(origSettingsFile) Then ' does the original settings.ini exist?
 '            frmRegistry.chkReadRegistry.Value = 0
 '            frmRegistry.chkReadSettings.Value = 1
 '            frmRegistry.chkReadConfig.Value = 0
@@ -1157,7 +1157,7 @@ Public Sub btnSaveRestart_Click_event(ByRef handle As Long)
 
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
-    If FExists(interimSettingsFile) Then
+    If fFExists(interimSettingsFile) Then
         rDGeneralReadConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralReadConfig", interimSettingsFile)
         rDGeneralWriteConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralWriteConfig", interimSettingsFile)
     End If
@@ -1181,7 +1181,7 @@ Public Sub btnSaveRestart_Click_event(ByRef handle As Long)
             FileCopy interimSettingsFile, dockSettingsFile
             'Call readInterimAndWriteConfig ' save the config.
             ' restart rocketdock /steamydock
-            If FExists(NameProcess) Then ' .09 DAEB 07/02/2021 rDIconConfigForm.frm use the fullprocess variable without adding path again - duh!
+            If fFExists(NameProcess) Then ' .09 DAEB 07/02/2021 rDIconConfigForm.frm use the fullprocess variable without adding path again - duh!
                 ans = ShellExecute(handle, "Open", NameProcess, vbNullString, App.Path, 1)
             End If
         End If
@@ -1200,7 +1200,7 @@ Public Sub btnSaveRestart_Click_event(ByRef handle As Long)
         End If
 
         ' restart rocketdock /steamydock
-        If FExists(NameProcess) Then
+        If fFExists(NameProcess) Then
             ans = ShellExecute(handle, "Open", NameProcess, vbNullString, App.Path, 1)
         End If
     End If
@@ -1237,7 +1237,7 @@ Public Function fbackupSettings() As String
         For useloop = 1 To 32767
             srchSettingsFile = bkpSettingsFile & "." & useloop
           
-            If FExists(srchSettingsFile) Then
+            If fFExists(srchSettingsFile) Then
               ' found a file
               bkpfileFound = True
             Else
@@ -1254,7 +1254,7 @@ l_exit_bkp_loop:
             
             'if versionNumberAvailable >= 32767 then
                 'versionNumberAvailable = 1
-                'If FExists(bkpSettingsFile) Then
+                'If fFExists(bkpSettingsFile) Then
                     'delete bkpSettingsFile
                 'endif
             'endif
@@ -1263,16 +1263,16 @@ l_exit_bkp_loop:
         End If
         
         bkpSettingsFile = bkpSettingsFile & "." & Trim$(Str(versionNumberAvailable))
-        If Not FExists(bkpSettingsFile) Then
+        If Not fFExists(bkpSettingsFile) Then
             ' copy the original settings file to a duplicate that we will keep as a safety backup
 '            If defaultDock = 0 Then ' rocketdock
-''                If FExists(origSettingsFile) Then
+''                If fFExists(origSettingsFile) Then
 ''                    FileCopy origSettingsFile, bkpSettingsFile
 ''                Else
 '                    FileCopy interimSettingsFile, bkpSettingsFile
 ''                End If
 '            Else    ' steamydock alone
-                If FExists(dockSettingsFile) Then ' .41 DAEB 09/05/2021 rdIconConfig.frm fix copying the dock settings file for backups
+                If fFExists(dockSettingsFile) Then ' .41 DAEB 09/05/2021 rdIconConfig.frm fix copying the dock settings file for backups
                     FileCopy dockSettingsFile, bkpSettingsFile
                 End If
 '            End If
@@ -1341,7 +1341,7 @@ Public Sub readInterimAndWriteConfig()
         
     'use of the 3rd config file in the user data area first
         If steamyDockInstalled = True And defaultDock = 1 And rDGeneralWriteConfig = "True" Then ' note it will always exist even if not used
-            If FExists(interimSettingsFile) Then ' does the temporary settings.ini exist?
+            If fFExists(interimSettingsFile) Then ' does the temporary settings.ini exist?
                 ' read the registry values for each of the icons and write them to the settings.ini
                 
                 For useloop = 0 To rdIconMaximum
@@ -1363,7 +1363,7 @@ Public Sub readInterimAndWriteConfig()
         End If
 '        'Either of Rocketdock's two methods of saving data
 '        If rDGeneralReadConfig = "False" Then
-'            If FExists(origSettingsFile) Then ' does the original settings.ini exist?
+'            If fFExists(origSettingsFile) Then ' does the original settings.ini exist?
 ''                chkReadRegistry.Value = 0
 ''                chkReadSettings.Value = 1
 ''                chkReadConfig.Value = 0
@@ -1483,30 +1483,30 @@ Public Sub setThemeShade(ByRef thisForm As Form, ByVal redC As Integer, ByVal gr
             classicTheme = True
             thisForm.mnuLight.Checked = False
             thisForm.mnuDark.Checked = True
-            If FExists(App.Path & "\resources\arrowDown.jpg") Then thisForm.btnArrowDown.Picture = LoadPicture(App.Path & "\resources\arrowDown.jpg") ' imageList candidates
-            If FExists(App.Path & "\resources\leftArrow.jpg") Then thisForm.btnMapPrev.Picture = LoadPicture(App.Path & "\resources\leftArrow.jpg")
-            If FExists(App.Path & "\resources\rightArrow.jpg") Then thisForm.btnMapNext.Picture = LoadPicture(App.Path & "\resources\rightArrow.jpg")
-            If FExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.btnArrowUp.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
+            If fFExists(App.Path & "\resources\arrowDown.jpg") Then thisForm.btnArrowDown.Picture = LoadPicture(App.Path & "\resources\arrowDown.jpg") ' imageList candidates
+            If fFExists(App.Path & "\resources\leftArrow.jpg") Then thisForm.btnMapPrev.Picture = LoadPicture(App.Path & "\resources\leftArrow.jpg")
+            If fFExists(App.Path & "\resources\rightArrow.jpg") Then thisForm.btnMapNext.Picture = LoadPicture(App.Path & "\resources\rightArrow.jpg")
+            If fFExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.btnArrowUp.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
             ' .52 DAEB 24/04/2022 rDIConConfig.frm Added up button to the two down buttons, theme them and add another at the bottom left
-            If FExists(App.Path & "\resources\arrowDown.jpg") Then thisForm.btnSettingsDown.Picture = LoadPicture(App.Path & "\resources\arrowDown.jpg")
-            If FExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.btnSettingsUp.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
-            If FExists(App.Path & "\resources\arrowDown.jpg") Then thisForm.picMoreConfigDown.Picture = LoadPicture(App.Path & "\resources\arrowDown.jpg")
-            If FExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.picMoreConfigUp.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
-            If FExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.picHideConfig.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
+            If fFExists(App.Path & "\resources\arrowDown.jpg") Then thisForm.btnSettingsDown.Picture = LoadPicture(App.Path & "\resources\arrowDown.jpg")
+            If fFExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.btnSettingsUp.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
+            If fFExists(App.Path & "\resources\arrowDown.jpg") Then thisForm.picMoreConfigDown.Picture = LoadPicture(App.Path & "\resources\arrowDown.jpg")
+            If fFExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.picMoreConfigUp.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
+            If fFExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.picHideConfig.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
         Else
             classicTheme = False
             thisForm.mnuLight.Checked = True
             thisForm.mnuDark.Checked = False
-            If FExists(App.Path & "\resources\arrowDown10.jpg") Then thisForm.btnArrowDown.Picture = LoadPicture(App.Path & "\resources\arrowDown10.jpg")
-            If FExists(App.Path & "\resources\leftArrow10.jpg") Then thisForm.btnMapPrev.Picture = LoadPicture(App.Path & "\resources\leftArrow10.jpg")
-            If FExists(App.Path & "\resources\rightArrow10.jpg") Then thisForm.btnMapNext.Picture = LoadPicture(App.Path & "\resources\rightArrow10.jpg")
-            If FExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.btnArrowUp.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
+            If fFExists(App.Path & "\resources\arrowDown10.jpg") Then thisForm.btnArrowDown.Picture = LoadPicture(App.Path & "\resources\arrowDown10.jpg")
+            If fFExists(App.Path & "\resources\leftArrow10.jpg") Then thisForm.btnMapPrev.Picture = LoadPicture(App.Path & "\resources\leftArrow10.jpg")
+            If fFExists(App.Path & "\resources\rightArrow10.jpg") Then thisForm.btnMapNext.Picture = LoadPicture(App.Path & "\resources\rightArrow10.jpg")
+            If fFExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.btnArrowUp.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
             ' .52 DAEB 24/04/2022 rDIConConfig.frm Added up button to the two down buttons, theme them and add another at the bottom left
-            If FExists(App.Path & "\resources\arrowDown10.jpg") Then thisForm.btnSettingsDown.Picture = LoadPicture(App.Path & "\resources\arrowDown10.jpg")
-            If FExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.btnSettingsUp.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
-            If FExists(App.Path & "\resources\arrowDown10.jpg") Then thisForm.picMoreConfigDown.Picture = LoadPicture(App.Path & "\resources\arrowDown10.jpg")
-            If FExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.picMoreConfigUp.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
-            If FExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.picHideConfig.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
+            If fFExists(App.Path & "\resources\arrowDown10.jpg") Then thisForm.btnSettingsDown.Picture = LoadPicture(App.Path & "\resources\arrowDown10.jpg")
+            If fFExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.btnSettingsUp.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
+            If fFExists(App.Path & "\resources\arrowDown10.jpg") Then thisForm.picMoreConfigDown.Picture = LoadPicture(App.Path & "\resources\arrowDown10.jpg")
+            If fFExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.picMoreConfigUp.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
+            If fFExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.picHideConfig.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
         End If
         
         ' these elements are normal elements that should have their styling removed on a classic theme

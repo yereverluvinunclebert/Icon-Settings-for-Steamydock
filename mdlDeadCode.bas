@@ -483,26 +483,26 @@ Attribute VB_Name = "mdlDeadCode"
 'End Sub
 
 ''---------------------------------------------------------------------------------------
-'' Procedure : FExists
+'' Procedure : fFExists
 '' Author    : beededea
 '' Date      : 17/10/2019
 '' Purpose   :
 ''---------------------------------------------------------------------------------------
 ''
-'Public Function FExists(ByRef OrigFile As String) As Boolean
+'Public Function fFExists(ByRef OrigFile As String) As Boolean
 '    Dim FS As Object
-'   On Error GoTo FExists_Error
-'   If debugFlg = 1 Then debugLog "%FExists"
+'   On Error GoTo fFExists_Error
+'   If debugFlg = 1 Then debugLog "%fFExists"
 '
 '    Set FS = CreateObject("Scripting.FileSystemObject")
-'    FExists = FS.FileExists(OrigFile)
+'    fFExists = FS.FileExists(OrigFile)
 '
 '   On Error GoTo 0
 '   Exit Function
 '
-'FExists_Error:
+'fFExists_Error:
 '
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure FExists of Module Module1"
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fFExists of Module Module1"
 'End Function
 '
 '

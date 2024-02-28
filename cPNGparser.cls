@@ -275,7 +275,7 @@ Private Function LoadPNG(ByRef FileHandle As Long, ByRef Filename As String, ByR
             m_Height = cHost.Height
             
 '            ' ref point 0001
-'            If FExists(Filename) Then
+'            If fFExists(Filename) Then
 '                'check the size of the preview PNG image and display it
 '                rDIconConfigForm.lblWidthHeight.Caption = " width " & m_Width & " height " & m_Width & " (pixels)"
 '            End If
