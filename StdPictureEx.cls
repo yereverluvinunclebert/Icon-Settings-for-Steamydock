@@ -124,15 +124,15 @@ Private Declare Function GetIconInfo Lib "user32.dll" (ByVal hIcon As Long, ByRe
 'Private Declare Function GetSysColor Lib "user32.dll" (ByVal nIndex As Long) As Long
 Private Declare Function FillRect Lib "user32.dll" (ByVal hdc As Long, ByRef lpRect As RECTI, ByVal hBrush As Long) As Long
 Private Declare Function FindWindow Lib "user32.dll" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
-Private Declare Function GetWindowThreadProcessId Lib "user32.dll" (ByVal hWnd As Long, ByRef lpdwProcessId As Long) As Long
-Private Declare Function GetWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function GetWindowThreadProcessId Lib "user32.dll" (ByVal hwnd As Long, ByRef lpdwProcessId As Long) As Long
+Private Declare Function GetWindow Lib "user32.dll" (ByVal hwnd As Long, ByVal wCmd As Long) As Long
 Private Declare Function FindWindowEx Lib "user32.dll" Alias "FindWindowExA" (ByVal hWndParent As Long, ByVal hWndChildAfter As Long, ByVal lpszClass As String, ByVal lpszWindow As String) As Long
-Private Declare Function SetProp Lib "user32.dll" Alias "SetPropA" (ByVal hWnd As Long, ByVal lpString As String, ByVal hData As Long) As Long
-Private Declare Function GetProp Lib "user32.dll" Alias "GetPropA" (ByVal hWnd As Long, ByVal lpString As String) As Long
+Private Declare Function SetProp Lib "user32.dll" Alias "SetPropA" (ByVal hwnd As Long, ByVal lpString As String, ByVal hData As Long) As Long
+Private Declare Function GetProp Lib "user32.dll" Alias "GetPropA" (ByVal hwnd As Long, ByVal lpString As String) As Long
 Private Declare Function CreateWindowEx Lib "user32.dll" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, ByRef lpParam As Any) As Long
 Private Declare Function CopyImage Lib "user32.dll" (ByVal handle As Long, ByVal un1 As Long, ByVal n1 As Long, ByVal n2 As Long, ByVal un2 As Long) As Long
-Private Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long) As Long
+Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function DestroyIcon Lib "user32.dll" (ByVal hIcon As Long) As Long
 Private Declare Function DestroyCursor Lib "user32.dll" (ByVal hCursor As Long) As Long
 Private Declare Function GetSystemMetrics Lib "user32.dll" (ByVal nIndex As Long) As Long
@@ -2138,7 +2138,7 @@ Private Function pvCreateThunks() As Boolean
     Dim vIPicDisp As Long
     Dim Index As Long
     
-    Dim hWnd As Long
+    Dim hwnd As Long
     Dim tObj As Object
 
    
@@ -2147,10 +2147,10 @@ Private Function pvCreateThunks() As Boolean
         Exit Function
     End If
    
-    hWnd = m_Hwnd: m_Hwnd = 0&              ' look for a child window we created on the owner window
-    m_Hwnd = FindWindowEx(hWnd, 0&, "Static", "IPIC+Thunker")
+    hwnd = m_Hwnd: m_Hwnd = 0&              ' look for a child window we created on the owner window
+    m_Hwnd = FindWindowEx(hwnd, 0&, "Static", "IPIC+Thunker")
     If m_Hwnd = 0& Then                     ' if not found, create it now & abort if failure
-        m_Hwnd = CreateWindowEx(0&, "Static", "IPIC+Thunker", WS_CHILD, 0&, 0&, 0&, 0&, hWnd, 0&, 0&, ByVal 0&)
+        m_Hwnd = CreateWindowEx(0&, "Static", "IPIC+Thunker", WS_CHILD, 0&, 0&, 0&, 0&, hwnd, 0&, 0&, ByVal 0&)
         If m_Hwnd = 0& Then m_ThunkPtr = -1&: Exit Function
         ' thunks will now be created below
     Else                                    ' otherwise, get the thunk pointer and other info
@@ -2192,7 +2192,7 @@ Private Function pvCreateThunks() As Boolean
     'z_Code(2)  Thunk#2 address, to be filled in later
     'z_Code(3)  filled in dynamically, as needed: gdi+ image handle table
     On Error Resume Next
-    DebugPrint 1 / 0   ' when in IDE, prevent calling back to this class
+    debugLog 1 / 0    ' when in IDE, prevent calling back to this class
     If Err Then         ' when the IDE is stopped, paused, or ended
         Err.Clear       ' any VB5 users still out there? If so, change vba6 below to vba5
         z_Code(4) = GetProcAddress(GetModuleHandle("vba6"), "EbMode")
@@ -2514,7 +2514,7 @@ Private Sub pvReleased(ByVal pUnk As Long)
     'Dim gIndex As Long
 
    
-'    DebugPrint "releasing "; pUnk
+'    debugLog  "releasing "; pUnk
    
     For Index = 0& To m_RefCount - 1&                           ' locate the pUnk object in our array
         If pUnk = m_PicRefs(Index).pIPicture Then

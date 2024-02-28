@@ -41,7 +41,7 @@ Private Enum OLE_ERROR_CODES
     E_INVALIDARG = &H80070057
 End Enum
   
-Public debugflg As Integer
+Public debugFlg As Integer
 Public fileIconListPosition As Integer
 Public rdIconNumber As Integer
 
@@ -288,9 +288,9 @@ Public programStatus As String
 Sub Main()
    On Error GoTo Main_Error
    
-    If debugflg = 1 Then DebugPrint "%Main"
+    If debugFlg = 1 Then debugLog "%Main"
 
-    debugflg = 0
+    debugFlg = 0
     
     rDIconConfigForm.Show
 
@@ -418,7 +418,7 @@ End Sub
 Private Function make32BitLong(ByVal LoWord As Integer, _
                  Optional ByVal HiWord As Integer = 0) As Long
    On Error GoTo make32BitLong_Error
-   If debugflg = 1 Then DebugPrint "%make32BitLong"
+   If debugFlg = 1 Then debugLog "%make32BitLong"
 
     make32BitLong = CLng(HiWord) * CLng(&H10000) + CLng(LoWord)
 
@@ -619,7 +619,7 @@ End Sub
 Public Sub chkTheRegistry()
 
     On Error GoTo chkTheRegistry_Error
-    'If debugflg = 1 Then DebugPrint "%" & "chkTheRegistry"
+    'If debugFlg = 1 Then debugLog  "%" & "chkTheRegistry"
 
     'frmRegistry.fraReadConfig.Enabled = True
     'frmRegistry.fraWriteConfig.Enabled = True
@@ -716,7 +716,7 @@ Private Sub displayFontSelector(ByRef currFont As String, ByRef currSize As Inte
     'thisFont =
    
    ' On Error GoTo displayFontSelector_Error
-   If debugflg = 1 Then Debug.Print "%displayFontSelector"
+   If debugFlg = 1 Then debugLog "%displayFontSelector"
 
     With thisFont
       .Color = currColour
@@ -942,7 +942,7 @@ Public Sub changeFont(ByRef formName As Object, ByRef fntNow As Boolean, ByRef f
     
     On Error GoTo changeFont_Error
     
-    If debugflg = 1 Then DebugPrint "%" & "changeFont"
+    If debugFlg = 1 Then debugLog "%" & "changeFont"
     
     If fntNow = True Then
         displayFontSelector fntFont, fntSize, fntWeight, fntStyle, fntColour, fntItalics, fntUnderline, fntFontResult
@@ -1062,7 +1062,7 @@ Public Sub backupDockSettings(Optional ByVal askQuestion As Boolean = False)
     
     On Error GoTo backupDockSettings_Error
 
-    If debugflg = 1 Then DebugPrint "%" & "btnBackup_Click"
+    If debugFlg = 1 Then debugLog "%" & "btnBackup_Click"
 
     bkpFilename = fbackupSettings()
     If askQuestion = True Then
@@ -1072,7 +1072,7 @@ Public Sub backupDockSettings(Optional ByVal askQuestion As Boolean = False)
             On Error Resume Next
     
             ' set the default folder to the existing reference
-            If DirExists(App.Path & "\backup") Then
+            If fDirExists(App.Path & "\backup") Then
                 ' set the default folder to the existing reference
                 dialogInitDir = App.Path & "\backup" 'start dir, might be "C:\" or so also
             Else
@@ -1229,7 +1229,7 @@ Public Function fbackupSettings() As String
         ' set the name of the bkp file
    
    On Error GoTo fbackupSettings_Error
-      If debugflg = 1 Then DebugPrint "%" & "fbackupSettings"
+      If debugFlg = 1 Then debugLog "%" & "fbackupSettings"
 
         bkpSettingsFile = App.Path & "\backup\bkpSettings.ini"
                 
@@ -1300,7 +1300,7 @@ End Function
 '
 Public Sub getFileNameAndTitle(ByRef retFileName As String, ByRef retfileTitle As String)
    On Error GoTo getFileNameAndTitle_Error
-   If debugflg = 1 Then DebugPrint "%getFileNameAndTitle"
+   If debugFlg = 1 Then debugLog "%getFileNameAndTitle"
 
   If GetOpenFileName(x_OpenFilename) <> 0 Then
     If x_OpenFilename.lpstrFile = "*.*" Then
@@ -1454,7 +1454,7 @@ Public Sub setThemeShade(ByRef thisForm As Form, ByVal redC As Integer, ByVal gr
     firstRun = False
     
     On Error GoTo setThemeShade_Error
-    If debugflg = 1 Then DebugPrint "setThemeShade"
+    If debugFlg = 1 Then debugLog "setThemeShade"
     
     ' RGB(redC, greenC, blueC) is the background colour used by the classic theme
     

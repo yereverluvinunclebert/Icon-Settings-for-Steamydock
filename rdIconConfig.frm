@@ -1882,11 +1882,17 @@ Begin VB.Form rDIconConfigForm
       Begin VB.Menu mnuseparator1 
          Caption         =   ""
       End
-      Begin VB.Menu mnuEditWidget 
-         Caption         =   "Edit Program Using..."
-      End
-      Begin VB.Menu mnuDebug 
-         Caption         =   "Turn Debugging ON"
+      Begin VB.Menu mnuDevOptions 
+         Caption         =   "Developer Options"
+         Begin VB.Menu mnuAppFolder 
+            Caption         =   "Reveal Program Location in Windows Explorer"
+         End
+         Begin VB.Menu mnuEditWidget 
+            Caption         =   "Edit Program Using..."
+         End
+         Begin VB.Menu mnuDebug 
+            Caption         =   "Turn Debugging ON"
+         End
       End
       Begin VB.Menu mnuClose 
          Caption         =   "Close this Program"
@@ -2163,6 +2169,18 @@ Attribute VB_Exposed = False
 '   10. Use the lightweight method of reading images from SteamyDock rather than LaVolpe's method using readFromStream.
 '
 '
+' https://classicvb.net/samples/HookXP/  CHookMouseWheel.cls
+'    Provides MouseWheel events, both vertical and horizontal, for any window that doesn't handle it natively. As Windows has evolved, the base classes
+'    that VB controls inherit from have slowly added scrollwheel support. But Windows passes the WM_MOUSEWHEEL message on up the parent chain when this
+'    isn't the case. So, one class can now monitor for any mousewheel activity that isn't already being responded to. This could help allow scrollbars in VB6
+'    to react to mousescrollwheel events. Especially iconSettings and the native scrollbar controls.
+
+' https://classicvb.net/samples/HookXP/   CHookMouseEvents.cls
+'    This class provides the mysterious MouseEnter, MouseHover, and MouseLeave events, as well as a few bonus features like when the user clicks the
+'    4th or 5th buttons on a 5 button mouse. It also provides a collection based scheme whereby you can add and remove windows to monitor just as
+'    you would to an ordinary collection. All events are raised with the associated hWnd so you can determine which control is under the mouse. This
+'    could help the prefs in Pz J. Clock and other tools enabling balloon tooltips on comboBoxes.
+
 ' Other Tasks:
 '
 '   Github
@@ -2663,7 +2681,7 @@ Private Sub btnIconSelect_Click()
     validImageTypes = ".jpg,.jpeg,.bmp,.ico,.png,.tif,.gif"
     
     'On Error GoTo btnTarget_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "btnIconSelect_Click"
+    If debugFlg = 1 Then debugLog "%" & "btnIconSelect_Click"
     
     'On Error GoTo l_err1
  
@@ -2678,7 +2696,7 @@ Private Sub btnIconSelect_Click()
             iconPath = getFolderNameFromPath(txtCurrentIcon.Text)
             ' set the default folder to the existing reference
             dialogInitDir = iconPath 'start dir, might be "C:\" or so also
-        ElseIf DirExists(txtCurrentIcon.Text) Then ' this caters for the entry being just a folder name
+        ElseIf fDirExists(txtCurrentIcon.Text) Then ' this caters for the entry being just a folder name
             ' set the default folder to the existing reference
             dialogInitDir = txtCurrentIcon.Text 'start dir, might be "C:\" or so also
         Else
@@ -2996,7 +3014,7 @@ Private Sub selectApplication(ByVal inputFolderName As String, ByRef retFileName
     'On Error GoTo addTargetProgram_Error
     On Error GoTo selectApplication_Error
 
-    If debugflg = 1 Then DebugPrint "%" & "selectApplication_Error"
+    If debugFlg = 1 Then debugLog "%" & "selectApplication_Error"
     
     'On Error GoTo l_err1
     'savLblTarget = inputFoldername
@@ -3010,7 +3028,7 @@ Private Sub selectApplication(ByVal inputFolderName As String, ByRef retFileName
             iconPath = getFolderNameFromPath(inputFolderName)
             ' set the default folder to the existing reference
             dialogInitDir = iconPath 'start dir, might be "C:\" or so also
-        ElseIf DirExists(inputFolderName) Then ' this caters for the entry being just a folder name
+        ElseIf fDirExists(inputFolderName) Then ' this caters for the entry being just a folder name
             ' set the default folder to the existing reference
             dialogInitDir = inputFolderName 'start dir, might be "C:\" or so also
         Else
@@ -3022,7 +3040,7 @@ Private Sub selectApplication(ByVal inputFolderName As String, ByRef retFileName
         End If
     Else
         ' .85 DAEB 06/06/2022 rDIConConfig.frm  Second app button should open in the program files folder
-        If DirExists("c:\program files") Then
+        If fDirExists("c:\program files") Then
             dialogInitDir = "c:\program files"
         End If
     End If
@@ -3033,7 +3051,7 @@ Private Sub selectApplication(ByVal inputFolderName As String, ByRef retFileName
             dllPath = getFolderNameFromPath(sDockletFile)
             ' set the default folder to the existing reference
             dialogInitDir = dllPath 'start dir, might be "C:\" or so also
-        ElseIf DirExists(sDockletFile) Then ' this caters for the entry being just a folder name
+        ElseIf fDirExists(sDockletFile) Then ' this caters for the entry being just a folder name
             ' set the default folder to the existing reference
             dialogInitDir = sDockletFile 'start dir, might be "C:\" or so also
         Else
@@ -3199,6 +3217,8 @@ End Sub
 
 
 
+
+
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuTrgtCompMgmt_click
 ' Author    : beededea
@@ -3208,7 +3228,7 @@ End Sub
 '
 Private Sub mnuTrgtCompMgmt_click()
    On Error GoTo mnuTrgtCompMgmt_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtCompMgmt_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtCompMgmt_click"
 
     sCommand = "compmgmt.msc"
     txtTarget.Text = sCommand
@@ -3258,7 +3278,7 @@ End Sub
 '
 Private Sub mnuTrgtDiscMgmt_click()
    On Error GoTo mnuTrgtDiscMgmt_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtDiscMgmt_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtDiscMgmt_click"
 
     sCommand = "diskmgmt.msc"
     txtTarget.Text = sCommand
@@ -3670,7 +3690,7 @@ Private Sub Form_Load()
     ReDim thumbArray(12) As Integer
     
     On Error GoTo Form_Load_Error
-    If debugflg = 1 Then DebugPrint "%" & "Form_Load"
+    If debugFlg = 1 Then debugLog "%" & "Form_Load"
             
     ' vars set to initial values
     
@@ -3685,6 +3705,7 @@ Private Sub Form_Load()
     filesIconList.Pattern = validIconTypes ' set the filter pattern to only show the icon types supported by Rocketdock
     programStatus = "startup"
     rDDefaultEditor = "" ' "E:\vb6\rocketdock\iconsettings.vbp"
+    rDDebugFlg = ""
     
     ' theme variables
     
@@ -4234,13 +4255,16 @@ End Sub
 '
 Public Sub adjustMainControls()
    
-   On Error GoTo adjustMainControls_Error
-   
-    If rDDefaultEditor <> vbNullString Then 'And PzGDebug = "1" Then
-        mnuEditWidget.Caption = "Edit Program using " & rDDefaultEditor
+    On Error GoTo adjustMainControls_Error
+          
+    If rDDefaultEditor <> vbNullString Then mnuEditWidget.Caption = "Edit Program using " & rDDefaultEditor
+    
+    If debugFlg = 1 Then
         mnuEditWidget.Visible = True
+        mnuAppFolder.Visible = True
     Else
         mnuEditWidget.Visible = False
+        mnuAppFolder.Visible = False
     End If
     
    On Error GoTo 0
@@ -4352,7 +4376,7 @@ Public Sub setThemeColour(ByRef thisForm As Form)
     Dim SysClr As Long: SysClr = 0
     
     On Error GoTo setThemeColour_Error
-    If debugflg = 1 Then DebugPrint "%setThemeColour"
+    If debugFlg = 1 Then debugLog "%setThemeColour"
 
     If IsThemeActive() = False Then
         'MsgBox "Windows Classic Theme detected"
@@ -4396,7 +4420,7 @@ End Sub
 'Private Sub Form_KeyUp(ByRef KeyCode As Integer, ByRef Shift As Integer)
 '    ' Simple example of pasting file names on a drag drop
 '   On Error GoTo Form_KeyUp_Error
-'   If debugflg = 1 Then DebugPrint "%" & "Form_KeyUp"
+'   If debugFlg = 1 Then debugLog  "%" & "Form_KeyUp"
 '
 '    If KeyCode = vbKeyV Then
 '
@@ -4441,7 +4465,7 @@ Private Sub btnAdd_Click()
    Dim itemno As Integer: itemno = 0
     
    On Error GoTo btnAdd_Click_Error
-   If debugflg = 1 Then DebugPrint "%" & "btnAdd_Click"
+   If debugFlg = 1 Then debugLog "%" & "btnAdd_Click"
     
    mapImageChanged = False
    If storedIndex <> 9999 Then
@@ -4478,7 +4502,7 @@ Private Sub changeMapImage()
    Dim itemno As Integer: itemno = 0
    
    On Error GoTo changeMapImage_Error
-   If debugflg = 1 Then DebugPrint "%changeMapImage"
+   If debugFlg = 1 Then debugLog "%changeMapImage"
 
     mapImageChanged = True
     
@@ -4513,7 +4537,7 @@ Private Sub btnGenerate_Click()
     
     'Call btnArrowDown_Click ' populate the dock
     On Error GoTo btnGenerate_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "btnGenerate_Click"
+    If debugFlg = 1 Then debugLog "%" & "btnGenerate_Click"
     
     If defaultDock = 1 Then
         formSoftwareList.Show
@@ -4536,7 +4560,7 @@ End Sub
 '
 Private Sub btnNext_KeyDown(ByRef KeyCode As Integer, ByRef Shift As Integer)
    On Error GoTo btnNext_KeyDown_Error
-   If debugflg = 1 Then DebugPrint "%btnNext_KeyDown"
+   If debugFlg = 1 Then debugLog "%btnNext_KeyDown"
 
     Call getKeyPress(KeyCode)
 
@@ -4557,7 +4581,7 @@ End Sub
 '
 Private Sub btnPrev_KeyDown(ByRef KeyCode As Integer, ByRef Shift As Integer)
    On Error GoTo btnPrev_KeyDown_Error
-   If debugflg = 1 Then DebugPrint "%btnPrev_KeyDown"
+   If debugFlg = 1 Then debugLog "%btnPrev_KeyDown"
 
     Call getKeyPress(KeyCode)
 
@@ -4591,7 +4615,7 @@ Private Sub btnRemoveFolder_Click()
    Dim tNode As CCRTreeView.TvwNode
    
    On Error GoTo btnRemoveFolder_Click_Error
-   If debugflg = 1 Then DebugPrint "%" & "btnRemoveFolder_Click"
+   If debugFlg = 1 Then debugLog "%" & "btnRemoveFolder_Click"
 
     Set tNode = folderTreeView.SelectedItem
     
@@ -4668,7 +4692,7 @@ Private Sub createThumbnailLayout()
     Dim useloop As Integer: useloop = 0
     
     On Error GoTo createThumbnailLayout_Error
-    If debugflg = 1 Then DebugPrint "%" & "createThumbnailLayout"
+    If debugFlg = 1 Then debugLog "%" & "createThumbnailLayout"
 
     storeLeft = 165
 '    fraThumbLabel(0).ZOrder
@@ -4715,7 +4739,7 @@ Private Sub createRdMapBoxes()
     Dim useloop As Integer: useloop = 0
 
    On Error GoTo createRdMapBoxes_Error
-   If debugflg = 1 Then DebugPrint "%" & "createRdMapBoxes"
+   If debugFlg = 1 Then debugLog "%" & "createRdMapBoxes"
 
     storeLeft = boxSpacing
     ' dynamically create more picture boxes to the maximum number of icons
@@ -4750,7 +4774,7 @@ Private Sub determineFirstRun()
     Dim sfirst As String: sfirst = "True" ' .31 DAEB 10/04/2021 rDIConConfigForm.frm initialise the value - rather important
 
     On Error GoTo determineFirstRun_Error
-    If debugflg = 1 Then DebugPrint "%" & "determineFirstRun"
+    If debugFlg = 1 Then debugLog "%" & "determineFirstRun"
     
    
     If Not FExists(toolSettingsFile) Then Exit Sub ' does the tool's own settings.ini exist?
@@ -5002,7 +5026,7 @@ Private Sub readRocketDockSettings()
     ' check to see if the settings file exists
     ' (Rocketdock overwrites its own settings.ini when it closes meaning that we have to work on a copy).
    On Error GoTo readRocketDockSettings_Error
-   If debugflg = 1 Then DebugPrint "%" & "readRocketDockSettings"
+   If debugFlg = 1 Then debugLog "%" & "readRocketDockSettings"
 
     origSettingsFile = rdAppPath & "\settings.ini" ' Rocketdock 's settings file
         
@@ -5225,13 +5249,13 @@ End Sub
 '    dockSettingsDir = ""
 '
 '    On Error GoTo locateDockSettingsFile_Error
-'    If debugflg = 1 Then DebugPrint "%locateDockSettingsFile"
+'    If debugFlg = 1 Then debugLog  "%locateDockSettingsFile"
 '
 '    dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" ' just for this user alone
 '    dockSettingsFile = dockSettingsDir & "\docksettings.ini" ' the third config option for steamydock alone
 '
 '    'if the folder does not exist then create the folder
-'    If Not DirExists(dockSettingsDir) Then
+'    If Not fDirExists(dockSettingsDir) Then
 '        MkDir dockSettingsDir
 '    End If
 '
@@ -5274,7 +5298,7 @@ Private Sub checkRocketdockInstallation()
     
     ' check where rocketdock is installed
     On Error GoTo checkRocketdockInstallation_Error
-    If debugflg = 1 Then DebugPrint "%" & "checkRocketdockInstallation"
+    If debugFlg = 1 Then debugLog "%" & "checkRocketdockInstallation"
         
     RD86installed = driveCheck("Program Files (x86)\Rocketdock", "RocketDock.exe")
     RDinstalled = driveCheck("Program Files\Rocketdock", "RocketDock.exe")
@@ -5342,7 +5366,7 @@ Private Sub getToolSettingsFile()
     Dim toolSettingsDir As String:  toolSettingsDir = ""
 
     On Error GoTo getToolSettingsFile_Error
-    If debugflg = 1 Then DebugPrint "%getToolSettingsFile"
+    If debugFlg = 1 Then debugLog "%getToolSettingsFile"
     
     toolSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\rocketdockEnhancedSettings"
     toolSettingsFile = toolSettingsDir & "\settings.ini"
@@ -5350,7 +5374,7 @@ Private Sub getToolSettingsFile()
     'sharedToolSettingsFile = SpecialFolder(SpecialFolder_CommonAppData) & "\rocketdockEnhancedSettings\settings.ini"
     
     'if the folder does not exist then create the folder
-    If Not DirExists(toolSettingsDir) Then
+    If Not fDirExists(toolSettingsDir) Then
         MkDir toolSettingsDir
     End If
     
@@ -5384,7 +5408,7 @@ End Sub
 '    Dim slicence As String
 '
 '    On Error GoTo checkLicenceState_Error
-'    If debugflg = 1 Then DebugPrint "%" & "checkLicenceState"
+'    If debugFlg = 1 Then debugLog  "%" & "checkLicenceState"
 '
 '    ' read the tool's own settings file (
 '    If FExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
@@ -5427,7 +5451,7 @@ End Sub
 '
 '
 '    On Error GoTo placeThumbnailPicboxes_Error
-'    If debugflg = 1 Then DebugPrint "%" & "placeThumbnailPicboxes"
+'    If debugFlg = 1 Then debugLog  "%" & "placeThumbnailPicboxes"
 '
 ''    picThumbIcon(0).Width = 1000
 ''    picThumbIcon(0).Height = 1000
@@ -5488,7 +5512,7 @@ End Sub
 '
 Private Sub busyStart()
    On Error GoTo busyStart_Error
-   If debugflg = 1 Then DebugPrint "%busyStart"
+   If debugFlg = 1 Then debugLog "%busyStart"
 
         Me.MousePointer = 11
 
@@ -5509,7 +5533,7 @@ End Sub
 '
 Private Sub busyStop()
    On Error GoTo busyStop_Error
-   If debugflg = 1 Then DebugPrint "%busyStop"
+   If debugFlg = 1 Then debugLog "%busyStop"
 
         Me.MousePointer = 1
 
@@ -5550,7 +5574,7 @@ End Sub
 Private Sub btnGetMore_Click()
     ' TODO - move the link below to a right click menu as well
    On Error GoTo btnGetMore_Click_Error
-   If debugflg = 1 Then DebugPrint "%btnGetMore_Click"
+   If debugFlg = 1 Then debugLog "%btnGetMore_Click"
 
     Call ShellExecute(Me.hwnd, "Open", "https://www.deviantart.com/yereverluvinuncleber/gallery/59981272/orbs-and-icons", vbNullString, App.Path, 1)
 
@@ -5573,7 +5597,7 @@ Private Sub btnKillIcon_Click()
     Dim answer As VbMsgBoxResult: answer = vbNo
     
     On Error GoTo btnKillIcon_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "btnKillIcon_Click"
+    If debugFlg = 1 Then debugLog "%" & "btnKillIcon_Click"
 
         If textCurrIconPath.Text = vbNullString Then
             msgBoxA "Cannot perform a deletion as no icon has been selected. ", vbInformation + vbOKOnly, "", False
@@ -5642,7 +5666,7 @@ End Sub
 Private Sub btnSet_Click()
    
    On Error GoTo btnSet_Click_Error
-   If debugflg = 1 Then DebugPrint "%" & "btnSet_Click"
+   If debugFlg = 1 Then debugLog "%" & "btnSet_Click"
    
     
     sFilename = txtCurrentIcon.Text
@@ -5737,7 +5761,7 @@ Private Sub btnRefresh_Click()
    
     On Error GoTo btnRefresh_Click_Error
     
-        If debugflg = 1 Then DebugPrint "%" & "btnRefresh_Click"
+        If debugFlg = 1 Then debugLog "%" & "btnRefresh_Click"
         thisRoutine = "btnRefresh_Click"
         
         ' clear the cache before the refresh
@@ -5822,7 +5846,7 @@ End Sub
 ''
 'Private Function getFolderNameFromPath(ByRef path As String) As String
 '    On Error GoTo getFolderNameFromPath_Error
-'    If debugflg = 1 Then DebugPrint "%" & "getFolderNameFromPath"
+'    If debugFlg = 1 Then debugLog  "%" & "getFolderNameFromPath"
 '
 '    If InStrRev(path, "\") = 0 Then
 '        getFolderNameFromPath = ""
@@ -5856,7 +5880,7 @@ Private Sub btnTarget_Click()
         If FExists(txtTarget.Text) Then
             Call getFileName
 
-        ElseIf DirExists(txtTarget.Text) Then
+        ElseIf fDirExists(txtTarget.Text) Then
             dialogInitDir = txtTarget.Text 'start dir, might be "C:\" or so also
             getFolder = BrowseFolder(hwnd, dialogInitDir) ' show the dialog box to select a folder
             If getFolder <> vbNullString Then txtTarget.Text = getFolder
@@ -5911,7 +5935,7 @@ Private Function addTargetProgram(ByVal targetText As String)
     Const x_MaxBuffer = 256
     
     'On Error GoTo addTargetProgram_Error
-    If debugflg = 1 Then DebugPrint "%" & "addTargetProgram"
+    If debugFlg = 1 Then debugLog "%" & "addTargetProgram"
     
     'On Error GoTo l_err1
     'savLblTarget = txtTarget.Text
@@ -5925,7 +5949,7 @@ Private Function addTargetProgram(ByVal targetText As String)
             iconPath = getFolderNameFromPath(targetText)
             ' set the default folder to the existing reference
             dialogInitDir = iconPath 'start dir, might be "C:\" or so also
-        ElseIf DirExists(targetText) Then ' this caters for the entry being just a folder name
+        ElseIf fDirExists(targetText) Then ' this caters for the entry being just a folder name
             ' set the default folder to the existing reference
             dialogInitDir = targetText 'start dir, might be "C:\" or so also
         Else
@@ -5937,7 +5961,7 @@ Private Function addTargetProgram(ByVal targetText As String)
         End If
     Else
     ' .85 DAEB 06/06/2022 rDIConConfig.frm  Second app button should open in the program files folder
-    If DirExists("c:\program files") Then
+    If fDirExists("c:\program files") Then
             dialogInitDir = "c:\program files"
         End If
     End If
@@ -5948,7 +5972,7 @@ Private Function addTargetProgram(ByVal targetText As String)
             dllPath = getFolderNameFromPath(sDockletFile)
             ' set the default folder to the existing reference
             dialogInitDir = dllPath 'start dir, might be "C:\" or so also
-        ElseIf DirExists(sDockletFile) Then ' this caters for the entry being just a folder name
+        ElseIf fDirExists(sDockletFile) Then ' this caters for the entry being just a folder name
             ' set the default folder to the existing reference
             dialogInitDir = sDockletFile 'start dir, might be "C:\" or so also
         Else
@@ -6107,9 +6131,9 @@ End Sub
 Private Sub mnuAddPreviewIcon_Click()
 
    On Error GoTo mnuAddPreviewIcon_Click_Error
-   If debugflg = 1 Then DebugPrint "%mnuAddPreviewIcon_Click"
+   If debugFlg = 1 Then debugLog "%mnuAddPreviewIcon_Click"
 
-    'DebugPrint picPreview.Tag
+    'debugLog  picPreview.Tag
     
     Call btnAdd_Click
 
@@ -6135,7 +6159,7 @@ Private Sub mnuAddProgram_Click()
     Dim iconImage As String: iconImage = vbNullString
 
    On Error GoTo mnuAddProgram_Click_Error
-   If debugflg = 1 Then Debug.Print "%mnuAddProgram_Click"
+   If debugFlg = 1 Then debugLog "%mnuAddProgram_Click"
 
     retFileName = addTargetProgram("")
        
@@ -6207,7 +6231,7 @@ Private Sub mnuRocketDock_click()
     Dim dialogInitDir As String: dialogInitDir = vbNullString
    
    On Error GoTo mnuRocketDock_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuRocketDock_click"
+   If debugFlg = 1 Then debugLog "%mnuRocketDock_click"
 
     dialogInitDir = "C:\" 'start dir, might be "C:\" or so also
 
@@ -6216,7 +6240,7 @@ Private Sub mnuRocketDock_click()
         If defaultDock = 0 Then ' ' .19 DAEB 01/03/2021 rDIConConfigForm.frm Separated the Rocketdock/Steamydock specific actions
             If FExists(getFolder & "\rocketdock.exe") Then
                 rdAppPath = getFolder & "\rocketdock.exe"
-                'If DirExists(getFolder) Then mnuRocketDock.Caption = "RocketDock Location - " & getFolder & " - click to change."
+                'If fDirExists(getFolder) Then mnuRocketDock.Caption = "RocketDock Location - " & getFolder & " - click to change."
                 
                 If FExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
                     PutINISetting "Software\SteamyDockSettings", "rocketDockLocation", rdAppPath, toolSettingsFile
@@ -6226,7 +6250,7 @@ Private Sub mnuRocketDock_click()
         Else
             If FExists(getFolder & "\steamydock.exe") Then
                 sdAppPath = getFolder & "\steamydock.exe"
-                'If DirExists(getFolder) Then mnuRocketDock.Caption = "Steamydock Location - " & getFolder & " - click to change."
+                'If fDirExists(getFolder) Then mnuRocketDock.Caption = "Steamydock Location - " & getFolder & " - click to change."
                 
                 If FExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
                     ' write the default dock location to the SteamyDock settings file
@@ -6259,7 +6283,7 @@ Private Sub mnuAddSeparator_click()
     Dim iconFileName As String: iconFileName = vbNullString
 
     On Error GoTo mnuAddSeparator_click_Error
-    If debugflg = 1 Then DebugPrint "mnuAddSeparator_click"
+    If debugFlg = 1 Then debugLog "mnuAddSeparator_click"
            
     iconFileName = App.Path & "\my collection" & "\separator.png"
     If FExists(iconFileName) Then
@@ -6309,10 +6333,10 @@ Private Sub mnuaddFolder_click()
     Dim dialogInitDir As String: dialogInitDir = vbNullString
    
    On Error GoTo mnuaddFolder_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuaddFolder_click"
+   If debugFlg = 1 Then debugLog "%mnuaddFolder_click"
 
     If txtStartIn.Text <> vbNullString Then
-        If DirExists(txtStartIn.Text) Then
+        If fDirExists(txtStartIn.Text) Then
             dialogInitDir = txtStartIn.Text 'start dir, might be "C:\" or so also
         Else
             If defaultDock = 0 Then ' ' .19 DAEB 01/03/2021 rDIConConfigForm.frm Separated the Rocketdock/Steamydock specific actions
@@ -6326,7 +6350,7 @@ Private Sub mnuaddFolder_click()
 
     getFolder = BrowseFolder(hwnd, dialogInitDir) ' show the dialog box to select a folder
 
-    If DirExists(getFolder) Then
+    If fDirExists(getFolder) Then
     
         iconFileName = App.Path & "\my collection" & "\folder-closed.png"
         If FExists(iconFileName) Then
@@ -6360,7 +6384,7 @@ Private Sub mnuAddMyComputer_click()
     
     ' check the icon exists
    On Error GoTo mnuAddMyComputer_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuAddMyComputer_click"
+   If debugFlg = 1 Then debugLog "%mnuAddMyComputer_click"
 
     iconFileName = App.Path & "\my collection" & "\my folder.png"
     If FExists(iconFileName) Then
@@ -6395,7 +6419,7 @@ Private Sub mnuAddMyDocuments_Click()
     
     On Error GoTo mnuAddMyDocuments_Click_Error
 
-    If debugflg = 1 Then DebugPrint "%mnuAddMyComputer_click"
+    If debugFlg = 1 Then debugLog "%mnuAddMyComputer_click"
     
     ' check the icon exist
     iconFileName = App.Path & "\my collection" & "\folder-closed.png"
@@ -6438,7 +6462,7 @@ Private Sub mnuAddMyMusic_Click()
     ' check the icon exists
     On Error GoTo mnuAddMyMusic_Click_Error
 
-    If debugflg = 1 Then DebugPrint "%mnuAddMyComputer_click"
+    If debugFlg = 1 Then debugLog "%mnuAddMyComputer_click"
 
     iconFileName = App.Path & "\my collection" & "\music.png"
     If FExists(iconFileName) Then
@@ -6485,7 +6509,7 @@ Private Sub mnuAddMyPictures_Click()
     ' check the icon exists
     On Error GoTo mnuAddMyPictures_Click_Error
 
-    If debugflg = 1 Then DebugPrint "%mnuAddMyComputer_click"
+    If debugFlg = 1 Then debugLog "%mnuAddMyComputer_click"
 
     iconFileName = App.Path & "\my collection" & "\pictures.png"
     If FExists(iconFileName) Then
@@ -6531,7 +6555,7 @@ Private Sub mnuAddMyVideos_Click()
     ' check the icon exists
     On Error GoTo mnuAddMyVideos_Click_Error
 
-    If debugflg = 1 Then DebugPrint "%mnuAddMyComputer_click"
+    If debugFlg = 1 Then debugLog "%mnuAddMyComputer_click"
 
     iconFileName = App.Path & "\my collection" & "\video-folder.png"
     If FExists(iconFileName) Then
@@ -6571,7 +6595,7 @@ Private Sub mnuAddEnhanced_click()
     Dim iconFileName As String: iconFileName = vbNullString
     
     On Error GoTo mnuAddEnhanced_click_Error
-    If debugflg = 1 Then DebugPrint "%mnuAddEnhanced_click"
+    If debugFlg = 1 Then debugLog "%mnuAddEnhanced_click"
 
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\SteamyRocket.png"
@@ -6615,7 +6639,7 @@ Private Sub mnuAddDocklet_click() ' disable this if RD is not the defaultdock
     Const x_MaxBuffer = 256
     
     On Error GoTo mnuAddDocklet_click_Error
-    If debugflg = 1 Then DebugPrint "%mnuAddDocklet_click"
+    If debugFlg = 1 Then debugLog "%mnuAddDocklet_click"
     
     ' set the default folder to the docklet folder under rocketdock
     If defaultDock = 0 Then ' .14 DAEB 27/02/2021 rdIConConfigForm.frm Added default dock check to ensure it works without RD installed
@@ -6713,7 +6737,7 @@ End Sub
 '
 Private Sub btnFileListView_Click()
    On Error GoTo btnFileListView_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "btnFileListView_Click"
+    If debugFlg = 1 Then debugLog "%" & "btnFileListView_Click"
       
     Call busyStart
     If filesIconList.Visible = True Then
@@ -6751,7 +6775,7 @@ End Sub
 '
 Private Sub chkRunElevated_Click()
    On Error GoTo chkRunElevated_Click_Error
-      If debugflg = 1 Then DebugPrint "%" & "chkRunElevated_Click"
+      If debugFlg = 1 Then debugLog "%" & "chkRunElevated_Click"
            
         btnSet.Enabled = True ' tell the program that something has changed
         btnCancel.Visible = True
@@ -6779,7 +6803,7 @@ Private Sub comboIconTypesFilter_Click()
     'Dim validIconTypes As String
     
     On Error GoTo comboIconTypesFilter_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "comboIconTypesFilter_Click"
+    If debugFlg = 1 Then debugLog "%" & "comboIconTypesFilter_Click"
 
     filterType = comboIconTypesFilter.ListIndex
     
@@ -6844,7 +6868,7 @@ End Sub
 '
 Private Sub cmbOpenRunning_Click()
    On Error GoTo cmbOpenRunning_Click_Error
-   If debugflg = 1 Then DebugPrint "%cmbOpenRunning_Click"
+   If debugFlg = 1 Then debugLog "%cmbOpenRunning_Click"
 
     btnSet.Enabled = True ' tell the program that something has changed
         btnCancel.Visible = True
@@ -6867,7 +6891,7 @@ End Sub
 '
 Private Sub cmbRunState_Click()
    On Error GoTo cmbRunState_Click_Error
-   If debugflg = 1 Then DebugPrint "%cmbRunState_Click"
+   If debugFlg = 1 Then debugLog "%cmbRunState_Click"
 
     btnSet.Enabled = True ' tell the program that something has changed
         btnCancel.Visible = True
@@ -6892,7 +6916,7 @@ Private Sub btnCancel_Click()
     Dim Filename As String: Filename = vbNullString
     
     On Error GoTo btnCancel_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "btnCancel_Click"
+    If debugFlg = 1 Then debugLog "%" & "btnCancel_Click"
     
     settingsTimer.Enabled = False
 
@@ -6967,7 +6991,7 @@ Private Sub btnAddFolder_Click()
     ' read the settings ini file
     'eg. rDCustomIconFolder=?E:\dean\steampunk theme\icons\
     On Error GoTo btnAddFolder_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "btnAddFolder_Click"
+    If debugFlg = 1 Then debugLog "%" & "btnAddFolder_Click"
    
     If FExists(interimSettingsFile) Then
         rDCustomIconFolder = GetINISetting("Software\SteamyDock\DockSettings", "rDCustomIconFolder", interimSettingsFile)
@@ -6997,7 +7021,7 @@ Private Sub btnAddFolder_Click()
     
 '
 '    If txtStartIn.Text <> vbNullString Then
-'        If DirExists(txtStartIn.Text) Then
+'        If fDirExists(txtStartIn.Text) Then
 '            dialogInitDir = txtStartIn.Text 'start dir, might be "C:\" or so also
 '        Else
 '            dialogInitDir = rdAppPath 'start dir, might be "C:\" or so also
@@ -7083,9 +7107,9 @@ Private Sub btnSelectStart_Click()
     Dim dialogInitDir As String: dialogInitDir = vbNullString
    
     On Error GoTo btnSelectStart_Click_Error
-    If debugflg = 1 Then DebugPrint "%btnSelectStart_Click"
+    If debugFlg = 1 Then debugLog "%btnSelectStart_Click"
     If txtStartIn.Text <> vbNullString Then
-        If DirExists(txtStartIn.Text) Then
+        If fDirExists(txtStartIn.Text) Then
             dialogInitDir = txtStartIn.Text 'start dir, might be "C:\" or so also
         Else
             If defaultDock = 0 Then ' ' .19 DAEB 01/03/2021 rDIConConfigForm.frm Separated the Rocketdock/Steamydock specific actions
@@ -7119,7 +7143,7 @@ End Sub
 'Private Function ChooseDir_Click() As String
 '    Dim sTempDir As String
 '    On Error GoTo ChooseDir_Click_Error
-'       If debugflg = 1 Then DebugPrint "%" & "ChooseDir_Click"
+'       If debugFlg = 1 Then debugLog  "%" & "ChooseDir_Click"
 '
 '
 '
@@ -7128,7 +7152,7 @@ End Sub
 '    sTempDir = CurDir    'Remember the current active directory
 '    rdDialogForm.CommonDialog.DialogTitle = "Select a directory" 'titlebar
 '    If Not txtStartIn.Text = vbNullString Then
-'        If DirExists(txtStartIn.Text) Then
+'        If fDirExists(txtStartIn.Text) Then
 '            rdDialogForm.CommonDialog.InitDir = txtStartIn.Text 'start dir, might be "C:\" or so also
 '        Else
 '            rdDialogForm.CommonDialog.InitDir = rdAppPath 'start dir, might be "C:\" or so also
@@ -7167,7 +7191,7 @@ End Sub
 Private Sub btnHelp_Click()
     ' show a single help PNG with pointers as to what does what
    On Error GoTo btnHelp_Click_Error
-   If debugflg = 1 Then DebugPrint "%btnHelp_Click"
+   If debugFlg = 1 Then debugLog "%btnHelp_Click"
 
     'rdHelpForm.Show
     
@@ -7241,7 +7265,7 @@ End Sub
 Private Sub preMapPageUpDown(ByRef exitSubFlg As Boolean)
     Dim answer As VbMsgBoxResult: answer = vbNo
     
-    If debugflg = 1 Then DebugPrint "%" & "preMapPageDown"
+    If debugFlg = 1 Then debugLog "%" & "preMapPageDown"
     
     If btnSet.Enabled = True Then
         If chkToggleDialogs.Value = 1 Then
@@ -7330,7 +7354,7 @@ End Sub
 'Private Sub readRegistryOnce(ByVal iconNumberToRead As Integer)
 '    ' read the settings from the registry
 '   On Error GoTo readRegistryOnce_Error
-'   If debugflg = 1 Then DebugPrint "%" & "readRegistryOnce"
+'   If debugFlg = 1 Then debugLog  "%" & "readRegistryOnce"
 '
 '
 '
@@ -7365,7 +7389,7 @@ End Sub
 'Private Sub writeRegistryOnce(ByVal iconNumberToWrite As Integer)
 '
 '   On Error GoTo writeRegistryOnce_Error
-'    If debugflg = 1 Then DebugPrint "%" & "writeRegistryOnce"
+'    If debugFlg = 1 Then debugLog  "%" & "writeRegistryOnce"
 '
 '    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-FileName", sFilename)
 '    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-FileName2", sFileName2)
@@ -7398,7 +7422,7 @@ End Sub
 '    Dim Max As Integer
 '
 '    On Error GoTo ExtractSuffix_Error
-'    If debugflg = 1 Then DebugPrint "%" & "ExtractSuffix"
+'    If debugFlg = 1 Then debugLog  "%" & "ExtractSuffix"
 '
 '    If strPath = "" Then
 '        ExtractSuffix = ""
@@ -7430,7 +7454,7 @@ End Sub
 '    Dim Max As Integer
 '
 '    On Error GoTo ExtractSuffixWithDot_Error
-'    If debugflg = 1 Then Debug.Print "%" & "ExtractSuffixWithDot"
+'    If debugFlg = 1 Then debugLog "%" & "ExtractSuffixWithDot"
 '
 '    If strPath = vbNullString Then
 '        ExtractSuffixWithDot = vbNullString
@@ -7470,7 +7494,7 @@ Private Sub displayResizedImage(ByRef Filename As String, ByRef targetPicBox As 
     Dim picSize As Long: picSize = 0
                 
     On Error GoTo displayResizedImage_Error
-    If debugflg = 1 Then DebugPrint "%" & "displayResizedImage"
+    If debugFlg = 1 Then debugLog "%" & "displayResizedImage"
     ' .36 DAEB 20/04/2021 rdIconConfig.frm Add a final check that the chosen image file actually exists
     If Not FExists(Filename) Then
         If FExists(App.Path() & "\my collection\" & "red-X.png") Then
@@ -7614,7 +7638,7 @@ End Sub
 '
 Private Sub checkImageSize(ByRef Filename As String, ByRef picWidth As Long, ByRef picHeight As Long)
     
-    If debugflg = 1 Then DebugPrint "%checkImageSize"
+    If debugFlg = 1 Then debugLog "%checkImageSize"
 
     'create an original size bitmap
     Dim bmpsizingImage As StdPicture
@@ -7656,7 +7680,7 @@ Private Sub btnHomeRdMap()
     'Dim ff As Long
     'if the modification flag is set then ask before moving to the next icon
     On Error GoTo btnHomeRdMap_Error
-    If debugflg = 1 Then DebugPrint "%" & "btnHomeRdMap"
+    If debugFlg = 1 Then debugLog "%" & "btnHomeRdMap"
    
     If btnSet.Enabled = True Then
         If chkToggleDialogs.Value = 1 Then
@@ -7709,7 +7733,7 @@ Private Sub btnEndRdMap()
     
     'if the modification flag is set then ask before moving to the next icon
     On Error GoTo btnEndRdMap_Error
-    If debugflg = 1 Then DebugPrint "%" & "btnEndRdMap"
+    If debugFlg = 1 Then debugLog "%" & "btnEndRdMap"
    
     If btnSet.Enabled = True Then
         If chkToggleDialogs.Value = 1 Then
@@ -7762,7 +7786,7 @@ Private Sub btnPrev_Click()
     Dim exitSubFlg As Boolean: exitSubFlg = False
     
     On Error GoTo btnPrev_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "btnPrev_Click"
+    If debugFlg = 1 Then debugLog "%" & "btnPrev_Click"
     
     Call preButtonClick(exitSubFlg)
     
@@ -7794,7 +7818,7 @@ Private Sub btnNext_Click()
     Dim exitSubFlg As Boolean: exitSubFlg = False
     
     On Error GoTo btnNext_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "btnNext_Click"
+    If debugFlg = 1 Then debugLog "%" & "btnNext_Click"
 
     Call preButtonClick(exitSubFlg)
     
@@ -7829,7 +7853,7 @@ Private Sub preButtonClick(ByVal exitSubFlg As Boolean)
     
     On Error GoTo preButtonClick_Error
 
-    If debugflg = 1 Then DebugPrint "%" & "btnPrev_Click"
+    If debugFlg = 1 Then debugLog "%" & "btnPrev_Click"
 
     If btnSet.Enabled = True Then
         ' 17/11/2020    .03 DAEB Replaced the confirmation dialog with an automatic save when moving from one icon to another using the right/left icon buttons
@@ -7941,7 +7965,7 @@ Private Sub displayIconElement(ByVal iconCount As Integer, ByRef picBox As Pictu
     
     'if it is a good icon then read the data
     On Error GoTo displayIconElement_Error
-    If debugflg = 1 Then DebugPrint "%" & "displayIconElement"
+    If debugFlg = 1 Then debugLog "%" & "displayIconElement"
 
     If FExists(interimSettingsFile) Then '
         'get the rocketdock alternative settings.ini for this icon alone
@@ -8170,7 +8194,7 @@ End Sub
 '
 Private Sub btnThumbnailView_Click()
     On Error GoTo btnThumbnailView_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "btnThumbnailView_Click"
+    If debugFlg = 1 Then debugLog "%" & "btnThumbnailView_Click"
     thisRoutine = "btnThumbnailView_Click"
     
     If filesIconList.ListIndex >= 0 Then
@@ -8211,7 +8235,7 @@ End Sub
 Private Sub refreshThumbnailViewPanel()
  
    On Error GoTo refreshThumbnailViewPanel_Error
-   If debugflg = 1 Then DebugPrint "%refreshThumbnailViewPanel"
+   If debugFlg = 1 Then debugLog "%refreshThumbnailViewPanel"
 
     Call busyStart
     
@@ -8290,7 +8314,7 @@ Private Sub populateThumbnails(ByVal imageSize As Integer, ByRef startItem As In
     Dim thisThumbnailCacheCount As Integer: thisThumbnailCacheCount = 0
     
     On Error GoTo populateThumbnails_Error
-    If debugflg = 1 Then DebugPrint "%" & "populateThumbnails"
+    If debugFlg = 1 Then debugLog "%" & "populateThumbnails"
    
     ' change the image to a tree view icon
     ' create a matrix of 12 x image objects from file
@@ -8553,7 +8577,7 @@ Private Sub populateRdMap(ByVal xDeviation As Integer)
     Dim dotString As String: dotString = vbNullString
    
     On Error GoTo populateRdMap_Error
-    If debugflg = 1 Then DebugPrint "%" & "populateRdMap"
+    If debugFlg = 1 Then debugLog "%" & "populateRdMap"
 
     dotString = vbNullString
     dotCount = 0
@@ -8629,7 +8653,7 @@ Public Sub deleteRdMap(Optional ByVal backupFirst As Boolean = False, Optional B
     Dim answer As VbMsgBoxResult: answer = vbNo
     
    On Error GoTo deleteRdMap_Error
-   If debugflg = 1 Then DebugPrint "%deleteRdMap"
+   If debugFlg = 1 Then debugLog "%deleteRdMap"
 
     'If picRdMapGotFocus <> True Then Exit Sub
     answer = msgBoxA(" This will delete all the icons in your dock , are you sure?", vbQuestion + vbYesNo)
@@ -8715,7 +8739,7 @@ End Sub
 Private Sub btnMapNext_Click()
     
    On Error GoTo btnMapNext_Click_Error
-   If debugflg = 1 Then DebugPrint "%btnMapNext_Click"
+   If debugFlg = 1 Then debugLog "%btnMapNext_Click"
 
     Call picRdMapSetFocus
     
@@ -8741,7 +8765,7 @@ End Sub
 Private Sub btnMapPrev_Click()
 
     On Error GoTo btnMapPrev_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "btnMapPrev_Click"
+    If debugFlg = 1 Then debugLog "%" & "btnMapPrev_Click"
 
     Call picRdMapSetFocus
     
@@ -8918,7 +8942,7 @@ Private Sub mnuFont_Click()
 '    Dim suppliedStyle As Boolean
 '
 '    On Error GoTo mnuFont_Click_Error
-'    If debugflg = 1 Then DebugPrint "%" & "mnuFont_Click"
+'    If debugFlg = 1 Then debugLog  "%" & "mnuFont_Click"
 '
 '    Set FontDlg = New CommonDlgs
 '
@@ -8981,7 +9005,7 @@ Private Sub filesIconList_DblClick()
     
     ' takes the result from the treeview
     On Error GoTo filesIconList_DblClick_Error
-    If debugflg = 1 Then DebugPrint "%" & "filesIconList_DblClick"
+    If debugFlg = 1 Then debugLog "%" & "filesIconList_DblClick"
     
     ' note the old icon image just in case the user decides to not save
     previousIcon = txtCurrentIcon.Text
@@ -9019,7 +9043,7 @@ End Sub
 '
 Private Sub filesIconList_GotFocus()
    On Error GoTo filesIconList_GotFocus_Error
-    If debugflg = 1 Then DebugPrint "%" & "filesIconList_GotFocus"
+    If debugFlg = 1 Then debugLog "%" & "filesIconList_GotFocus"
 
     picFrameThumbsGotFocus = True
     picRdMapGotFocus = False
@@ -9043,7 +9067,7 @@ End Sub
 '
 Private Sub filesIconList_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
     On Error GoTo filesIconList_MouseDown_Error
-    If debugflg = 1 Then DebugPrint "%" & "filesIconList_MouseDown"
+    If debugFlg = 1 Then debugLog "%" & "filesIconList_MouseDown"
 
     If Button = 2 Then
         ' only required for VB6, the VB.NET version allows
@@ -9095,7 +9119,7 @@ Private Sub readTreeviewDefaultFolder()
     ' read the tool settings file
     'eg. defaultFolderNodeKey=?E:\dean\steampunk theme\icons\
     On Error GoTo readTreeviewDefaultFolder_Error
-    If debugflg = 1 Then DebugPrint "%" & "readTreeviewDefaultFolder"
+    If debugFlg = 1 Then debugLog "%" & "readTreeviewDefaultFolder"
 
     If FExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
         defaultFolderNodeKey = GetINISetting("Software\SteamyDockSettings", "defaultFolderNodeKey", toolSettingsFile)
@@ -9148,7 +9172,7 @@ Private Sub readRegistryWriteSettings()
         PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
    On Error GoTo readRegistryWriteSettings_Error
-      If debugflg = 1 Then DebugPrint "%" & "readRegistryWriteSettings"
+      If debugFlg = 1 Then debugLog "%" & "readRegistryWriteSettings"
    
     For useloop = 0 To rdIconMaximum
          ' get the relevant entries from the registry
@@ -9200,7 +9224,7 @@ End Sub
 '        sDrv = sDrives(cnt)
 '        ' on 32bit windows the folder is "Program Files\Rocketdock"
 '        folderString = sDrv & folder
-'        If DirExists(folderString) = True Then
+'        If fDirExists(folderString) = True Then
 '           'test for the yahoo widgets binary
 '            testAppPath = folderString
 '            If FExists(testAppPath & "\" & filename) Then
@@ -9250,7 +9274,7 @@ End Sub
 '    '"C:\ D:\ E:\ &C:"
 '
 '    On Error GoTo GetDriveString_Error
-'       If debugflg = 1 Then DebugPrint "%" & "GetDriveString"
+'       If debugFlg = 1 Then debugLog  "%" & "GetDriveString"
 '
 '
 '
@@ -9279,7 +9303,7 @@ End Sub
 ''
 'Public Function ValidDrive(ByVal d As String) As Boolean
 '   On Error GoTo ValidDrive_Error
-'      If debugflg = 1 Then DebugPrint "%" & "ValidDrive"
+'      If debugFlg = 1 Then debugLog  "%" & "ValidDrive"
 '
 '
 '
@@ -9314,7 +9338,7 @@ Private Sub addRocketdockFolders()
     Dim pathCheck As String: pathCheck = vbNullString
     
     On Error GoTo addRocketdockFolders_Error
-    If debugflg = 1 Then DebugPrint "%" & "addRocketdockFolders"
+    If debugFlg = 1 Then debugLog "%" & "addRocketdockFolders"
 
     If defaultDock = 0 Then ' .14 DAEB 27/02/2021 rdIConConfigForm.frm Added default dock check to ensure it works without RD installed
         pathCheck = rdAppPath & "\icons"
@@ -9352,12 +9376,12 @@ Private Sub setSteampunkLocation()
     Dim SteampunkIconFolder As String: SteampunkIconFolder = vbNullString
     
    On Error GoTo setSteampunkLocation_Error
-   If debugflg = 1 Then DebugPrint "%" & "setSteampunkLocation"
+   If debugFlg = 1 Then debugLog "%" & "setSteampunkLocation"
 
 
     SteampunkIconFolder = App.Path & "\my collection"
     
-    If DirExists(SteampunkIconFolder) Then
+    If fDirExists(SteampunkIconFolder) Then
         ' add the chosen folder to the treeview
         folderTreeView.Nodes.Add , , SteampunkIconFolder, SteampunkIconFolder
         Call addtotree(SteampunkIconFolder, folderTreeView)
@@ -9388,7 +9412,7 @@ Private Sub readCustomLocation()
     ' read the settings ini file
     'eg. rDCustomIconFolder=?E:\dean\steampunk theme\icons\
     On Error GoTo readCustomLocation_Error
-    If debugflg = 1 Then DebugPrint "%" & "rDCustomIconFolder"
+    If debugFlg = 1 Then debugLog "%" & "rDCustomIconFolder"
 
     If FExists(interimSettingsFile) Then
         rDCustomIconFolder = GetINISetting("Software\RocketDock", "rDCustomIconFolder", interimSettingsFile)
@@ -9396,7 +9420,7 @@ Private Sub readCustomLocation()
     
     If Not rDCustomIconFolder = vbNullString Then
         rDCustomIconFolder = Mid$(rDCustomIconFolder, 2) ' remove the question mark
-        If DirExists(rDCustomIconFolder) Then
+        If fDirExists(rDCustomIconFolder) Then
             ' add the chosen folder to the treeview
             folderTreeView.Nodes.Add , , rDCustomIconFolder, rDCustomIconFolder
             Call addtotree(rDCustomIconFolder, folderTreeView)
@@ -9423,7 +9447,7 @@ End Sub
 '
 Private Sub Form_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
    On Error GoTo Form_MouseDown_Error
-   If debugflg = 1 Then DebugPrint "%" & "Form_MouseDown"
+   If debugFlg = 1 Then debugLog "%" & "Form_MouseDown"
    
     If moreConfigVisible = True Then Call picMoreConfigDown_Click ' .nn cause the new expanding section to close
    
@@ -9453,7 +9477,7 @@ End Sub
 '
 Private Sub frameButtons_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
    On Error GoTo frameButtons_MouseDown_Error
-   If debugflg = 1 Then DebugPrint "%" & "frameButtons_MouseDown"
+   If debugFlg = 1 Then debugLog "%" & "frameButtons_MouseDown"
    
    'If moreConfigVisible = True Then Call picMoreConfigDown_Click ' .nn cause the new expanding section to close
    If Button = 2 Then
@@ -9480,7 +9504,7 @@ End Sub
 '
 Private Sub FrameFolders_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
    On Error GoTo FrameFolders_MouseDown_Error
-      If debugflg = 1 Then DebugPrint "%" & "FrameFolders_MouseDown"
+      If debugFlg = 1 Then debugLog "%" & "FrameFolders_MouseDown"
 
     If Button = 2 Then
     ' only required for VB6, the VB.NET version allows
@@ -9507,7 +9531,7 @@ End Sub
 '
 Private Sub frameIcons_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
     On Error GoTo frameIcons_MouseDown_Error
-    If debugflg = 1 Then DebugPrint "%" & "frameIcons_MouseDown"
+    If debugFlg = 1 Then debugLog "%" & "frameIcons_MouseDown"
 
     If Button = 2 Then
         ' only required for VB6, the VB.NET version allows
@@ -9536,7 +9560,7 @@ End Sub
 '
 Private Sub framePreview_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
    On Error GoTo framePreview_MouseDown_Error
-    If debugflg = 1 Then DebugPrint "%" & "framePreview_MouseDown"
+    If debugFlg = 1 Then debugLog "%" & "framePreview_MouseDown"
 
     If Button = 2 Then
         ' only required for VB6, the VB.NET version allows
@@ -9564,7 +9588,7 @@ End Sub
 '
 Private Sub fraProperties_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
    On Error GoTo fraProperties_MouseDown_Error
-    If debugflg = 1 Then DebugPrint "%" & "fraProperties_MouseDown"
+    If debugFlg = 1 Then debugLog "%" & "fraProperties_MouseDown"
    
     If Button = 2 Then
         ' only required for VB6, the VB.NET version allows
@@ -9596,7 +9620,7 @@ End Sub
 '
 Private Sub picFrameThumbs_LostFocus()
    On Error GoTo picFrameThumbs_LostFocus_Error
-   'If debugflg = 1 Then DebugPrint "%picFrameThumbs_LostFocus"
+   'If debugFlg = 1 Then debugLog  "%picFrameThumbs_LostFocus"
    
    'MsgBox Me.ActiveControl.Name
    
@@ -9692,7 +9716,7 @@ Private Sub picRdMap_DragDrop(Index As Integer, Source As Control, X As Single, 
     Dim answer As VbMsgBoxResult: answer = vbNo
     Dim Filename As String: Filename = vbNullString
     
-    If debugflg = 1 Then DebugPrint "%" & "picRdMap_DragDrop"
+    If debugFlg = 1 Then debugLog "%" & "picRdMap_DragDrop"
     
     'if dragging from one part of the map to another but landing on the same icon as the one we started from
     If srcDragControl = "rdMap" And rdMapIconSrcIndex = Index Then
@@ -10230,7 +10254,7 @@ Private Sub rdMapHScroll_Change()
     Dim spacing As Integer: spacing = 0
     
     On Error GoTo rdMapHScroll_Change_Error
-    If debugflg = 1 Then DebugPrint "%" & "rdMapHScroll_Change"
+    If debugFlg = 1 Then debugLog "%" & "rdMapHScroll_Change"
    
     spacing = 540
 
@@ -10409,10 +10433,10 @@ Public Sub themeTimer_Timer()
 ' that excludes windows 8 and 10 so this timer can be switched off on these o/s.
 
    On Error GoTo themeTimer_Timer_Error
-    If debugflg = 1 Then DebugPrint "%themeTimer_Timer"
+    If debugFlg = 1 Then debugLog "%themeTimer_Timer"
 
     SysClr = GetSysColor(COLOR_BTNFACE)
-    If debugflg = 1 Then DebugPrint "COLOR_BTNFACE = " & SysClr ' generates too many debug statements in the log
+    If debugFlg = 1 Then debugLog "COLOR_BTNFACE = " & SysClr  ' generates too many debug statements in the log
     If SysClr <> storeThemeColour Then
     
         Call setThemeColour(Me)
@@ -10438,7 +10462,7 @@ Private Sub folderTreeView_GotFocus()
 
     
    On Error GoTo folderTreeView_GotFocus_Error
-   If debugflg = 1 Then DebugPrint "%folderTreeView_GotFocus"
+   If debugFlg = 1 Then debugLog "%folderTreeView_GotFocus"
 
    Call thumbsLostFocus
 
@@ -10460,7 +10484,7 @@ End Sub
 Private Sub thumbsLostFocus()
 
    On Error GoTo thumbsLostFocus_Error
-   If debugflg = 1 Then DebugPrint "%thumbsLostFocus"
+   If debugFlg = 1 Then debugLog "%thumbsLostFocus"
 
     If picFrameThumbsLostFocus = False Then
         lblThumbName(thumbIndexNo).BackColor = RGB(212, 208, 200) ' grey
@@ -10484,7 +10508,7 @@ End Sub
 '
 Private Sub txtArguments_Change()
    On Error GoTo txtArguments_Change_Error
-   If debugflg = 1 Then DebugPrint "%txtArguments_Change"
+   If debugFlg = 1 Then debugLog "%txtArguments_Change"
 
     btnSet.Enabled = True ' tell the program that something has changed
     btnCancel.Visible = True
@@ -10507,7 +10531,7 @@ End Sub
 '
 Private Sub txtLabelName_Change()
    On Error GoTo txtLabelName_Change_Error
-   If debugflg = 1 Then DebugPrint "%txtLabelName_Change"
+   If debugFlg = 1 Then debugLog "%txtLabelName_Change"
 
     btnSet.Enabled = True ' tell the program that something has changed
         btnCancel.Visible = True
@@ -10542,7 +10566,7 @@ End Sub
 '
 Private Sub txtStartIn_Change()
    On Error GoTo txtStartIn_Change_Error
-   If debugflg = 1 Then DebugPrint "%txtStartIn_Change"
+   If debugFlg = 1 Then debugLog "%txtStartIn_Change"
 
     btnSet.Enabled = True ' tell the program that something has changed
     btnCancel.Visible = True
@@ -10618,7 +10642,7 @@ End Sub
 '
 Private Sub txtTarget_Change()
    On Error GoTo txtTarget_Change_Error
-   If debugflg = 1 Then DebugPrint "%txtTarget_Change"
+   If debugFlg = 1 Then debugLog "%txtTarget_Change"
 
     btnSet.Enabled = True ' tell the program that something has changed
         btnCancel.Visible = True
@@ -10654,8 +10678,8 @@ Private Sub getKeyPress(ByVal KeyCode As Integer)
     thisRoutine = "getKeyPress"
 
     
-    If debugflg = 1 Then DebugPrint "%" & "getkeypress"
-    If debugflg = 1 Then DebugPrint "%" & "keycode= " & KeyCode
+    If debugFlg = 1 Then debugLog "%" & "getkeypress"
+    If debugFlg = 1 Then debugLog "%" & "keycode= " & KeyCode
     
     keyPressOccurred = True
     displayHourglass = False
@@ -10698,7 +10722,7 @@ Private Sub getKeyPress(ByVal KeyCode As Integer)
     End If
     
 
-    If debugflg = 1 Then DebugPrint "%" & "picFrameThumbsGotFocus= " & picFrameThumbsGotFocus
+    If debugFlg = 1 Then debugLog "%" & "picFrameThumbsGotFocus= " & picFrameThumbsGotFocus
 
     '38 is key press up
     If KeyCode = 38 Then
@@ -10726,7 +10750,7 @@ Private Sub getKeyPress(ByVal KeyCode As Integer)
     '39 is right
     If KeyCode = 39 Then
         
-        'DebugPrint "########################### getkeypress right STARTS"
+        'debugLog  "########################### getkeypress right STARTS"
     
         If picRdMapGotFocus = True Then
             ' if the rdMap has focus then
@@ -10786,8 +10810,8 @@ Private Sub thumbnailGetKeyPress(ByVal KeyCode As Integer)
     thisRoutine = "thumbnailGetKeyPress"
 
     
-    If debugflg = 1 Then DebugPrint "%" & "thumbnailGetKeyPress"
-    If debugflg = 1 Then DebugPrint "%" & "keycode= " & KeyCode
+    If debugFlg = 1 Then debugLog "%" & "thumbnailGetKeyPress"
+    If debugFlg = 1 Then debugLog "%" & "keycode= " & KeyCode
     
     keyPressOccurred = True
     displayHourglass = False
@@ -10832,7 +10856,7 @@ Private Sub thumbnailGetKeyPress(ByVal KeyCode As Integer)
     End If
     
 
-    If debugflg = 1 Then DebugPrint "%" & "picFrameThumbsGotFocus= " & picFrameThumbsGotFocus
+    If debugFlg = 1 Then debugLog "%" & "picFrameThumbsGotFocus= " & picFrameThumbsGotFocus
 
     '38 is key press up
     If KeyCode = 38 Then
@@ -10918,8 +10942,8 @@ Private Sub thumbnailGetKeyPress(ByVal KeyCode As Integer)
                 vScrollThumbs.Value = thumbArray(thumbIndexNo)
             End If
             
-'            DebugPrint "thumbnailGetKeyPress left "
-'            DebugPrint thumbIndexNo
+'            debugLog  "thumbnailGetKeyPress left "
+'            debugLog  thumbIndexNo
 '            Sleep (1000)
         End If
     End If
@@ -10927,7 +10951,7 @@ Private Sub thumbnailGetKeyPress(ByVal KeyCode As Integer)
     '39 is right
     If KeyCode = 39 Then
         
-        'DebugPrint "########################### thumbnailGetKeyPress right STARTS"
+        'debugLog  "########################### thumbnailGetKeyPress right STARTS"
     
         If picFrameThumbsGotFocus = True Then
             refreshThumbnailView = False
@@ -10958,8 +10982,8 @@ Private Sub thumbnailGetKeyPress(ByVal KeyCode As Integer)
                     End If
                 End If
             End If
-'            DebugPrint thumbIndexNo
-'            DebugPrint "########################### thumbnailGetKeyPress right ENDS"
+'            debugLog  thumbIndexNo
+'            debugLog  "########################### thumbnailGetKeyPress right ENDS"
 '            Sleep (1000)
 
         End If
@@ -11012,7 +11036,7 @@ End Sub
 Private Sub lblThumbName_Click(ByRef Index As Integer)
     ' clicking on the text below the icon triggers a click on the icon itself
    On Error GoTo lblThumbName_Click_Error
-   If debugflg = 1 Then DebugPrint "%lblThumbName_Click"
+   If debugFlg = 1 Then debugLog "%lblThumbName_Click"
 
     Call picThumbIcon_MouseDown(Index, 1, 0, 0, 0)
 
@@ -11033,7 +11057,7 @@ End Sub
 '
 Private Sub picFrameThumbs_GotFocus()
    On Error GoTo picFrameThumbs_GotFocus_Error
-   If debugflg = 1 Then DebugPrint "%picFrameThumbs_GotFocus"
+   If debugFlg = 1 Then debugLog "%picFrameThumbs_GotFocus"
 
     picFrameThumbsGotFocus = True
 
@@ -11053,7 +11077,7 @@ End Sub
 '
 Private Sub picFrameThumbs_KeyDown(ByRef KeyCode As Integer, ByRef Shift As Integer)
    On Error GoTo picFrameThumbs_KeyDown_Error
-   If debugflg = 1 Then DebugPrint "%picFrameThumbs_KeyDown"
+   If debugFlg = 1 Then debugLog "%picFrameThumbs_KeyDown"
 
     Call thumbnailGetKeyPress(KeyCode)
 
@@ -11073,7 +11097,7 @@ End Sub
 '
 Private Sub picFrameThumbs_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
    On Error GoTo picFrameThumbs_MouseDown_Error
-   If debugflg = 1 Then DebugPrint "%picFrameThumbs_MouseDown"
+   If debugFlg = 1 Then debugLog "%picFrameThumbs_MouseDown"
 
    If Button = 2 Then
         'storedIndex = Index ' get the icon number from the array's index
@@ -11105,7 +11129,7 @@ Private Sub picThumbIcon_MouseDown(ByRef Index As Integer, ByRef Button As Integ
     thisRoutine = "picThumbIcon_MouseDown"
     picThumbIconMouseDown = True
 
-    If debugflg = 1 Then DebugPrint "%" & "picThumbIcon_MouseDown"
+    If debugFlg = 1 Then debugLog "%" & "picThumbIcon_MouseDown"
     On Error GoTo picThumbIcon_MouseDown_Error
         
     If Button = 2 Then
@@ -11167,7 +11191,7 @@ Private Sub picThumbIcon_DblClick(ByRef Index As Integer)
     Dim itemno As Integer: itemno = 0
 
     On Error GoTo picThumbIcon_DblClick_Error
-    If debugflg = 1 Then DebugPrint "%" & "picThumbIcon_DblClick"
+    If debugFlg = 1 Then debugLog "%" & "picThumbIcon_DblClick"
 
     Call btnAdd_Click
 
@@ -11188,7 +11212,7 @@ End Sub
 '
 Private Sub picThumbIcon_GotFocus(ByRef Index As Integer)
    On Error GoTo picThumbIcon_GotFocus_Error
-   If debugflg = 1 Then DebugPrint "%" & "picThumbIcon_GotFocus"
+   If debugFlg = 1 Then debugLog "%" & "picThumbIcon_GotFocus"
 
     picFrameThumbsGotFocus = True
     picRdMapGotFocus = False
@@ -11212,7 +11236,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub picThumbIcon_KeyDown(ByRef Index As Integer, ByRef KeyCode As Integer, ByRef Shift As Integer)
-    If debugflg = 1 Then DebugPrint "%" & "picThumbIcon_KeyDown"
+    If debugFlg = 1 Then debugLog "%" & "picThumbIcon_KeyDown"
     On Error GoTo picThumbIcon_KeyDown_Error
 
     picFrameThumbsGotFocus = True
@@ -11242,7 +11266,7 @@ End Sub
 '
 Private Sub picThumbIcon_MouseMove(ByRef Index As Integer, ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
    On Error GoTo picThumbIcon_MouseMove_Error
-   'If debugflg = 1 Then DebugPrint "%" & "picThumbIcon_MouseMove"
+   'If debugFlg = 1 Then debugLog  "%" & "picThumbIcon_MouseMove"
 
     fraThumbLabel(Index).ZOrder
 
@@ -11266,7 +11290,7 @@ Private Sub picPreview_DblClick()
     Dim useloop As Integer: useloop = 0
 
     On Error GoTo picPreview_DblClick_Error
-    If debugflg = 1 Then DebugPrint "%" & "picPreview_DblClick"
+    If debugFlg = 1 Then debugLog "%" & "picPreview_DblClick"
    
     For useloop = 0 To filesIconList.ListCount - 1
     ' TODO - extract just the filename from txtCurrentIcon.Text
@@ -11313,7 +11337,7 @@ End Sub
 ''
 'Public Function getFileNameFromPath(ByRef strFullPath As String) As String
 '   On Error GoTo getFileNameFromPath_Error
-'   If debugflg = 1 Then DebugPrint "%" & "getFileNameFromPath"
+'   If debugFlg = 1 Then debugLog  "%" & "getFileNameFromPath"
 '
 '   getFileNameFromPath = right$(strFullPath, Len(strFullPath) - InStrRev(strFullPath, "\"))
 '
@@ -11336,7 +11360,7 @@ End Sub
 '
 Private Sub picPreview_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
     On Error GoTo picPreview_MouseDown_Error
-    If debugflg = 1 Then DebugPrint "%" & "picPreview_MouseDown"
+    If debugFlg = 1 Then debugLog "%" & "picPreview_MouseDown"
    
     If Button = 2 Then
         If picPreview.Tag <> txtCurrentIcon.Text Then
@@ -11366,7 +11390,7 @@ End Sub
 '
 Private Sub picRdMap_GotFocus(ByRef Index As Integer)
     On Error GoTo picRdMap_GotFocus_Error
-    If debugflg = 1 Then DebugPrint "%" & "picRdMap_GotFocus"
+    If debugFlg = 1 Then debugLog "%" & "picRdMap_GotFocus"
 
     picRdMapGotFocus = True
     picFrameThumbsGotFocus = False
@@ -11391,7 +11415,7 @@ End Sub
 '
 Private Sub picRdMap_KeyDown(ByRef Index As Integer, ByRef KeyCode As Integer, ByRef Shift As Integer)
    On Error GoTo picRdMap_KeyDown_Error
-    If debugflg = 1 Then DebugPrint "%" & "picRdMap_KeyDown"
+    If debugFlg = 1 Then debugLog "%" & "picRdMap_KeyDown"
 
     Call getKeyPress(KeyCode)
 
@@ -11416,7 +11440,7 @@ Private Sub picRdMap_MouseDown(ByRef Index As Integer, ByRef Button As Integer, 
     Dim answer As VbMsgBoxResult: answer = vbNo
     
     On Error GoTo picRdMap_MouseDown_Error
-    If debugflg = 1 Then DebugPrint "%" & "picRdMap_MouseDown"
+    If debugFlg = 1 Then debugLog "%" & "picRdMap_MouseDown"
 
     If Button = 2 Then
         rdIconNumber = Index ' get the icon number from the array's index
@@ -11556,7 +11580,7 @@ End Sub
 '
 '    ' use class to load 1st file that was dropped, if more than one. Unicode compatible
 '   On Error GoTo picPreview_OLEDragDrop_Error
-'      If debugflg = 1 Then DebugPrint "%" & "picPreview_OLEDragDrop"
+'      If debugFlg = 1 Then debugLog  "%" & "picPreview_OLEDragDrop"
 '
 '
 '
@@ -11586,7 +11610,7 @@ Private Sub rdMapRefresh_Click()
     Dim answer As VbMsgBoxResult: answer = vbNo
    
     On Error GoTo rdMapRefresh_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "rdMapRefresh_Click"
+    If debugFlg = 1 Then debugLog "%" & "rdMapRefresh_Click"
     
     If btnSet.Enabled = True Or mapImageChanged = True Then
         If chkToggleDialogs.Value = 1 Then
@@ -11686,7 +11710,7 @@ End Sub
 '
 Private Sub registryTimer_Timer()
    On Error GoTo registryTimer_Timer_Error
-    'If debugflg = 1 Then DebugPrint "%" & "registryTimer_Timer" ' no messages thankyou
+    'If debugFlg = 1 Then debugLog  "%" & "registryTimer_Timer" ' no messages thankyou
 
     chkTheRegistry
 
@@ -11710,7 +11734,7 @@ Private Sub sliPreviewSize_Change()
     Dim Filename As String: Filename = vbNullString
            
     On Error GoTo sliPreviewSize_Change_Error
-    If debugflg = 1 Then DebugPrint "%" & "sliPreviewSize_Change"
+    If debugFlg = 1 Then debugLog "%" & "sliPreviewSize_Change"
     
     If programStatus = "startup" Then Exit Sub ' prevent the control from registering a change just from modifying its theme at startup
 
@@ -11778,7 +11802,7 @@ Private Sub folderTreeView_MouseMove(ByRef Button As Integer, ByRef Shift As Int
    Dim N As CCRTreeView.TvwNode
 
   On Error GoTo folderTreeView_MouseMove_Error
-   'If debugflg = 1 Then DebugPrint "%" & "folderTreeView_MouseMove" ' we don't want too many notifications in the debug log
+   'If debugFlg = 1 Then debugLog  "%" & "folderTreeView_MouseMove" ' we don't want too many notifications in the debug log
 
   Set N = folderTreeView.HitTest(X, Y)
    If N Is Nothing Then
@@ -11819,7 +11843,7 @@ End Sub
 Private Sub folderTreeView_NodeSelect(ByVal Node As CCRTreeView.TvwNode)
 
     On Error GoTo folderTreeView_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "folderTreeView_Click"
+    If debugFlg = 1 Then debugLog "%" & "folderTreeView_Click"
    
     Dim Path As String: Path = vbNullString
     Dim defaultFolderNodeKey As String: defaultFolderNodeKey = vbNullString
@@ -11841,7 +11865,7 @@ l_bypass_parent:
     
     If Not folderTreeView.SelectedItem Is Nothing Then
         textCurrentFolder.Text = Path
-        If DirExists(textCurrentFolder.Text) Then
+        If fDirExists(textCurrentFolder.Text) Then
             filesIconList.Path = textCurrentFolder.Text
         End If
         
@@ -11889,10 +11913,10 @@ Private Sub addtotree(ByVal Path As String, ByRef tv As CCRTreeView.TreeView)
     Dim busyFilename As String: busyFilename = vbNullString
 
     On Error GoTo addtotree_Error
-    If debugflg = 1 Then DebugPrint "%" & "addtotree"
+    If debugFlg = 1 Then debugLog "%" & "addtotree"
 
     Set FS = CreateObject("Scripting.FileSystemObject")
-    If DirExists(Path) Then
+    If fDirExists(Path) Then
         For Each folder1 In FS.getFolder(Path).SubFolders
         
             ' this next line is the MSCOMTCL.OCX usage of the Treeview TvwChild property
@@ -11939,13 +11963,13 @@ End Sub
 Private Sub folderTreeView_DblClick()
     
    On Error GoTo folderTreeView_DblClick_Error
-      If debugflg = 1 Then DebugPrint "%" & "folderTreeView_DblClick"
+      If debugFlg = 1 Then debugLog "%" & "folderTreeView_DblClick"
    
   
 '   Dim a As String
 '   Dim fromNode As String
 '
-'    If DirExists(folderTreeView.SelectedItem.Key) Then
+'    If fDirExists(folderTreeView.SelectedItem.Key) Then
 '        ShellExecute 0, vbNullString, folderTreeView.SelectedItem.Key, vbNullString, vbNullString, 1
 '    End If
 
@@ -11969,7 +11993,7 @@ End Sub
 '
 Private Sub folderTreeView_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
    On Error GoTo folderTreeView_MouseDown_Error
-    If debugflg = 1 Then DebugPrint "%" & "folderTreeView_MouseDown"
+    If debugFlg = 1 Then debugLog "%" & "folderTreeView_MouseDown"
     
     If Button = 2 Then
         ' only required for VB6, the VB.NET version allows
@@ -12004,7 +12028,7 @@ End Sub
 '
 Private Sub txtCurrentIcon_Change()
    On Error GoTo txtCurrentIcon_Change_Error
-      If debugflg = 1 Then DebugPrint "%" & "txtCurrentIcon_Change"
+      If debugFlg = 1 Then debugLog "%" & "txtCurrentIcon_Change"
    
    
     'Dim savIt As String
@@ -12053,7 +12077,7 @@ Private Sub vScrollThumbs_Change()
     On Error GoTo vScrollThumbs_Change_Error
     'thisRoutine = "vScrollThumbs_Change"
 
-    If debugflg = 1 Then DebugPrint "%" & "vScrollThumbs_Change"
+    If debugFlg = 1 Then debugLog "%" & "vScrollThumbs_Change"
    
     ' .51 DAEB 24/04/2022 rDIConConfig.frm Icon preview needs to be forced to refresh after a click elsewhere and a return to the same icon thumbnail.
     'Dim picFrameThumbsLostFocus As Boolean
@@ -12174,7 +12198,7 @@ Private Sub removeThumbHighlighting()
     
     'remove the highlighting
    On Error GoTo removeThumbHighlighting_Error
-      If debugflg = 1 Then DebugPrint "%" & "removeThumbHighlighting"
+      If debugFlg = 1 Then debugLog "%" & "removeThumbHighlighting"
     
     'remove the highlighting
     For useloop = 0 To 11
@@ -12204,7 +12228,7 @@ Private Sub mnuHelpPdf_click()
    Dim answer As VbMsgBoxResult: answer = vbNo
 
    On Error GoTo mnuHelpPdf_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuHelpPdf_click"
+   If debugFlg = 1 Then debugLog "%mnuHelpPdf_click"
 
     answer = msgBoxA("This option opens a browser window and displays this tool's help. Proceed?", vbQuestion + vbYesNo, "Display Help for this tool? ", True, "mnuHelpPdf_click")
     If answer = vbYes Then
@@ -12235,7 +12259,7 @@ Private Sub mnuFacebook_Click()
     Dim answer As VbMsgBoxResult: answer = vbNo
 
     On Error GoTo mnuFacebook_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuFacebook_Click"
+    If debugFlg = 1 Then debugLog "%" & "mnuFacebook_Click"
 
     answer = msgBoxA("Visiting the Facebook chat page - this button opens a browser window and connects to our Facebook chat page. Proceed?", vbQuestion + vbYesNo, "Connect to FaceBook? ", False)
     If answer = vbYes Then
@@ -12260,7 +12284,7 @@ End Sub
 Private Sub mnuHelp_Click(ByRef Index As Integer)
 
     On Error GoTo mnuHelp_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuHelp_Click"
+    If debugFlg = 1 Then debugLog "%" & "mnuHelp_Click"
 
     rdHelpForm.Visible = True
     
@@ -12284,7 +12308,7 @@ Private Sub mnuLatest_Click()
     Dim answer As VbMsgBoxResult: answer = vbNo
 
     On Error GoTo mnuLatest_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuLatest_Click"
+    If debugFlg = 1 Then debugLog "%" & "mnuLatest_Click"
 
     answer = msgBoxA("Download latest version of the program - this button opens a browser window and connects to the widget download page where you can check and download the latest zipped file). Proceed?", vbQuestion + vbYesNo)
 
@@ -12311,7 +12335,7 @@ End Sub
 '
 Private Sub mnuLicence_Click()
     On Error GoTo mnuLicence_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuLicence_Click"
+    If debugFlg = 1 Then debugLog "%" & "mnuLicence_Click"
         
     Call LoadFileToTB(licence.txtLicenceTextBox, App.Path & "\licence.txt", False)
     licence.Show
@@ -12370,7 +12394,7 @@ Private Sub mnuSupport_Click()
     'Dim hWnd As Long
 
     On Error GoTo mnuSupport_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuSupport_Click"
+    If debugFlg = 1 Then debugLog "%" & "mnuSupport_Click"
 
     answer = msgBoxA("Visiting the support page - this button opens a browser window and connects to our contact us page where you can send us a support query or just have a chat). Proceed?", vbQuestion + vbYesNo)
 
@@ -12398,7 +12422,7 @@ Private Sub mnuSweets_Click()
     'Dim hWnd As Long
 
     On Error GoTo mnuSweets_Click_Error
-       If debugflg = 1 Then DebugPrint "%" & "mnuSweets_Click"
+       If debugFlg = 1 Then debugLog "%" & "mnuSweets_Click"
     
     
     answer = msgBoxA(" Help support the creation of more widgets like this. Buy me a small item on my Amazon wishlist! This button opens a browser window and connects to my Amazon wish list page). Will you be kind and proceed?", vbQuestion + vbYesNo)
@@ -12427,7 +12451,7 @@ Private Sub mnuWidgets_Click()
     'Dim hWnd As Long
 
     On Error GoTo mnuWidgets_Click_Error
-       If debugflg = 1 Then DebugPrint "%" & "mnuWidgets_Click"
+       If debugFlg = 1 Then debugLog "%" & "mnuWidgets_Click"
     
     
 
@@ -12454,7 +12478,7 @@ End Sub
 '
 Private Sub mnuClose_Click()
     On Error GoTo mnuClose_Click_Error
-    If debugflg = 1 Then DebugPrint "%mnuDebug_Click"
+    If debugFlg = 1 Then debugLog "%mnuDebug_Click"
     
     Call btnClose_Click
 
@@ -12472,30 +12496,27 @@ End Sub
 ' Procedure : mnuDebug_Click
 ' Author    : beededea
 ' Date      : 26/08/2019
-' Purpose   : Run the runtime debugging window exectuable
+' Purpose   :
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuDebug_Click()
-'    Dim NameProcess As String: NameProcess = ""
-'    Dim debugPath As String: debugPath = vbNullString
     
     On Error GoTo mnuDebug_Click_Error
-    If debugflg = 1 Then DebugPrint "%mnuDebug_Click"
+    If debugFlg = 1 Then debugLog "%mnuDebug_Click"
 
-'    NameProcess = "PersistentDebugPrint.exe"
-'    debugPath = App.Path() & "\" & NameProcess
-    
-    If debugflg = 0 Then
-        debugflg = 1
-'        mnuDebug.Caption = "Turn Debugging OFF"
-'        If FExists(debugPath) Then
-'            Call ShellExecute(hwnd, "Open", debugPath, vbNullString, App.Path, 1)
-'        End If
+    If debugFlg = 0 Then
+        debugFlg = 1
+        mnuDebug.Caption = "Turn Debugging OFF"
+        mnuAppFolder.Visible = True
+        mnuEditWidget.Visible = True
     Else
-        debugflg = 0
-'        mnuDebug.Caption = "Turn Debugging ON"
-'        checkAndKill NameProcess, False, False
+        debugFlg = 0
+        mnuDebug.Caption = "Turn Debugging ON"
+        mnuAppFolder.Visible = False
+        mnuEditWidget.Visible = False
     End If
+
+    PutINISetting "Software\SteamyDock\IconSettings", "debugFlg", debugFlg, toolSettingsFile
 
    On Error GoTo 0
    Exit Sub
@@ -12504,6 +12525,41 @@ mnuDebug_Click_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuDebug_Click of Form rDIconConfigForm"
 End Sub
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : mnuAppFolder_Click
+' Author    : beededea
+' Date      : 05/05/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub mnuAppFolder_Click()
+    Dim folderPath As String: folderPath = vbNullString
+    Dim execStatus As Long: execStatus = 0
+    
+   On Error GoTo mnuAppFolder_Click_Error
+
+    folderPath = App.Path
+    If fDirExists(folderPath) Then ' if it is a folder already
+
+        execStatus = ShellExecute(Me.hwnd, "open", folderPath, vbNullString, vbNullString, 1)
+        If execStatus <= 32 Then MsgBox "Attempt to open folder failed."
+    Else
+        MsgBox "Having a bit of a problem opening a folder for this widget - " & folderPath & " It doesn't seem to have a valid working directory set.", "Panzer Earth Gauge Confirmation Message", vbOKOnly + vbExclamation
+        'MessageBox Me.hWnd, "Having a bit of a problem opening a folder for that command - " & sCommand & " It doesn't seem to have a valid working directory set.", "Panzer Earth Gauge Confirmation Message", vbOKOnly + vbExclamation
+    End If
+
+   On Error GoTo 0
+   Exit Sub
+
+mnuAppFolder_Click_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAppFolder_Click of Form menuForm"
+
+End Sub
+
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuAbout_Click
 ' Author    : beededea
@@ -12514,7 +12570,7 @@ End Sub
 Private Sub mnuAbout_Click(ByRef Index As Integer)
     
     On Error GoTo mnuAbout_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAbout_Click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAbout_Click"
      
      'MsgBox App.Major & ":" & App.Minor & ":" & App.Revision
      
@@ -12546,7 +12602,7 @@ End Sub
 '
 Private Sub mnuMoreIcons_Click()
    On Error GoTo mnuMoreIcons_Click_Error
-   If debugflg = 1 Then DebugPrint "%mnuMoreIcons_Click"
+   If debugFlg = 1 Then debugLog "%mnuMoreIcons_Click"
 
     Call btnGetMore_Click
 
@@ -12589,7 +12645,7 @@ Private Sub menuLeft_Click()
 
     ' take the current icon -1 and read its details and store it
     On Error GoTo menuLeft_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "menuLeft_Click"
+    If debugFlg = 1 Then debugLog "%" & "menuLeft_Click"
     
     ' .82 DAEB 02/06/2022 rDIConConfig.frm Added check for moving right or left beyond the end of the RDMap.
     If rdIconNumber - 1 < 0 Then Exit Sub
@@ -12706,7 +12762,7 @@ Private Sub menuright_Click()
     Dim storedRunElevated   As String: storedRunElevated = vbNullString
      
     On Error GoTo menuright_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "menuright_Click"
+    If debugFlg = 1 Then debugLog "%" & "menuright_Click"
 
     ' .82 DAEB 02/06/2022 rDIConConfig.frm Added check for moving right or left beyond the end of the RDMap.
     If rdIconNumber + 1 > rdIconMaximum Then Exit Sub
@@ -12811,7 +12867,7 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
     Dim thisIcon As Integer
 
     On Error GoTo menuAddSomething_Error
-    If debugflg = 1 Then DebugPrint "%" & "menuAddSomething"
+    If debugFlg = 1 Then debugLog "%" & "menuAddSomething"
   
     Call busyStart
 
@@ -12935,7 +12991,7 @@ End Sub
 Private Sub mnuClone_Click()
         
     On Error GoTo mnuClone_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuClone_Click"
+    If debugFlg = 1 Then debugLog "%" & "mnuClone_Click"
       
     ' when we arrive at the original position then add a blank item
     ' with the following blank characteristics
@@ -12966,7 +13022,7 @@ Private Sub mnuClearCache_Click()
     Dim iconFileName As String: iconFileName = vbNullString
     
     On Error GoTo menuAdd_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuClearCache_Click"
+    If debugFlg = 1 Then debugLog "%" & "mnuClearCache_Click"
       
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\recyclebin-full.png"
@@ -12999,7 +13055,7 @@ End Sub
 Private Sub menuAddBlank_Click()
         
     On Error GoTo menuAdd_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "menuAddBlank_Click"
+    If debugFlg = 1 Then debugLog "%" & "menuAddBlank_Click"
       
     ' when we arrive at the original position then add a blank item
     ' with the following blank characteristics
@@ -13030,7 +13086,7 @@ Private Sub mnuAddShutdown_click()
     Dim iconFileName As String: iconFileName = vbNullString
     
    On Error GoTo mnuAddShutdown_click_Error
-      If debugflg = 1 Then DebugPrint "%" & "mnuAddShutdown_click"
+      If debugFlg = 1 Then debugLog "%" & "mnuAddShutdown_click"
    
    
     ' check the icon exists
@@ -13064,7 +13120,7 @@ Private Sub mnuAddRestart_click()
     Dim iconFileName As String: iconFileName = vbNullString
     
    On Error GoTo mnuAddRestart_click_Error
-      If debugflg = 1 Then DebugPrint "%" & "mnuAddRestart_click"
+      If debugFlg = 1 Then debugLog "%" & "mnuAddRestart_click"
    
    
     ' check the icon exists
@@ -13134,7 +13190,7 @@ Private Sub mnuAddLog_click()
     Dim iconFileName As String: iconFileName = vbNullString
 
     On Error GoTo mnuAddLog_click_Error
-    If debugflg = 1 Then DebugPrint "%mnuAddLog_click"
+    If debugFlg = 1 Then debugLog "%mnuAddLog_click"
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\console-green-screen-logout.png"
@@ -13167,7 +13223,7 @@ Private Sub mnuAddLock_click()
     Dim iconFileName As String: iconFileName = vbNullString
 
     On Error GoTo mnuAddLock_click_Error
-    If debugflg = 1 Then DebugPrint "%mnuAddLock_click"
+    If debugFlg = 1 Then debugLog "%mnuAddLock_click"
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\padlockLockWorkstation.png"
@@ -13200,7 +13256,7 @@ Private Sub mnuAddNetwork_click()
     Dim iconFileName As String: iconFileName = vbNullString
 
     On Error GoTo mnuAddNetwork_click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAddNetwork_click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAddNetwork_click"
    
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\big-globe(network).png"
@@ -13234,7 +13290,7 @@ Private Sub mnuAddWorkgroup_click()
     Dim iconFileName As String: iconFileName = vbNullString
 
     On Error GoTo mnuAddWorkgroup_click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAddWorkgroup_click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAddWorkgroup_click"
    
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\big-globe(network).png"
@@ -13267,7 +13323,7 @@ Private Sub mnuAddPrinters_click()
     Dim iconImage As String: iconImage = vbNullString
     Dim iconFileName As String: iconFileName = vbNullString
     On Error GoTo mnuAddPrinters_click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAddPrinters_click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAddPrinters_click"
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\printer.png"
@@ -13301,7 +13357,7 @@ Private Sub mnuAddTask_click()
     Dim iconFileName As String: iconFileName = vbNullString
     ' check the icon exists
     On Error GoTo mnuAddTask_click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAddTask_click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAddTask_click"
     
     iconFileName = App.Path & "\my collection" & "\task-manager(tskmgr).png"
     If FExists(iconFileName) Then
@@ -13351,7 +13407,7 @@ Private Sub mnuAddControl_click()
     Dim iconFileName As String: iconFileName = vbNullString
     ' check the icon exists
     On Error GoTo mnuAddControl_click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAddControl_click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAddControl_click"
 
     iconFileName = App.Path & "\my collection" & "\control-panel(control).png"
     If FExists(iconFileName) Then
@@ -13382,7 +13438,7 @@ Private Sub mnuAddPrograms_click()
     Dim iconImage As String: iconImage = vbNullString
     Dim iconFileName As String: iconFileName = vbNullString
     On Error GoTo mnuAddPrograms_click_Error
-       If debugflg = 1 Then DebugPrint "%" & "mnuAddPrograms_click"
+       If debugFlg = 1 Then debugLog "%" & "mnuAddPrograms_click"
     
     
     ' check the icon exists
@@ -13416,7 +13472,7 @@ Private Sub mnuAddDiscMgmt_click()
     Dim iconImage As String: iconImage = vbNullString
     Dim iconFileName As String: iconFileName = vbNullString
     On Error GoTo mnuAddDiscMgmt_click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAddDiscMgmt_click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAddDiscMgmt_click"
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\discMgmt.png"
@@ -13448,7 +13504,7 @@ Private Sub mnuAddDevMgmt_click()
     Dim iconImage As String: iconImage = vbNullString
     Dim iconFileName As String: iconFileName = vbNullString
     On Error GoTo mnuAddDevMgmt_click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAddDevMgmt_click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAddDevMgmt_click"
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\Administrative Tools(compmgmt.msc).png"
@@ -13481,7 +13537,7 @@ Private Sub mnuAddEventViewer_click()
     Dim iconImage As String: iconImage = vbNullString
     Dim iconFileName As String: iconFileName = vbNullString
     On Error GoTo mnuAddEventViewer_click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAddEventViewer_click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAddEventViewer_click"
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\event-viewer(CEventVwr.msc).png"
@@ -13514,7 +13570,7 @@ Private Sub mnuAddPerfMon_click()
     Dim iconImage As String: iconImage = vbNullString
     Dim iconFileName As String: iconFileName = vbNullString
     On Error GoTo mnuAddPerfMon_click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAddPerfMon_click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAddPerfMon_click"
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\perfmon.png"
@@ -13545,7 +13601,7 @@ Private Sub mnuAddServices_click()
     Dim iconImage As String: iconImage = vbNullString
     Dim iconFileName As String: iconFileName = vbNullString
     On Error GoTo mnuAddServices_click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAddServices_click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAddServices_click"
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\Administrative Tools(compmgmt.msc).png"
@@ -13576,7 +13632,7 @@ Private Sub mnuAddTaskSched_click()
     Dim iconImage As String: iconImage = vbNullString
     Dim iconFileName As String: iconFileName = vbNullString
     On Error GoTo mnuAddTaskSched_click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAddTaskSched_click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAddTaskSched_click"
     
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\glass-clipboard.png"
@@ -13608,7 +13664,7 @@ Private Sub mnuAddDock_click()
     Dim iconFileName As String: iconFileName = vbNullString
     ' check the icon exists
     On Error GoTo mnuAddDock_click_Error
-      If debugflg = 1 Then DebugPrint "%" & "mnuAddDock_click"
+      If debugFlg = 1 Then debugLog "%" & "mnuAddDock_click"
 
     iconFileName = App.Path & "\my collection" & "\dock settings.ico"
     If FExists(iconFileName) Then
@@ -13641,7 +13697,7 @@ Private Sub mnuAddAdministrative_click()
     Dim iconFileName As String: iconFileName = vbNullString
     ' check the icon exists
     On Error GoTo mnuAddAdministrative_click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAddAdministrative_click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAddAdministrative_click"
 
     iconFileName = App.Path & "\my collection" & "\Administrative Tools(compmgmt.msc).png"
     If FExists(iconFileName) Then
@@ -13672,7 +13728,7 @@ Private Sub mnuAddRecycle_click()
     Dim iconImage As String: iconImage = vbNullString
     Dim iconFileName As String: iconFileName = vbNullString
     On Error GoTo mnuAddRecycle_click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAddRecycle_click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAddRecycle_click"
    
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\recyclebin-full.png"
@@ -13709,7 +13765,7 @@ Private Sub mnuAddClearCache_click()
     Dim iconImage As String: iconImage = vbNullString
     Dim iconFileName As String: iconFileName = vbNullString
     On Error GoTo mnuAddClearCache_click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAddClearCache_click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAddClearCache_click"
    
     ' check the icon exists
     iconFileName = App.Path & "\my collection" & "\recyclebin-full.png"
@@ -13746,7 +13802,7 @@ Private Sub mnuAddQuit_click()
 
     ' check the icon exists
     On Error GoTo mnuAddQuit_click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAddQuit_click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAddQuit_click"
    
     iconFileName = App.Path & "\my collection" & "\quit.png"
     If FExists(iconFileName) Then
@@ -13778,7 +13834,7 @@ Private Sub mnuAddProgramFiles_click()
 
     ' check the icon exists
     On Error GoTo mnuAddProgramFiles_click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuAddProgramFiles_click"
+    If debugFlg = 1 Then debugLog "%" & "mnuAddProgramFiles_click"
    
     iconFileName = App.Path & "\my collection" & "\hard-drive-indicator-D.png"
     If FExists(iconFileName) Then
@@ -13809,7 +13865,7 @@ End Sub
 Private Sub mnuTrgtSeparator_click()
        
    On Error GoTo mnuTrgtSeparator_click_Error
-   If debugflg = 1 Then DebugPrint "mnuTrgtSeparator_click"
+   If debugFlg = 1 Then debugLog "mnuTrgtSeparator_click"
       
     sIsSeparator = "1"
         
@@ -13855,7 +13911,7 @@ Private Sub mnuTrgtClearCache_click()
     Dim dialogInitDir As String: dialogInitDir = vbNullString
    
     On Error GoTo mnuTrgtClearCache_click_Error
-    If debugflg = 1 Then DebugPrint "%mnuTrgtClearCache_click"
+    If debugFlg = 1 Then debugLog "%mnuTrgtClearCache_click"
 
     sCommand = Environ$("windir") & "\System32\RUNDLL32.exe"
     sArguments = "advapi32.dll , ProcessIdleTasks"
@@ -13885,10 +13941,10 @@ Private Sub mnuTrgtFolder_click()
     Dim dialogInitDir As String: dialogInitDir = vbNullString
    
    On Error GoTo mnuTrgtFolder_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtFolder_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtFolder_click"
 
     If txtTarget.Text <> vbNullString Then
-        If DirExists(txtStartIn.Text) Then
+        If fDirExists(txtStartIn.Text) Then
             dialogInitDir = txtTarget.Text 'start dir, might be "C:\" or so also
         Else
             If defaultDock = 0 Then ' ' .19 DAEB 01/03/2021 rDIConConfigForm.frm Separated the Rocketdock/Steamydock specific actions
@@ -13923,7 +13979,7 @@ End Sub
 Private Sub mnuTrgtShutdown_click()
 
    On Error GoTo mnuTrgtShutdown_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtShutdown_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtShutdown_click"
 
     sCommand = Environ$("windir") & "\System32\shutdown.exe"
     sArguments = "/s /t 00 /f /i"
@@ -13949,7 +14005,7 @@ End Sub
 Private Sub mnuTrgtRestart_click()
 
    On Error GoTo mnuTrgtRestart_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtRestart_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtRestart_click"
 
     sCommand = Environ$("windir") & "\System32\shutdown.exe"
     sArguments = "/r"
@@ -14000,7 +14056,7 @@ End Sub
 '
 Private Sub mnuTrgtEnhanced_click()
    On Error GoTo mnuTrgtEnhanced_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtEnhanced_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtEnhanced_click"
 
     sCommand = App.Path & "\iconsettings.exe" ' 17/11/2020    .04 DAEB Replaced all occurrences of rocket1.exe with iconsettings.exe
 
@@ -14025,7 +14081,7 @@ End Sub
 Private Sub mnuTrgtLog_click()
 
    On Error GoTo mnuTrgtLog_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtLog_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtLog_click"
 
     sCommand = Environ$("windir") & "\System32\shutdown.exe"
     sArguments = "/l"
@@ -14053,7 +14109,7 @@ End Sub
 Private Sub mnuTrgtLock_click()
 
    On Error GoTo mnuTrgtLock_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtLock_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtLock_click"
 
     sCommand = Environ$("windir") & "\System32\rundll32.exe"
     sArguments = "user32.dll, LockWorkStation"
@@ -14081,7 +14137,7 @@ End Sub
 Private Sub mnuTrgtWorkgroup_click()
 
    On Error GoTo mnuTrgtWorkgroup_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtWorkgroup_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtWorkgroup_click"
 
     sCommand = "::{208D2C60-3AEA-1069-A2D7-08002B30309D}"
     txtTarget.Text = sCommand
@@ -14105,7 +14161,7 @@ End Sub
 Private Sub mnuTrgtNetwork_click()
 
    On Error GoTo mnuTrgtNetwork_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtNetwork_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtNetwork_click"
 
     sCommand = "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}"
     txtTarget.Text = sCommand
@@ -14129,7 +14185,7 @@ End Sub
 Private Sub mnuTrgtMyComputer_click()
  
    On Error GoTo mnuTrgtMyComputer_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtMyComputer_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtMyComputer_click"
 
     sCommand = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
     txtTarget.Text = sCommand
@@ -14152,7 +14208,7 @@ End Sub
 Private Sub mnuTrgtMyDocuments_click()
  
    On Error GoTo mnuTrgtMyDocuments_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtMyDocuments_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtMyDocuments_click"
 
     sCommand = "::{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}"
     txtTarget.Text = sCommand
@@ -14180,7 +14236,7 @@ Private Sub mnuTrgtMyMusic_click()
     userprof = ""
     
    On Error GoTo mnuTrgtMyMusic_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtMyMusic_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtMyMusic_click"
 
     userprof = Environ$("USERPROFILE")
 
@@ -14211,7 +14267,7 @@ Private Sub mnuTrgtMyPictures_click()
     userprof = ""
     
    On Error GoTo mnuTrgtMyPictures_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtMyPictures_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtMyPictures_click"
 
     userprof = Environ$("USERPROFILE")
 
@@ -14242,7 +14298,7 @@ Private Sub mnuTrgtMyVideos_click()
     userprof = ""
     
    On Error GoTo mnuTrgtMyVideos_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtMyVideos_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtMyVideos_click"
 
     userprof = Environ$("USERPROFILE")
 
@@ -14267,7 +14323,7 @@ End Sub
 '
 Private Sub mnuTrgtPrinters_click()
    On Error GoTo mnuTrgtPrinters_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtPrinters_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtPrinters_click"
 
     sCommand = "::{2227a280-3aea-1069-a2de-08002b30309d}"
     txtTarget.Text = sCommand
@@ -14288,7 +14344,7 @@ End Sub
 '
 Private Sub mnuTrgtTask_click()
    On Error GoTo mnuTrgtTask_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtTask_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtTask_click"
 
     sCommand = "taskmgr"
     txtTarget.Text = sCommand
@@ -14309,7 +14365,7 @@ End Sub
 '
 Private Sub mnuTrgtControl_click()
    On Error GoTo mnuTrgtControl_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtControl_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtControl_click"
 
     sCommand = "control"
     txtTarget.Text = sCommand
@@ -14330,7 +14386,7 @@ End Sub
 '
 Private Sub mnuTrgtProgramFiles_click()
    On Error GoTo mnuTrgtProgramFiles_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtProgramFiles_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtProgramFiles_click"
 
     sCommand = "::{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}"
     txtTarget.Text = sCommand
@@ -14351,7 +14407,7 @@ End Sub
 '
 Private Sub mnuTrgtPrograms_click()
    On Error GoTo mnuTrgtPrograms_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtPrograms_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtPrograms_click"
 
     sCommand = "appwiz.cpl"
     txtTarget.Text = sCommand
@@ -14373,7 +14429,7 @@ End Sub
 '
 Private Sub mnuTrgtRecycle_click()
    On Error GoTo mnuTrgtRecycle_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtRecycle_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtRecycle_click"
 
     sCommand = "::{645ff040-5081-101b-9f08-00aa002f954e}"
     txtTarget.Text = sCommand
@@ -14401,7 +14457,7 @@ Private Sub mnuTrgtDocklet_click()
     Const x_MaxBuffer = 256
     ' set the default folder to the docklet folder under rocketdock
    On Error GoTo mnuTrgtDocklet_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtDocklet_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtDocklet_click"
    
     If defaultDock = 0 Then ' ' .19 DAEB 01/03/2021 rDIConConfigForm.frm Separated the Rocketdock/Steamydock specific actions
         dialogInitDir = rdAppPath & "\docklets"
@@ -14468,7 +14524,7 @@ End Sub
 '
 Private Sub mnuTrgtDock_click()
    On Error GoTo mnuTrgtDock_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtDock_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtDock_click"
 
     sCommand = "[Settings]"
     txtTarget.Text = sCommand
@@ -14489,7 +14545,7 @@ End Sub
 '
 Private Sub mnuTrgtRocketdock_click()
    On Error GoTo mnuTrgtRocketdock_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuTrgtRocketdock_click"
+   If debugFlg = 1 Then debugLog "%mnuTrgtRocketdock_click"
 
     sCommand = "[Quit]"
     txtTarget.Text = sCommand
@@ -14512,7 +14568,7 @@ End Sub
 '
 Public Function CheckControlExists(ByRef ctl As Object) As Boolean
    On Error GoTo CheckControlExists_Error
-    If debugflg = 1 Then DebugPrint "%" & "CheckControlExists"
+    If debugFlg = 1 Then debugLog "%" & "CheckControlExists"
    
     CheckControlExists = (VarType(ctl) <> vbObject)
 
@@ -14535,7 +14591,7 @@ End Function
 '
 Private Sub mnuDelete_Click()
     On Error GoTo mnuDelete_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuDelete_Click"
+    If debugFlg = 1 Then debugLog "%" & "mnuDelete_Click"
     
     Call deleteRdMapPosition(rdIconNumber)
     
@@ -14643,7 +14699,7 @@ Private Sub mnuCoffee_Click(ByRef Index As Integer)
     Dim answer As VbMsgBoxResult: answer = vbNo
 
     On Error GoTo mnuCoffee_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "mnuCoffee_Click"
+    If debugFlg = 1 Then debugLog "%" & "mnuCoffee_Click"
     
     answer = msgBoxA(" Help support the creation of more widgets like this, send us a beer! This button opens a browser window and connects to the Paypal donate page for this widget). Will you be kind and proceed?", vbQuestion + vbYesNo)
 
@@ -14671,7 +14727,7 @@ End Sub
 Private Sub menuAddToDock_click()
 
    On Error GoTo menuAddToDock_Error
-   If debugflg = 1 Then DebugPrint "%menuAddToDock"
+   If debugFlg = 1 Then debugLog "%menuAddToDock"
 
     Call btnAdd_Click
 
@@ -14697,7 +14753,7 @@ Private Sub menuSmallerIcons_Click()
     
     ' the labels for the smaller thumbnail icon view
     On Error GoTo menuSmallerIcons_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "menuSmallerIcons_Click"
+    If debugFlg = 1 Then debugLog "%" & "menuSmallerIcons_Click"
    
     If thumbImageSize = 64 Then ' change to 32
         thumbImageSize = 32
@@ -14734,7 +14790,7 @@ Private Sub menuLargerThumbs_Click()
     'Dim suffix As String: suffix = vbnullstring
     
     On Error GoTo menuLargerThumbs_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "menuLargerThumbs_Click"
+    If debugFlg = 1 Then debugLog "%" & "menuLargerThumbs_Click"
     
     If thumbImageSize = 32 Then
         thumbImageSize = 64
@@ -14766,7 +14822,7 @@ End Sub
 '                If Not 0 Then
 '                    chkBiLinear.Tag = "noMsg"
 '                    On Error Resume Next
-'                    DebugPrint 1 / 0
+'                    debugLog  1 / 0
 '                    If Err Then ' uncompiled
 '                        Err.Clear
 '                        MsgBox "Non-GDI+ rotation with bilinear interpolation is painfully slow in IDE." & vbCrLf & _
@@ -14840,13 +14896,13 @@ Private Sub Form_Unload(ByRef Cancel As Integer)
     ' destroy it in the Unload or Terminate event
     ' and also reset gdiToken property for each existing class
 
-    'If debugflg = 1 Then DebugPrint "%" & "Form_Unload"
+    'If debugFlg = 1 Then debugLog  "%" & "Form_Unload"
     
-    NameProcess = "PersistentDebugPrint.exe"
+    'NameProcess = "PersistentdebugLog .exe"
     
-    If debugflg = 1 Then
-        checkAndKill NameProcess, False, False
-    End If
+'    If debugFlg = 1 Then
+'        checkAndKill NameProcess, False, False
+'    End If
         
     If m_GDItoken Then
         If Not cShadow Is Nothing Then cShadow.gdiToken = 0&
@@ -14894,7 +14950,7 @@ End Sub
 '    ' The 1st two options will be disabled if you do not have GDI+ installed
 '
 '    On Error GoTo mnuSubOpts_Click_Error
-'    If debugflg = 1 Then DebugPrint "%" & "mnuSubOpts_Click"
+'    If debugFlg = 1 Then debugLog  "%" & "mnuSubOpts_Click"
 '
 '    Select Case Index
 '    Case 0: ' do not use GDI+
@@ -14961,7 +15017,7 @@ Private Sub refreshPicBox(ByRef picBox As PictureBox, ByVal iconSizing As Intege
     Dim LightAdjustment As Single
         
     On Error GoTo refreshPicBox_Error
-    If debugflg = 1 Then DebugPrint "%" & "refreshPicBox"
+    If debugFlg = 1 Then debugLog "%" & "refreshPicBox"
 
     mirrorOffsetX = 1
     mirrorOffsetY = 1
@@ -15029,7 +15085,7 @@ End Sub
 ''
 'Private Sub vScrollThumbs_KeyDown(ByRef KeyCode As Integer, ByRef Shift As Integer)
 '   On Error GoTo vScrollThumbs_KeyDown_Error
-'      If debugflg = 1 Then DebugPrint "%" & "vScrollThumbs_KeyDown"
+'      If debugFlg = 1 Then debugLog  "%" & "vScrollThumbs_KeyDown"
 '
 '
 '
@@ -15066,7 +15122,7 @@ End Sub
 '    Dim s As String
 '
 '   On Error GoTo LoadFileToTB_Error
-'   If debugflg = 1 Then DebugPrint "%" & "LoadFileToTB"
+'   If debugFlg = 1 Then debugLog  "%" & "LoadFileToTB"
 '
 '    If Dir(FilePath) = "" Then Exit Function
 '
@@ -15106,7 +15162,7 @@ End Sub
 '
 Private Sub btnTarget_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
    On Error GoTo btnTarget_MouseDown_Error
-   If debugflg = 1 Then DebugPrint "%btnTarget_MouseDown"
+   If debugFlg = 1 Then debugLog "%btnTarget_MouseDown"
 
     If Button = 2 Then
         'Me.PopupMenu mnupopmenu, vbPopupMenuRightButton
@@ -15131,7 +15187,7 @@ End Sub
 '
 Private Sub mnuLight_click()
    On Error GoTo mnuLight_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuLight_click"
+   If debugFlg = 1 Then debugLog "%mnuLight_click"
     
     'MsgBox "Auto Theme Selection Manually Disabled"
     mnuAuto.Caption = "Auto Theme Enable"
@@ -15160,7 +15216,7 @@ End Sub
 '    Dim Ctrl As Control
 '
 '    On Error GoTo setThemeLight_Error
-'    If debugflg = 1 Then DebugPrint "%setThemeLight"
+'    If debugFlg = 1 Then debugLog  "%setThemeLight"
 '
 '    classicTheme = False
 '    mnuLight.Checked = True
@@ -15226,7 +15282,7 @@ End Sub
 '
 Private Sub mnuDark_click()
    On Error GoTo mnuDark_click_Error
-   If debugflg = 1 Then DebugPrint "%mnuDark_click"
+   If debugFlg = 1 Then debugLog "%mnuDark_click"
     
     'MsgBox "Auto Theme Selection Manually Disabled"
     mnuAuto.Caption = "Auto Theme Enable"
@@ -15255,7 +15311,7 @@ End Sub
 '
 Public Sub mnuAuto_click()
    On Error GoTo mnuAuto_Error
-   If debugflg = 1 Then DebugPrint "%mnuAuto"
+   If debugFlg = 1 Then debugLog "%mnuAuto"
 
     ' set the menu checks
     
@@ -15305,7 +15361,7 @@ Private Sub menuRun_click()
     userLevel = "open"
     
     On Error GoTo menuRun_click_Error
-    If debugflg = 1 Then DebugPrint "%menuRun_click"
+    If debugFlg = 1 Then debugLog "%menuRun_click"
     
     intShowCmd = Val(sShowCmd)
     
@@ -15368,7 +15424,7 @@ Private Sub menuRun_click()
         'thisCommand = App.Path & "\resources\dockSettings.exe"
         thisCommand = "C:\Program Files (x86)\SteamyDock\dockSettings\dockSettings.exe"
         If FExists(thisCommand) Then
-            If debugflg = 1 Then Debug.Print "ShellExecute " & thisCommand
+            If debugFlg = 1 Then debugLog "ShellExecute " & thisCommand
             Call executeCommand("open", thisCommand, vbNullString, vbNullString, intShowCmd) 'change to call new function as part of .16
         Else
             MsgBox "Cannot find " & thisCommand
@@ -15382,7 +15438,7 @@ Private Sub menuRun_click()
 '
 '
 '        If FExists(thisCommand) Then
-'            If debugflg = 1 Then Debug.Print "ShellExecute " & thisCommand
+'            If debugFlg = 1 Then debugLog "ShellExecute " & thisCommand
 '            Call executeCommand("runas", thisCommand, vbNullString, vbNullString, intShowCmd)
 '        Else
 '            MsgBox "Cannot find " & thisCommand
@@ -15418,7 +15474,7 @@ Private Sub menuRun_click()
     
      ' applications And features
 '    If thisCommand = "appwiz.cpl" Then
-'        If debugflg = 1 Then DebugPrint "Shell " & "rundll32.exe shell32.dll,Control_RunDLL " & thisCommand
+'        If debugFlg = 1 Then debugLog  "Shell " & "rundll32.exe shell32.dll,Control_RunDLL " & thisCommand
 '        Call shellCommand("rundll32.exe shell32.dll,Control_RunDLL appwiz.cpl", intShowCmd) 'change to call new function as part of .16
 '        Exit Sub
 '    End If
@@ -15443,7 +15499,7 @@ Private Sub menuRun_click()
             folderPath = getFolderNameFromPath(thisCommand)  ' extract the default folder from the full path
 
             ' .45 DAEB 01/04/2021 frmMain.frm Changed the logic to remove the code around a folder path existing...
-            If Not DirExists(folderPath) Then
+            If Not fDirExists(folderPath) Then
                  ' if there is no folder path provided then attempt it on its own hoping that the windows PATH will find it
                 On Error GoTo tryMSCFullPAth ' apologies for this GOTO - testing to see if it is in the path, then it will run.
                 Call executeCommand(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
@@ -15481,7 +15537,7 @@ tryMSCFullPAth:
     
     ' bat files
     If ExtractSuffixWithDot(UCase$(thisCommand)) = ".BAT" Then
-        If debugflg = 1 Then Debug.Print "ShellExecute " & thisCommand
+        If debugFlg = 1 Then debugLog "ShellExecute " & thisCommand
         thisCommand = """" & sCommand & """" ' put the command in quotes so it handles spaces in the path
         folderPath = getFolderNameFromPath(thisCommand)  ' extract the default folder from the batch full path
         If FExists(thisCommand) Then
@@ -15494,7 +15550,7 @@ tryMSCFullPAth:
     
     'anything else remaining
     If FExists(thisCommand) Then ' checks the current folder for the named target
-        'If debugflg = 1 Then debugLog "ShellExecute " & thisCommand
+        'If debugFlg = 1 Then debugLog "ShellExecute " & thisCommand
         If sWorkingDirectory <> vbNullString Then
             Call executeCommand(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
             Exit Sub
@@ -15502,7 +15558,7 @@ tryMSCFullPAth:
             Call executeCommand(userLevel, thisCommand, sArguments, vbNullString, intShowCmd)
             Exit Sub
         End If
-    ElseIf DirExists(thisCommand) Then ' checks if a folder of the same name exists in the current folder
+    ElseIf fDirExists(thisCommand) Then ' checks if a folder of the same name exists in the current folder
         Call executeCommand("open", thisCommand, sArguments, sWorkingDirectory, intShowCmd)
         Exit Sub
     End If
@@ -15616,7 +15672,7 @@ Private Sub subBtnArrowDown_Click()
     Dim amountToDrop As Integer: amountToDrop = 0
     
     On Error GoTo btnArrowDown_Click_Error
-    If debugflg = 1 Then DebugPrint "%" & "btnArrowDown_Click"
+    If debugFlg = 1 Then debugLog "%" & "btnArrowDown_Click"
     
     growBit = 670
     amountToDrop = 1200
@@ -15715,7 +15771,7 @@ End Sub
 '
 Private Sub btnArrowDown_MouseUp(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
    On Error GoTo btnArrowDown_MouseUp_Error
-   If debugflg = 1 Then DebugPrint "%btnArrowDown_MouseUp"
+   If debugFlg = 1 Then debugLog "%btnArrowDown_MouseUp"
 
         btnWorking.Visible = True
 
@@ -15735,7 +15791,7 @@ End Sub
 '
 Private Sub btnArrowUp_Click()
    On Error GoTo btnArrowUp_Click_Error
-   If debugflg = 1 Then DebugPrint "%" & "btnArrowUp_Click"
+   If debugFlg = 1 Then debugLog "%" & "btnArrowUp_Click"
 
    If picRdThumbFrame.Visible = True Then
    
@@ -15821,7 +15877,7 @@ End Sub
 Private Sub picRdMapSetFocus()
     
     On Error GoTo picRdMapSetFocus_Error
-    If debugflg = 1 Then DebugPrint "%picRdMapSetFocus"
+    If debugFlg = 1 Then debugLog "%picRdMapSetFocus"
 
     picRdMapGotFocus = True
     picFrameThumbsGotFocus = False
@@ -15849,7 +15905,7 @@ End Sub
     Private Sub picFrameThumbsSetFocus()
 
    On Error GoTo picFrameThumbsSetFocus_Error
-   If debugflg = 1 Then DebugPrint "%picFrameThumbsSetFocus"
+   If debugFlg = 1 Then debugLog "%picFrameThumbsSetFocus"
 
             picFrameThumbsGotFocus = True
             picRdMapGotFocus = False
@@ -16526,7 +16582,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
         iconCommand = Data.Files(1) ' set the command for all types
         
         ' is it a folder, does the folder exist
-        If DirExists(iconTitle) Then
+        If fDirExists(iconTitle) Then
             iconFileName = App.Path & "\my collection\steampunk icons MKVI" & "\document-dir.png"
             If FExists(iconFileName) Then
                 iconImage = iconFileName
@@ -16787,7 +16843,7 @@ Private Sub mnuOpenFolder_click()
         Exit Sub
     End If
     
-    If DirExists(selectedKey) Then
+    If fDirExists(selectedKey) Then
         ShellExecute 0, vbNullString, selectedKey, vbNullString, vbNullString, 1
     End If
     mnuOpenFolder.Visible = False
@@ -16830,14 +16886,18 @@ End Sub
 ' Author    : beededea
 ' Date      : 12/05/2020
 ' Purpose   : read the application's setting file and assign values to public vars
+' NOTE: most of the settings are read from the SteamyDock settings file
 '---------------------------------------------------------------------------------------
 '
+
 Public Sub readSettingsFile() '(ByVal location As String, ByVal PzGSettingsFile As String)
     On Error GoTo readSettingsFile_Error
 
     If FExists(toolSettingsFile) Then
 
         rDDefaultEditor = GetINISetting("Software\SteamyDock\IconSettings", "defaultEditor", toolSettingsFile)
+        rDDebugFlg = GetINISetting("Software\SteamyDock\IconSettings", "debugFlg", toolSettingsFile)
+        debugFlg = Val(rDDebugFlg)
 
     End If
 

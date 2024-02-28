@@ -1048,7 +1048,7 @@ Private Sub DecodeFilter_Avg(ByRef Filtered() As Byte, ByVal RowNr As Long, ByVa
     ' algorithm: Recon(x) = Filt(x) + floor((Recon(a) + Recon(b)) / 2)
     ' Unsigned arithmetic modulo 256 is used, so that both the inputs and outputs fit into bytes
 
-    Dim x As Long
+    Dim X As Long
 Dim startByte As Long
 
     
@@ -1059,18 +1059,18 @@ Dim startByte As Long
     If RowNr = 0 Then   ' 1st row; there will be no Top row to get data from
         ' if png is encoded properly, shouldn't get here
         ' now process the 2nd pixel on, to finish the scanline
-        For x = startByte + stepVal To startByte + ScanLine - 2
-            Filtered(x) = (0 + Filtered(x) + (Filtered(x - stepVal) \ 2)) Mod 256
+        For X = startByte + stepVal To startByte + ScanLine - 2
+            Filtered(X) = (0 + Filtered(X) + (Filtered(X - stepVal) \ 2)) Mod 256
         Next
         
     Else    ' 2nd or subsequent rows
         ' process the 1st n bytes (1st pixel only)
-        For x = startByte To startByte + stepVal - 1
-            Filtered(x) = (0 + Filtered(x) + (Filtered(x - ScanLine) \ 2)) Mod 256
+        For X = startByte To startByte + stepVal - 1
+            Filtered(X) = (0 + Filtered(X) + (Filtered(X - ScanLine) \ 2)) Mod 256
         Next
         ' now process the 2nd pixel on, to finish the scanline
-        For x = x To startByte + ScanLine - 2
-            Filtered(x) = (0 + Filtered(x) + (0 + Filtered(x - stepVal) + Filtered(x - ScanLine)) \ 2) Mod 256
+        For X = X To startByte + ScanLine - 2
+            Filtered(X) = (0 + Filtered(X) + (0 + Filtered(X - stepVal) + Filtered(X - ScanLine)) \ 2) Mod 256
         Next
     End If
 eh:
@@ -1091,7 +1091,7 @@ Private Sub DecodeFilter_Paeth(ByRef Filtered() As Byte, ByVal RowNr As Long, By
     ' algorithm: Recon(x) = Filt(x) + PaethPredictor(Recon(a), Recon(b), Recon(c))
     ' Unsigned arithmetic modulo 256 is used, so that both the inputs and outputs fit into bytes
 
-    Dim x As Long
+    Dim X As Long
 Dim startByte As Long
 
 
@@ -1103,18 +1103,18 @@ Dim startByte As Long
     If RowNr = 0 Then    ' 1st row; there will be no Top row to get data from
         ' if png is encoded properly, shouldn't get here
         ' now process the 2nd pixel on, to finish the scanline
-        For x = startByte + stepVal To startByte + ScanLine - 2
-            Filtered(x) = (0 + Filtered(x) + Filtered(x - stepVal)) Mod 256
+        For X = startByte + stepVal To startByte + ScanLine - 2
+            Filtered(X) = (0 + Filtered(X) + Filtered(X - stepVal)) Mod 256
         Next
     
     Else    ' 2nd or subsequent rows
         ' process the 1st n bytes (1st pixel only)
-        For x = startByte To startByte + stepVal - 1
-            Filtered(x) = (0 + Filtered(x) + Filtered(x - ScanLine)) Mod 256
+        For X = startByte To startByte + stepVal - 1
+            Filtered(X) = (0 + Filtered(X) + Filtered(X - ScanLine)) Mod 256
         Next
         ' now process the 2nd pixel on, to finish the scanline
-        For x = x To startByte + ScanLine - 2
-            Filtered(x) = (0 + Filtered(x) + PaethPredictor(Filtered(x - stepVal), Filtered(x - ScanLine), Filtered(x - ScanLine - stepVal))) Mod 256
+        For X = X To startByte + ScanLine - 2
+            Filtered(X) = (0 + Filtered(X) + PaethPredictor(Filtered(X - stepVal), Filtered(X - ScanLine), Filtered(X - ScanLine - stepVal))) Mod 256
         Next
 
     End If
@@ -1137,17 +1137,17 @@ Private Sub DecodeFilter_Sub(ByRef Filtered() As Byte, ByVal RowNr As Long, ByVa
     ' Unsigned arithmetic modulo 256 is used, so that both the inputs and outputs fit into bytes
 
     Dim startByte As Long
-    Dim n As Long
-Dim x As Long
+    Dim N As Long
+Dim X As Long
 
     
     startByte = RowNr * ScanLine + 1
     
     On Error GoTo eh
     ' 1st n bytes for 1st pixel are unfiltered
-    For n = startByte + stepVal To startByte + ScanLine - 2 Step stepVal
-        For x = n To n + stepVal - 1
-            Filtered(x) = (0 + Filtered(x) + Filtered(x - stepVal)) Mod 256
+    For N = startByte + stepVal To startByte + ScanLine - 2 Step stepVal
+        For X = N To N + stepVal - 1
+            Filtered(X) = (0 + Filtered(X) + Filtered(X - stepVal)) Mod 256
         Next
     Next
 eh:
@@ -1169,14 +1169,14 @@ Private Sub DecodeFilter_Up(ByRef Filtered() As Byte, ByVal RowNr As Long, ByVal
     ' Unsigned arithmetic modulo 256 is used, so that both the inputs and outputs fit into bytes
     
     Dim startByte As Long
-Dim x As Long
+Dim X As Long
 
     
     On Error GoTo eh
     If Not RowNr = 0 Then    ' 1st row; there will be no Top row to get data from
         startByte = RowNr * ScanLine + 1
-        For x = startByte To startByte + ScanLine - 2
-            Filtered(x) = (0 + Filtered(x) + Filtered(x - ScanLine)) Mod 256
+        For X = startByte To startByte + ScanLine - 2
+            Filtered(X) = (0 + Filtered(X) + Filtered(X - ScanLine)) Mod 256
         Next
     End If
 eh:
@@ -1240,7 +1240,7 @@ Dim bitPP As Byte
         ' calculate nr of pixels for this pass that will fit in width of image
         nr8wide = m_Width \ m_MatrixDat(Pass, MatrixColAdd) - (m_Width Mod m_MatrixDat(Pass, MatrixColAdd) > m_MatrixDat(Pass, MatrixCol))
         If nr8wide > 0& Then
-            'DebugPrint "pass "; Pass, "nr8wide = "; nr8wide, m_MatrixDat(Pass, MatrixColAdd)
+            'debugLog  "pass "; Pass, "nr8wide = "; nr8wide, m_MatrixDat(Pass, MatrixColAdd)
             ' calcuate nr of rows for this pass that will fit in height of image
             nr8high = m_Height \ m_MatrixDat(Pass, MatrixRowAdd) - (m_Height Mod m_MatrixDat(Pass, MatrixRowAdd) > m_MatrixDat(Pass, MatrixRow))
             If nr8high > 0& Then
@@ -1530,7 +1530,7 @@ Private Sub InitializePalette()
         Dim nrEntries As Long
 Dim stepVal As Long
 
-        Dim x As Long
+        Dim X As Long
 Dim Index As Long
 Dim Color As Long
 
@@ -1543,9 +1543,9 @@ Dim Color As Long
             
                 nrEntries = pow2x8(m_BitDepth) - 1&       ' number grayscale palette entries
                 stepVal = 255 \ (pow2x8(m_BitDepth) - 1&) ' step value for the palette
-                For x = 1& To nrEntries
-                    Color = x * stepVal
-                    Index = x * 3&
+                For X = 1& To nrEntries
+                    Color = X * stepVal
+                    Index = X * 3&
                     m_Palette(Index) = Color
                     m_Palette(Index + 1&) = Color
                     m_Palette(Index + 2&) = Color
@@ -1591,7 +1591,7 @@ Private Function vbDecompress(ByRef outStream() As Byte, ByRef CompressedArray()
     Dim Nubits As Long
     Dim L1 As Long
     Dim L2 As Long
-    Dim x As Long
+    Dim X As Long
     Dim lRtn As Long
     Dim MinLLength As Long
     Dim MaxLLength As Long
@@ -1698,14 +1698,14 @@ Private Function vbDecompress(ByRef outStream() As Byte, ByRef CompressedArray()
                     vbDropBits Nubits
                     L2 = DCodes.code(Char) + vbGetBits(DCodes.Length(Char))
     
-                    For x = 1& To L1
+                    For X = 1& To L1
                         If OutPos > UncompressedSize Then
                             OutPos = UncompressedSize
                             GoTo Stop_Decompression
                         End If
                          outStream(OutPos) = outStream(OutPos - L2)
                          OutPos = OutPos + 1&
-                    Next x
+                    Next X
                 
                 End If
 
@@ -1740,34 +1740,34 @@ End Function
 
 Private Function vbCreate_Static_Tree(ByRef MinLLength As Long, ByRef MaxLLength As Long, ByRef MinDLength As Long, ByRef MaxDLength As Long, ByRef IsStaticBuild As Boolean) As Long
 
-    Dim x As Long
+    Dim X As Long
     Dim Length(0 To 287) As Long
 
     If IsStaticBuild = False Then
         ' quick fill the tree (tile Blt)
-        For x = 0& To 7&: Length(x) = 8&: Next ' 0 to 143 elements = 8
-        For x = x To 143& Step 8&
-            CopyMemory Length(x), Length(0), 32&
+        For X = 0& To 7&: Length(X) = 8&: Next ' 0 to 143 elements = 8
+        For X = X To 143& Step 8&
+            CopyMemory Length(X), Length(0), 32&
         Next
-        For x = x To x + 7&: Length(x) = 9&: Next ' 144 to 255 elements = 9
-        For x = x To 255& Step 8&
-            CopyMemory Length(x), Length(144), 32&
+        For X = X To X + 7&: Length(X) = 9&: Next ' 144 to 255 elements = 9
+        For X = X To 255& Step 8&
+            CopyMemory Length(X), Length(144), 32&
         Next
-        For x = x To x + 7&: Length(x) = 7&: Next ' 256 to 279 elements = 7
-        For x = x To 279& Step 8&
-            CopyMemory Length(x), Length(256), 32&
+        For X = X To X + 7&: Length(X) = 7&: Next ' 256 to 279 elements = 7
+        For X = X To 279& Step 8&
+            CopyMemory Length(X), Length(256), 32&
         Next
-        For x = x To x + 3&: Length(x) = 8&: Next ' 280 to 287 elements = 8
-        CopyMemory Length(x), Length(280), 16&
+        For X = X To X + 3&: Length(X) = 8&: Next ' 280 to 287 elements = 8
+        CopyMemory Length(X), Length(280), 16&
         
         If Not vbCreate_Codes(TempLit, Length, 287&, MaxLLength, MinLLength) = 0& Then
              vbCreate_Static_Tree = -1&
             Exit Function
         End If
         
-        For x = 0& To 7&: Length(x) = 5&: Next  ' reset 0 to 32 to 5's
-        For x = x To 31& Step 8&
-            CopyMemory Length(x), Length(0), 32&
+        For X = 0& To 7&: Length(X) = 5&: Next  ' reset 0 to 32 to 5's
+        For X = X To 31& Step 8&
+            CopyMemory Length(X), Length(0), 32&
         Next
         vbCreate_Static_Tree = vbCreate_Codes(TempDist, Length, 31&, MaxDLength, MinDLength)
         IsStaticBuild = True
@@ -1795,19 +1795,19 @@ Private Function vbCreate_Dynamic_Tree(ByRef MinLLength As Long, ByRef MaxLLengt
     Dim Nubits As Long
     Dim LN As Long
     Dim Pos As Long
-    Dim x As Long
+    Dim X As Long
 
     NumLen = vbGetBits(5) + 257&
     Numdis = vbGetBits(5) + 1&
     NumCod = vbGetBits(4) + 4&
 
     ReDim Length(18)
-    For x = 0& To NumCod - 1&
-        Length(LenOrder(x)) = vbGetBits(3)
+    For X = 0& To NumCod - 1&
+        Length(LenOrder(X)) = vbGetBits(3)
     Next
 
-    For x = NumCod To 18&
-        Length(LenOrder(x)) = 0&
+    For X = NumCod To 18&
+        Length(LenOrder(X)) = 0&
     Next
 
     If Not vbCreate_Codes(Bl_Tree, Length, 18&, MaxBL, MinBL) = 0& Then
@@ -1865,8 +1865,8 @@ Private Function vbCreate_Dynamic_Tree(ByRef MinLLength As Long, ByRef MaxLLengt
         Exit Function
     End If
 
-    For x = 0& To Numdis
-        Length(x) = Length(x + NumLen)
+    For X = 0& To Numdis
+        Length(X) = Length(X + NumLen)
     Next
     
     vbCreate_Dynamic_Tree = vbCreate_Codes(Dist, Length, Numdis - 1&, MaxDLength, MinDLength)
@@ -1879,19 +1879,19 @@ Private Function vbCreate_Codes(ByRef tree As CodesType, ByRef Lengths() As Long
     Dim next_code(16) As Long
     Dim code As Long
     Dim LN As Long
-    Dim x As Long
+    Dim X As Long
 
     Minbits = 16&
-    For x = 0& To NumCodes
-        BITS(Lengths(x)) = BITS(Lengths(x)) + 1&
-        If Lengths(x) > MaxBits Then MaxBits = Lengths(x)
-        If Lengths(x) < Minbits And Lengths(x) > 0& Then Minbits = Lengths(x)
+    For X = 0& To NumCodes
+        BITS(Lengths(X)) = BITS(Lengths(X)) + 1&
+        If Lengths(X) > MaxBits Then MaxBits = Lengths(X)
+        If Lengths(X) < Minbits And Lengths(X) > 0& Then Minbits = Lengths(X)
     Next
 
     LN = 1&
-    For x = 1& To MaxBits
+    For X = 1& To MaxBits
         LN = LN + LN
-        LN = LN - BITS(x)
+        LN = LN - BITS(X)
         If LN < 0& Then
             vbCreate_Codes = LN
             Exit Function
@@ -1904,17 +1904,17 @@ Private Function vbCreate_Codes(ByRef tree As CodesType, ByRef Lengths() As Long
     code = 0&
     BITS(0) = 0&
     
-    For x = 1& To MaxBits
-        code = (code + BITS(x - 1&)) * 2&
-        next_code(x) = code
+    For X = 1& To MaxBits
+        code = (code + BITS(X - 1&)) * 2&
+        next_code(X) = code
     Next
 
-    For x = 0& To NumCodes
-        LN = Lengths(x)
+    For X = 0& To NumCodes
+        LN = Lengths(X)
         If Not LN = 0& Then
             code = vbBit_Reverse(next_code(LN), LN)
             tree.Length(code) = LN
-            tree.code(code) = x
+            tree.code(code) = X
             next_code(LN) = next_code(LN) + 1&
         End If
     Next
@@ -1934,7 +1934,7 @@ End Function
 Private Sub vbInit_Decompress()
     
     Dim Temp() As Variant
-    Dim x As Long
+    Dim X As Long
 
     Erase LitLen.code
     Erase LitLen.Length
@@ -1948,22 +1948,22 @@ Private Sub vbInit_Decompress()
     ReDim LenOrder(0 To 18)
 
     Temp() = Array(16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15)
-    For x = 0 To UBound(Temp): LenOrder(x) = Temp(x): Next
+    For X = 0 To UBound(Temp): LenOrder(X) = Temp(X): Next
      Temp() = Array(3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258)
-    For x = 0 To UBound(Temp): LCodes.code(x) = Temp(x): Next
+    For X = 0 To UBound(Temp): LCodes.code(X) = Temp(X): Next
      Temp() = Array(0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0)
-    For x = 0 To UBound(Temp): LCodes.Length(x) = Temp(x): Next
+    For X = 0 To UBound(Temp): LCodes.Length(X) = Temp(X): Next
      Temp() = Array(1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577, 32769, 49153)
-    For x = 0 To UBound(Temp): DCodes.code(x) = Temp(x): Next
+    For X = 0 To UBound(Temp): DCodes.code(X) = Temp(X): Next
      Temp() = Array(0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14)
-    For x = 0 To UBound(Temp): DCodes.Length(x) = Temp(x): Next
+    For X = 0 To UBound(Temp): DCodes.Length(X) = Temp(X): Next
     
     ReDim Pow2(0 To 16)
     ReDim BitMask(0 To 16)
     Pow2(0) = 1&
-    For x = 1& To 16&
-     Pow2(x) = Pow2(x - 1&) * 2&
-     BitMask(x) = Pow2(x) - 1&
+    For X = 1& To 16&
+     Pow2(X) = Pow2(X - 1&) * 2&
+     BitMask(X) = Pow2(X) - 1&
     Next
     OutPos = 0&
     Inpos = 0&

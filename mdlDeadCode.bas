@@ -134,7 +134,7 @@ Attribute VB_Name = "mdlDeadCode"
 '    'Writes an .INI File (SETTINGS.INI)
 '
 '   On Error GoTo writeIconSettingsIni_Error
-'   If debugflg = 1 Then Debug.Print "%writeIconSettingsIni"
+'   If debugFlg = 1 Then debugLog "%writeIconSettingsIni"
 '
 '        sFilenameCheck = sFilename  ' debug 01
 '
@@ -182,7 +182,7 @@ Attribute VB_Name = "mdlDeadCode"
 '    ' Icons\Steampunk_Clockwerk_Kubrick
 '
 '   On Error GoTo writeSettingsIni_Error
-'   If debugflg = 1 Then DebugPrint "%writeSettingsIni"
+'   If debugFlg = 1 Then debugLog  "%writeSettingsIni"
 '
 '        sFilenameCheck = sFilename  ' debug 01
 '
@@ -226,7 +226,7 @@ Attribute VB_Name = "mdlDeadCode"
 '    'removes data from the ini file at the given location
 '
 '   On Error GoTo removeSettingsIni_Error
-'   If debugflg = 1 Then DebugPrint "%removeSettingsIni"
+'   If debugFlg = 1 Then debugLog  "%removeSettingsIni"
 '
 '        PutINISetting "Software\RocketDock\Icons", iconNumberToWrite & "-FileName", vbNullString, interimSettingsFile
 '        PutINISetting "Software\RocketDock\Icons", iconNumberToWrite & "-FileName2", vbNullString, interimSettingsFile
@@ -261,7 +261,7 @@ Attribute VB_Name = "mdlDeadCode"
 '
 'Public Sub f_GetSaveFileName()
 '   On Error GoTo f_GetSaveFileName_Error
-'   If debugflg = 1 Then DebugPrint "%f_GetSaveFileName"
+'   If debugFlg = 1 Then debugLog  "%f_GetSaveFileName"
 '
 '  If GetSaveFileName(x_OpenFilename) <> 0 Then
 '    'PURPOSE: A file was selected
@@ -290,7 +290,7 @@ Attribute VB_Name = "mdlDeadCode"
 '    'Reads an .INI File (SETTINGS.INI)
 '
 '   On Error GoTo readSettingsIni_Error
-'   If debugflg = 1 Then DebugPrint "%readSettingsIni"
+'   If debugFlg = 1 Then debugLog  "%readSettingsIni"
 '
 '        sFilename = GetINISetting("Software\RocketDock\Icons", iconNumberToRead & "-FileName", interimSettingsFile)
 '        sFileName2 = GetINISetting("Software\RocketDock\Icons", iconNumberToRead & "-FileName2", interimSettingsFile)
@@ -452,11 +452,11 @@ Attribute VB_Name = "mdlDeadCode"
 '
 '    ProgramFilesDir = strString
 '    If ProgramFilesDir = vbNullString Then ProgramFilesDir = "c:\program files (x86)" ' 64bit systems
-'    If Not DirExists(ProgramFilesDir) Then
+'    If Not fDirExists(ProgramFilesDir) Then
 '        ProgramFilesDir = "c:\program files" ' 32 bit systems
 '    End If
 '
-'    If debugflg = 1 Then DebugPrint "%" & "ProgramFilesDir = " & ProgramFilesDir
+'    If debugFlg = 1 Then debugLog  "%" & "ProgramFilesDir = " & ProgramFilesDir
 '
 '    ' turn on the timer that tests every 10 secs whether the visual theme has changed
 '    ' only on those o/s versions that need it
@@ -492,7 +492,7 @@ Attribute VB_Name = "mdlDeadCode"
 'Public Function FExists(ByRef OrigFile As String) As Boolean
 '    Dim FS As Object
 '   On Error GoTo FExists_Error
-'   If debugflg = 1 Then Debug.Print "%FExists"
+'   If debugFlg = 1 Then debugLog "%FExists"
 '
 '    Set FS = CreateObject("Scripting.FileSystemObject")
 '    FExists = FS.FileExists(OrigFile)
@@ -507,26 +507,26 @@ Attribute VB_Name = "mdlDeadCode"
 '
 '
 ''---------------------------------------------------------------------------------------
-'' Procedure : DirExists
+'' Procedure : fDirExists
 '' Author    : beededea
 '' Date      : 17/10/2019
 '' Purpose   :
 ''---------------------------------------------------------------------------------------
 ''
-'Public Function DirExists(ByRef OrigFile As String) As Boolean
+'Public Function fDirExists(ByRef OrigFile As String) As Boolean
 '    Dim FS As Object
-'   On Error GoTo DirExists_Error
-'   If debugflg = 1 Then DebugPrint "%DirExists"
+'   On Error GoTo fDirExists_Error
+'   If debugFlg = 1 Then debugLog  "%fDirExists"
 '
 '    Set FS = CreateObject("Scripting.FileSystemObject")
-'    DirExists = FS.FolderExists(OrigFile)
+'    fDirExists = FS.FolderExists(OrigFile)
 '
 '   On Error GoTo 0
 '   Exit Function
 '
-'DirExists_Error:
+'fDirExists_Error:
 '
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure DirExists of Module Module1"
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fDirExists of Module Module1"
 'End Function
 
 
@@ -546,7 +546,7 @@ Attribute VB_Name = "mdlDeadCode"
 'Dim objFolder As Object
 '
 '   On Error GoTo SpecialFolder_Error
-'   If debugflg = 1 Then DebugPrint "%SpecialFolder"
+'   If debugFlg = 1 Then debugLog  "%SpecialFolder"
 '
 '  Set objShell = CreateObject("Shell.Application")
 '  Set objFolder = objShell.NameSpace(CLng(pFolder))
