@@ -115,7 +115,7 @@ Private Sub declineLabel_Click()
     Next
     slicence = "0"
     
-    PutINISetting "Software\SteamyDockSettings", "Licence", slicence, toolSettingsFile
+    PutINISetting "Software\IconSettings", "Licence", slicence, toolSettingsFile
     End
 End Sub
 
@@ -125,6 +125,6 @@ Private Sub Label2_Click()
     licence.Hide
     slicence = "1"
     
-    PutINISetting "Software\SteamyDockSettings", "Licence", slicence, toolSettingsFile
+    PutINISetting "Software\IconSettings", "Licence", slicence, toolSettingsFile
 
 End Sub

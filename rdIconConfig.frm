@@ -1917,6 +1917,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+' addTargetProgram move to common module
+
 ' Changes:
 
 ' .01 DAEB 26/10/2020 rDIconConfigForm.frm rocket1 Moved function isRunning from mdlMain (sD mdlMain.bas) to a shared common.bas module so that more than just one program can utilise it
@@ -3425,8 +3427,8 @@ Private Sub positionTimer_Timer()
     
     
     ' now write those params to the toolSettings.ini
-    PutINISetting "Software\SteamyDockSettings", "IconConfigFormXPos", rDIconConfigFormXPosTwips, toolSettingsFile
-    PutINISetting "Software\SteamyDockSettings", "IconConfigFormYPos", rDIconConfigFormYPosTwips, toolSettingsFile
+    PutINISetting "Software\IconSettings", "IconConfigFormXPos", rDIconConfigFormXPosTwips, toolSettingsFile
+    PutINISetting "Software\IconSettings", "IconConfigFormYPos", rDIconConfigFormYPosTwips, toolSettingsFile
 End Sub
 
 
@@ -3656,7 +3658,7 @@ Private Sub Form_Activate()
     If dragToDockOperating = False Then
 
         'check the map state on startup
-        sdMapState = GetINISetting("Software\SteamyDockSettings", "sdMapState", toolSettingsFile)
+        sdMapState = GetINISetting("Software\IconSettings", "sdMapState", toolSettingsFile)
         If sdMapState <> "hidden" Then
             Call subBtnArrowDown_Click ' .33
             If rdIconNumber > 0 Then
@@ -3924,7 +3926,7 @@ Private Sub chkToggleDialogs_Click()
     Else
        sdChkToggleDialogs = "1"
     End If
-    PutINISetting "Software\SteamyDockSettings", "sdChkToggleDialogs", sdChkToggleDialogs, toolSettingsFile
+    PutINISetting "Software\IconSettings", "sdChkToggleDialogs", sdChkToggleDialogs, toolSettingsFile
 
     Call setToolTips
 End Sub
@@ -4167,8 +4169,8 @@ Private Sub makeVisibleFormElements()
 '    virtualScreenWidthTwips = fVirtualScreenWidth
 
     ' read the form's saved X/Y params from the toolSettings.ini in twips and convert to pixels
-    formLeftPixels = Val(GetINISetting("Software\SteamyDockSettings", "IconConfigFormXPos", toolSettingsFile)) / screenTwipsPerPixelX
-    formTopPixels = Val(GetINISetting("Software\SteamyDockSettings", "IconConfigFormYPos", toolSettingsFile)) / screenTwipsPerPixelY
+    formLeftPixels = Val(GetINISetting("Software\IconSettings", "IconConfigFormXPos", toolSettingsFile)) / screenTwipsPerPixelX
+    formTopPixels = Val(GetINISetting("Software\IconSettings", "IconConfigFormYPos", toolSettingsFile)) / screenTwipsPerPixelY
 
     Call adjustFormPositionToCorrectMonitor(Me.hwnd, formLeftPixels, formTopPixels)
  
@@ -4260,11 +4262,13 @@ Public Sub adjustMainControls()
     If rDDefaultEditor <> vbNullString Then mnuEditWidget.Caption = "Edit Program using " & rDDefaultEditor
     
     If debugFlg = 1 Then
-        mnuEditWidget.Visible = True
+        mnuDebug.Caption = "Turn Debugging OFF"
         mnuAppFolder.Visible = True
+        mnuEditWidget.Visible = True
     Else
-        mnuEditWidget.Visible = False
+        mnuDebug.Caption = "Turn Debugging ON"
         mnuAppFolder.Visible = False
+        mnuEditWidget.Visible = False
     End If
     
    On Error GoTo 0
@@ -4780,7 +4784,7 @@ Private Sub determineFirstRun()
     If Not fFExists(toolSettingsFile) Then Exit Sub ' does the tool's own settings.ini exist?
     
     'test to see if the tool has ever been run before
-    sfirst = GetINISetting("Software\SteamyDockSettings", "First", toolSettingsFile)
+    sfirst = GetINISetting("Software\IconSettings", "First", toolSettingsFile)
     
     If sfirst = "True" Then
     
@@ -4822,7 +4826,7 @@ Private Sub determineFirstRun()
 '        PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconMaximum, interimSettingsFile
 
         'write the updated test of first run to false
-        PutINISetting "Software\SteamyDockSettings", "First", sfirst, toolSettingsFile
+        PutINISetting "Software\IconSettings", "First", sfirst, toolSettingsFile
     
 '        'filecopy the rocketdockSettings png to the rocketdock icons folder
 '        If defaultDock = 0 Then ' ' .19 DAEB 01/03/2021 rDIConConfigForm.frm Separated the Rocketdock/Steamydock specific actions
@@ -4976,12 +4980,12 @@ Private Sub readIconsAndConfiguration()
 '    End If
 
     ' .71 DAEB 16/05/2022 rDIConConfig.frm Move the reading of recent settings into the main read configuration procedure STARTS
-    rDThumbImageSize = GetINISetting("Software\SteamyDockSettings", "thumbImageSize", toolSettingsFile)
+    rDThumbImageSize = GetINISetting("Software\IconSettings", "thumbImageSize", toolSettingsFile)
     If rDThumbImageSize = "" Then rDThumbImageSize = "64" ' validate
     thumbImageSize = Val(rDThumbImageSize) ' set
 
     ' .70 DAEB 16/05/2022 rDIConConfig.frm Read the chkToggleDialogs value from a file and save the value for next time
-    sdChkToggleDialogs = GetINISetting("Software\SteamyDockSettings", "sdChkToggleDialogs", toolSettingsFile)
+    sdChkToggleDialogs = GetINISetting("Software\IconSettings", "sdChkToggleDialogs", toolSettingsFile)
     
     If sdChkToggleDialogs = "" Then sdChkToggleDialogs = "1" ' validate
     If sdChkToggleDialogs = "1" Then ' set
@@ -4992,7 +4996,7 @@ Private Sub readIconsAndConfiguration()
     ' .71 DAEB 16/05/2022 rDIConConfig.frm Move the reading of recent settings into the main read configuration procedure ENDS
 
     ' TBD
-    sdThumbnailCacheCount = GetINISetting("Software\SteamyDockSettings", "thumbnailCacheCount", toolSettingsFile)
+    sdThumbnailCacheCount = GetINISetting("Software\IconSettings", "thumbnailCacheCount", toolSettingsFile)
 
     If sdThumbnailCacheCount = "" Then sdThumbnailCacheCount = "250" ' default value
 
@@ -5202,7 +5206,7 @@ Private Sub checkDefaultDock()
             'mnuRocketDock.Caption = "SteamyDock location - " & sdAppPath & " - click to change"
             defaultDock = 1
             ' write the default dock to the SteamyDock settings file
-            PutINISetting "Software\SteamyDockSettings", "defaultDock", defaultDock, toolSettingsFile
+            PutINISetting "Software\IconSettings", "defaultDock", defaultDock, toolSettingsFile
             
 '    ElseIf rocketDockInstalled = True Then ' just rocketdock installed
 '            cmbDefaultDock.ListIndex = 0
@@ -5918,101 +5922,7 @@ Private Sub getFileName()
     End If
 
 End Sub
-'---------------------------------------------------------------------------------------
-' Procedure : addTargetProgram
-' Author    : beededea
-' Date      : 30/05/2019
-' Purpose   : open a dialogbox to select a file as the target, normally a binary
-'---------------------------------------------------------------------------------------
-'
-Private Function addTargetProgram(ByVal targetText As String)
-    Dim iconPath As String: iconPath = vbNullString
-    Dim dllPath As String: dllPath = vbNullString
-    Dim dialogInitDir As String: dialogInitDir = vbNullString
-    Dim retFileName As String: retFileName = vbNullString
-    Dim retfileTitle As String: retfileTitle = vbNullString
-    
-    Const x_MaxBuffer = 256
-    
-    'On Error GoTo addTargetProgram_Error
-    If debugFlg = 1 Then debugLog "%" & "addTargetProgram"
-    
-    'On Error GoTo l_err1
-    'savLblTarget = txtTarget.Text
-    
-    On Error Resume Next
-    
-    ' set the default folder to the existing reference
-    If Not targetText = vbNullString Then
-        If fFExists(targetText) Then
-            ' extract the folder name from the string
-            iconPath = getFolderNameFromPath(targetText)
-            ' set the default folder to the existing reference
-            dialogInitDir = iconPath 'start dir, might be "C:\" or so also
-        ElseIf fDirExists(targetText) Then ' this caters for the entry being just a folder name
-            ' set the default folder to the existing reference
-            dialogInitDir = targetText 'start dir, might be "C:\" or so also
-        Else
-            If defaultDock = 0 Then ' ' .19 DAEB 01/03/2021 rDIConConfigForm.frm Separated the Rocketdock/Steamydock specific actions
-                dialogInitDir = rdAppPath 'start dir, might be "C:\" or so also
-            Else
-                dialogInitDir = sdAppPath 'start dir, might be "C:\" or so also
-            End If
-        End If
-    Else
-    ' .85 DAEB 06/06/2022 rDIConConfig.frm  Second app button should open in the program files folder
-    If fDirExists("c:\program files") Then
-            dialogInitDir = "c:\program files"
-        End If
-    End If
-    
-    If Not sDockletFile = vbNullString Then
-        If fFExists(sDockletFile) Then
-            ' extract the folder name from the string
-            dllPath = getFolderNameFromPath(sDockletFile)
-            ' set the default folder to the existing reference
-            dialogInitDir = dllPath 'start dir, might be "C:\" or so also
-        ElseIf fDirExists(sDockletFile) Then ' this caters for the entry being just a folder name
-            ' set the default folder to the existing reference
-            dialogInitDir = sDockletFile 'start dir, might be "C:\" or so also
-        Else
-            If defaultDock = 0 Then ' .14 DAEB 27/02/2021 rdIConConfigForm.frm Added default dock check to ensure it works without RD installed
-                dialogInitDir = rdAppPath & "\docklets"  'start dir, might be "C:\" or so also
-            Else
-                dialogInitDir = sdAppPath & "\docklets"  'start dir, might be "C:\" or so also
-            End If
-        End If
-    End If
-    
-  With x_OpenFilename
-'    .hwndOwner = Me.hWnd
-    .hInstance = App.hInstance
-    .lpstrTitle = "Select a File Target for this icon to call"
-    .lpstrInitialDir = dialogInitDir
-    
-    .lpstrFilter = "Text Files" & vbNullChar & "*.txt" & vbNullChar & "All Files" & vbNullChar & "*.*" & vbNullChar & vbNullChar
-    .nFilterIndex = 2
-    
-    .lpstrFile = String$(x_MaxBuffer, 0)
-    .nMaxFile = x_MaxBuffer - 1
-    .lpstrFileTitle = .lpstrFile
-    .nMaxFileTitle = x_MaxBuffer - 1
-    .lStructSize = Len(x_OpenFilename)
-  End With
 
-  Call getFileNameAndTitle(retFileName, retfileTitle) ' retfile will be buffered to 256 bytes
-
-  addTargetProgram = retFileName
-
-   On Error GoTo 0
-   
-   Exit Function
-
-addTargetProgram_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addTargetProgram of Form rDIconConfigForm"
- 
-End Function
 
 
 
@@ -6243,7 +6153,7 @@ Private Sub mnuRocketDock_click()
                 'If fDirExists(getFolder) Then mnuRocketDock.Caption = "RocketDock Location - " & getFolder & " - click to change."
                 
                 If fFExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
-                    PutINISetting "Software\SteamyDockSettings", "rocketDockLocation", rdAppPath, toolSettingsFile
+                    PutINISetting "Software\IconSettings", "rocketDockLocation", rdAppPath, toolSettingsFile
                 End If
                 
             End If
@@ -6254,7 +6164,7 @@ Private Sub mnuRocketDock_click()
                 
                 If fFExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
                     ' write the default dock location to the SteamyDock settings file
-                    PutINISetting "Software\SteamyDockSettings", "steamyDockLocation", sdAppPath, toolSettingsFile
+                    PutINISetting "Software\IconSettings", "steamyDockLocation", sdAppPath, toolSettingsFile
                 End If
                 
             End If
@@ -8927,10 +8837,10 @@ Private Sub mnuFont_Click()
     SDSuppliedFontColour = CStr(fntColour)
 
     If fFExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
-        PutINISetting "Software\SteamyDockSettings", "defaultFont", SDSuppliedFont, toolSettingsFile
-        PutINISetting "Software\SteamyDockSettings", "defaultSize", SDSuppliedFontSize, toolSettingsFile
-        PutINISetting "Software\SteamyDockSettings", "defaultItalics", SDSuppliedFontItalics, toolSettingsFile
-        PutINISetting "Software\SteamyDockSettings", "defaultColour", SDSuppliedFontColour, toolSettingsFile
+        PutINISetting "Software\IconSettings", "defaultFont", SDSuppliedFont, toolSettingsFile
+        PutINISetting "Software\IconSettings", "defaultSize", SDSuppliedFontSize, toolSettingsFile
+        PutINISetting "Software\IconSettings", "defaultItalics", SDSuppliedFontItalics, toolSettingsFile
+        PutINISetting "Software\IconSettings", "defaultColour", SDSuppliedFontColour, toolSettingsFile
     End If
     
     
@@ -9122,7 +9032,7 @@ Private Sub readTreeviewDefaultFolder()
     If debugFlg = 1 Then debugLog "%" & "readTreeviewDefaultFolder"
 
     If fFExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
-        defaultFolderNodeKey = GetINISetting("Software\SteamyDockSettings", "defaultFolderNodeKey", toolSettingsFile)
+        defaultFolderNodeKey = GetINISetting("Software\IconSettings", "defaultFolderNodeKey", toolSettingsFile)
     End If
 
     folderTreeView.HideSelection = False ' Ensures found item highlighted
@@ -11872,7 +11782,7 @@ l_bypass_parent:
         defaultFolderNodeKey = folderTreeView.SelectedItem.Key
         'eg. defaultFolderNodeKey=?E:\dean\steampunk theme\icons\
         If fFExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
-                PutINISetting "Software\SteamyDockSettings", "defaultFolderNodeKey", defaultFolderNodeKey, toolSettingsFile
+                PutINISetting "Software\IconSettings", "defaultFolderNodeKey", defaultFolderNodeKey, toolSettingsFile
         End If
             
         If picFrameThumbs.Visible = True Then
@@ -12363,16 +12273,18 @@ Private Sub mnuEditWidget_Click()
     If rDDefaultEditor = vbNullString Then
         MsgBox "Select the .VBP file that is associated with the Icon Settings VB6 program."
         rDDefaultEditor = addTargetProgram("")
-        If fFExists(rDDefaultEditor) Then PutINISetting "Software\SteamyDock\IconSettings", "defaultEditor", rDDefaultEditor, toolSettingsFile
+        If fFExists(rDDefaultEditor) Then
+            PutINISetting "Software\IconSettings", "defaultEditor", rDDefaultEditor, toolSettingsFile
+            mnuEditWidget.Caption = "Edit Program using " & rDDefaultEditor
+        End If
     End If
     
     If fFExists(rDDefaultEditor) Then
-        
         ' run the selected program
         execStatus = ShellExecute(Me.hwnd, "open", rDDefaultEditor, vbNullString, vbNullString, 1)
         If execStatus <= 32 Then MsgBox "Attempt to open the IDE for this widget failed."
     Else
-        MsgBox "Having a bit of a problem opening an IDE for this widgt - " & rDDefaultEditor & " It doesn't seem to have a valid working directory set.", "Panzer Earth Gauge Confirmation Message", vbOKOnly + vbExclamation
+        MsgBox "Having a bit of a problem opening an IDE for this widget - " & rDDefaultEditor & " It doesn't seem to have a valid working directory set.", "Panzer Earth Gauge Confirmation Message", vbOKOnly + vbExclamation
     End If
 
    On Error GoTo 0
@@ -12516,7 +12428,8 @@ Private Sub mnuDebug_Click()
         mnuEditWidget.Visible = False
     End If
 
-    PutINISetting "Software\SteamyDock\IconSettings", "debugFlg", debugFlg, toolSettingsFile
+    rDDebugFlg = CStr(debugFlg)
+    PutINISetting "Software\IconSettings", "debugFlg", rDDebugFlg, toolSettingsFile
 
    On Error GoTo 0
    Exit Sub
@@ -14761,7 +14674,7 @@ Private Sub menuSmallerIcons_Click()
     
     ' .54 DAEB 25/04/2022 rDIConConfig.frm Added rDThumbImageSize saved variable to allow the tool to open the thumbnail explorer in small or large mode
     rDThumbImageSize = Str$(thumbImageSize)
-    PutINISetting "Software\SteamyDockSettings", "thumbImageSize", rDThumbImageSize, toolSettingsFile
+    PutINISetting "Software\IconSettings", "thumbImageSize", rDThumbImageSize, toolSettingsFile
     
     removeThumbHighlighting
     
@@ -14798,7 +14711,7 @@ Private Sub menuLargerThumbs_Click()
       
     ' .54 DAEB 25/04/2022 rDIConConfig.frm Added rDThumbImageSize saved variable to allow the tool to open the thumbnail explorer in small or large mode
     rDThumbImageSize = Str$(thumbImageSize)
-    PutINISetting "Software\SteamyDockSettings", "thumbImageSize", rDThumbImageSize, toolSettingsFile
+    PutINISetting "Software\IconSettings", "thumbImageSize", rDThumbImageSize, toolSettingsFile
 
     imlThumbnailCache.ListImages.Clear
 
@@ -14858,8 +14771,8 @@ Private Sub Form_Unload(ByRef Cancel As Integer)
     rDIconConfigFormYPosTwips = rDIconConfigForm.Top
     
     ' now write those params to the toolSettings.ini
-    PutINISetting "Software\SteamyDockSettings", "IconConfigFormXPos", rDIconConfigFormXPosTwips, toolSettingsFile
-    PutINISetting "Software\SteamyDockSettings", "IconConfigFormYPos", rDIconConfigFormYPosTwips, toolSettingsFile
+    PutINISetting "Software\IconSettings", "IconConfigFormXPos", rDIconConfigFormXPosTwips, toolSettingsFile
+    PutINISetting "Software\IconSettings", "IconConfigFormYPos", rDIconConfigFormYPosTwips, toolSettingsFile
     
     Call DestroyToolTip ' destroys any current tooltip
     
@@ -15735,7 +15648,7 @@ Private Sub subBtnArrowDown_Click()
         Call busyStop
 
         'write the visible state
-        PutINISetting "Software\SteamyDockSettings", "sdMapState", "visible", toolSettingsFile
+        PutINISetting "Software\IconSettings", "sdMapState", "visible", toolSettingsFile
 
     
     End If
@@ -15823,7 +15736,7 @@ Private Sub btnArrowUp_Click()
         rdMapHScroll.Visible = False
         
         'write the hidden state
-        PutINISetting "Software\SteamyDockSettings", "sdMapState", "hidden", toolSettingsFile
+        PutINISetting "Software\IconSettings", "sdMapState", "hidden", toolSettingsFile
                 
    End If
 
@@ -16123,13 +16036,13 @@ Private Sub readAndSetUtilityFont()
     ' set the tool's default font
    On Error GoTo readAndSetUtilityFont_Error
 
-    SDSuppliedFont = GetINISetting("Software\SteamyDockSettings", "defaultFont", toolSettingsFile)
-    SDSuppliedFontSize = Val(GetINISetting("Software\SteamyDockSettings", "defaultSize", toolSettingsFile))
-    SDSuppliedFontItalics = Val(GetINISetting("Software\SteamyDockSettings", "defaultItalics", toolSettingsFile))
-    SDSuppliedFontColour = Val(GetINISetting("Software\SteamyDockSettings", "defaultColour", toolSettingsFile))
+    SDSuppliedFont = GetINISetting("Software\IconSettings", "defaultFont", toolSettingsFile)
+    SDSuppliedFontSize = Val(GetINISetting("Software\IconSettings", "defaultSize", toolSettingsFile))
+    SDSuppliedFontItalics = Val(GetINISetting("Software\IconSettings", "defaultItalics", toolSettingsFile))
+    SDSuppliedFontColour = Val(GetINISetting("Software\IconSettings", "defaultColour", toolSettingsFile))
 '    SDSuppliedFontStrength = GetINISetting("Software\SteamyDockSettings", "defaultStrength", toolSettingsFile)
-'    SDSuppliedFontStyle = GetINISetting("Software\SteamyDockSettings", "defaultStyle", toolSettingsFile)
-    rDSkinTheme = GetINISetting("Software\SteamyDockSettings", "SkinTheme", toolSettingsFile) ' 17/11/2020 rDIconConfigForm.frm .05 DAEB Added the missing code to read/write the current theme to the tool's own settings file
+'    SDSuppliedFontStyle = GetINISetting("Software\IconSettings", "defaultStyle", toolSettingsFile)
+    rDSkinTheme = GetINISetting("Software\IconSettings", "SkinTheme", toolSettingsFile) ' 17/11/2020 rDIconConfigForm.frm .05 DAEB Added the missing code to read/write the current theme to the tool's own settings file
     
     
     'storedFont = txtTextFont.Text 'TBD
@@ -16895,8 +16808,8 @@ Public Sub readSettingsFile() '(ByVal location As String, ByVal PzGSettingsFile 
 
     If fFExists(toolSettingsFile) Then
 
-        rDDefaultEditor = GetINISetting("Software\SteamyDock\IconSettings", "defaultEditor", toolSettingsFile)
-        rDDebugFlg = GetINISetting("Software\SteamyDock\IconSettings", "debugFlg", toolSettingsFile)
+        rDDefaultEditor = GetINISetting("Software\IconSettings", "defaultEditor", toolSettingsFile)
+        rDDebugFlg = GetINISetting("Software\IconSettings", "debugFlg", toolSettingsFile)
         debugFlg = Val(rDDebugFlg)
 
     End If

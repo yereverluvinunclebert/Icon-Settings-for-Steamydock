@@ -1290,37 +1290,6 @@ fbackupSettings_Error:
 End Function
 
 
-' .89 DAEB 13/06/2022 rDIConConfig.frm Moved backup-related private routines to modules to make them public
-'---------------------------------------------------------------------------------------
-' Procedure : getFileNameAndTitle
-' Author    : beededea
-' Date      : 02/09/2019
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Public Sub getFileNameAndTitle(ByRef retFileName As String, ByRef retfileTitle As String)
-   On Error GoTo getFileNameAndTitle_Error
-   If debugFlg = 1 Then debugLog "%getFileNameAndTitle"
-
-  If GetOpenFileName(x_OpenFilename) <> 0 Then
-    If x_OpenFilename.lpstrFile = "*.*" Then
-        'txtTarget.Text = savLblTarget
-    Else
-        retfileTitle = x_OpenFilename.lpstrFileTitle
-        retFileName = x_OpenFilename.lpstrFile
-    End If
-  Else
-    'The CANCEL button was pressed
-    'MsgBox "Cancel"
-  End If
-
-   On Error GoTo 0
-   Exit Sub
-
-getFileNameAndTitle_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getFileNameAndTitle of Form rDIconConfigForm"
-End Sub
 
 
 
@@ -1525,7 +1494,7 @@ Public Sub setThemeShade(ByRef thisForm As Form, ByVal redC As Integer, ByVal gr
     
     End If
     
-    PutINISetting "Software\SteamyDockSettings", "SkinTheme", rDSkinTheme, toolSettingsFile ' now saved to the toolsettingsfile ' 17/11/2020 rDIconConfigForm.frm .05 DAEB Added the missing code to read/write the current theme to the tool's own settings file
+    PutINISetting "Software\IconSettings", "SkinTheme", rDSkinTheme, toolSettingsFile ' now saved to the toolsettingsfile ' 17/11/2020 rDIconConfigForm.frm .05 DAEB Added the missing code to read/write the current theme to the tool's own settings file
 
     ' on NT6 plus using the MSCOMCTL slider with the lighter default theme, the slider
     ' fails to pick up the new theme colour fully
