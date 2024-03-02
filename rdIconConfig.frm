@@ -3706,7 +3706,7 @@ Private Sub Form_Load()
     validIconTypes = "*.jpg;*.jpeg;*.bmp;*.ico;*.png;*.tif;*.tiff;*.gif" ' add any remaining types that Rocketdock's code supports
     filesIconList.Pattern = validIconTypes ' set the filter pattern to only show the icon types supported by Rocketdock
     programStatus = "startup"
-    rDDefaultEditor = "" ' "E:\vb6\rocketdock\iconsettings.vbp"
+    sDIconSettingsDefaultEditor = "" ' "E:\vb6\rocketdock\iconsettings.vbp"
     rDDebugFlg = ""
     
     ' theme variables
@@ -4259,7 +4259,7 @@ Public Sub adjustMainControls()
    
     On Error GoTo adjustMainControls_Error
           
-    If rDDefaultEditor <> vbNullString Then mnuEditWidget.Caption = "Edit Program using " & rDDefaultEditor
+    If sDIconSettingsDefaultEditor <> vbNullString Then mnuEditWidget.Caption = "Edit Program using " & sDIconSettingsDefaultEditor
     
     If debugFlg = 1 Then
         mnuDebug.Caption = "Turn Debugging OFF"
@@ -12270,21 +12270,21 @@ Private Sub mnuEditWidget_Click()
     
     On Error GoTo mnuEditWidget_Click_Error
     
-    If rDDefaultEditor = vbNullString Then
+    If sDIconSettingsDefaultEditor = vbNullString Then
         MsgBox "Select the .VBP file that is associated with the Icon Settings VB6 program."
-        rDDefaultEditor = addTargetProgram("")
-        If fFExists(rDDefaultEditor) Then
-            PutINISetting "Software\IconSettings", "defaultEditor", rDDefaultEditor, toolSettingsFile
-            mnuEditWidget.Caption = "Edit Program using " & rDDefaultEditor
+        sDIconSettingsDefaultEditor = addTargetProgram("")
+        If fFExists(sDIconSettingsDefaultEditor) Then
+            PutINISetting "Software\IconSettings", "defaultEditor", sDIconSettingsDefaultEditor, toolSettingsFile
+            mnuEditWidget.Caption = "Edit Program using " & sDIconSettingsDefaultEditor
         End If
     End If
     
-    If fFExists(rDDefaultEditor) Then
+    If fFExists(sDIconSettingsDefaultEditor) Then
         ' run the selected program
-        execStatus = ShellExecute(Me.hwnd, "open", rDDefaultEditor, vbNullString, vbNullString, 1)
+        execStatus = ShellExecute(Me.hwnd, "open", sDIconSettingsDefaultEditor, vbNullString, vbNullString, 1)
         If execStatus <= 32 Then MsgBox "Attempt to open the IDE for this widget failed."
     Else
-        MsgBox "Having a bit of a problem opening an IDE for this widget - " & rDDefaultEditor & " It doesn't seem to have a valid working directory set.", "Panzer Earth Gauge Confirmation Message", vbOKOnly + vbExclamation
+        MsgBox "Having a bit of a problem opening an IDE for this widget - " & sDIconSettingsDefaultEditor & " It doesn't seem to have a valid working directory set.", "Panzer Earth Gauge Confirmation Message", vbOKOnly + vbExclamation
     End If
 
    On Error GoTo 0
@@ -16808,7 +16808,7 @@ Public Sub readSettingsFile() '(ByVal location As String, ByVal PzGSettingsFile 
 
     If fFExists(toolSettingsFile) Then
 
-        rDDefaultEditor = GetINISetting("Software\IconSettings", "defaultEditor", toolSettingsFile)
+        sDIconSettingsDefaultEditor = GetINISetting("Software\IconSettings", "defaultEditor", toolSettingsFile)
         rDDebugFlg = GetINISetting("Software\IconSettings", "debugFlg", toolSettingsFile)
         debugFlg = Val(rDDebugFlg)
 
