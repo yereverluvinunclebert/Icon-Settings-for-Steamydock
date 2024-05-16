@@ -1601,6 +1601,9 @@ Begin VB.Form rDIconConfigForm
       Begin VB.Menu mnuTrgtSleep 
          Caption         =   "target = Sleep"
       End
+      Begin VB.Menu mnuTrgtHibernate 
+         Caption         =   "target = Hibernate"
+      End
       Begin VB.Menu mnuTrgtLock 
          Caption         =   "target = Lock Workstation"
       End
@@ -2614,6 +2617,8 @@ End Sub
 Private Sub btnClose_Click()
     Form_Unload 0
 End Sub
+
+
 
 Private Sub btnClose_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnClose.hwnd, "This button closes the window.", _
@@ -13909,6 +13914,32 @@ mnuTrgtShutdown_click_Error:
 
 End Sub
 '---------------------------------------------------------------------------------------
+' Procedure : mnuTrgtHibernate_click
+' Author    : beededea
+' Date      : 26/09/2019
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub mnuTrgtHibernate_click()
+
+   On Error GoTo mnuTrgtHibernate_click_Error
+   If debugFlg = 1 Then debugLog "%mnuTrgtHibernate_click"
+
+    sCommand = Environ$("windir") & "\System32\shutdown.exe"
+    sArguments = "/h"
+    
+    txtTarget.Text = sCommand
+    txtArguments.Text = sArguments
+
+   On Error GoTo 0
+   Exit Sub
+
+mnuTrgtHibernate_click_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuTrgtHibernate_click of Form rDIconConfigForm"
+
+End Sub
+'---------------------------------------------------------------------------------------
 ' Procedure : mnuTrgtRestart_click
 ' Author    : beededea
 ' Date      : 26/09/2019
@@ -14783,28 +14814,6 @@ Private Sub Form_Unload(ByRef Cancel As Integer)
         End If
     Next useloop
     
-'    For useloop = 1 To 11
-'        If CheckControlExists(picFraPicThumbIcon(useloop)) Then
-'            Unload picFraPicThumbIcon(useloop)
-'        End If
-'    Next useloop
-'    For useloop = 1 To 11
-'        If CheckControlExists(picThumbIcon(useloop)) Then
-'            Unload picThumbIcon(useloop)
-'        End If
-'    Next useloop
-'    For useloop = 1 To 11
-'        If CheckControlExists(fraThumbLabel(useloop)) Then
-'            Unload fraThumbLabel(useloop)
-'        End If
-'    Next useloop
-'    For useloop = 1 To 11
-'        If CheckControlExists(lblThumbName(useloop)) Then
-'            Unload lblThumbName(useloop)
-'        End If
-'    Next useloop
-
-    
     ' when you create a token to be shared, you must
     ' destroy it in the Unload or Terminate event
     ' and also reset gdiToken property for each existing class
@@ -14829,16 +14838,31 @@ Private Sub Form_Unload(ByRef Cancel As Integer)
     'controls being added or perhaps it was the failure to close GDI properly
     'then I added it back in as an END is the wrong thing to do supposedly - but I do like a good END.
     
-    For Each ofrm In Forms
-        'fcount = fcount + 1
-        'Sleep 250
-        'MsgBox ("Unloading form " & fcount)
-        Unload ofrm
-        
-    Next
+'    For Each ofrm In Forms
+'        Unload ofrm ' this is good but I just like to be specific
+'    Next
     
-'    Sleep 5000
-'    MsgBox ("END " & fcount)
+    ' unload the native VB6 forms
+    
+    Unload about
+    Unload formSoftwareList
+    Unload frmConfirmDock
+    Unload frmMessage
+    Unload frmRegistry
+    Unload licence
+    Unload rdHelpForm
+    Unload rDIconConfigForm
+    
+    ' remove all variable references to each form in turn
+    
+    Set about = Nothing
+    Set formSoftwareList = Nothing
+    Set frmConfirmDock = Nothing
+    Set frmMessage = Nothing
+    Set frmRegistry = Nothing
+    Set licence = Nothing
+    Set rdHelpForm = Nothing
+    Set rDIconConfigForm = Nothing
     
     'End ' on 32bit Windows this causes a crash and untidy exit so removed.
 
