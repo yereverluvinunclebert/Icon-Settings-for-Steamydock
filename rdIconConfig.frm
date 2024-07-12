@@ -3669,10 +3669,10 @@ Private Sub Form_Activate()
             Call subBtnArrowDown_Click ' .33
             If rdIconNumber > 0 Then
                  ' give the specific part of the map focus so that after startup any keypresses will operate immediately
-                 picRdMap(rdIconNumber).SetFocus  ' < .net
+                 'picRdMap(rdIconNumber).SetFocus  ' < .net
             Else
                  ' give the map focus so that any keypresses will operate immediately
-                 picRdMap(0).SetFocus  ' < .net
+                 'picRdMap(0).SetFocus  ' < .net
             End If
         End If
     End If
@@ -9674,9 +9674,11 @@ Private Sub picRdMap_DragDrop(Index As Integer, Source As Control, X As Single, 
     If mapImageChanged = True Then
         ' now determine the new filename
         If textCurrentFolder.Text <> vbNullString Then
-            Filename = textCurrentFolder.Text
-            If Right$(Filename, 1) <> "\" Then Filename = Filename & "\"
-            Filename = Filename & filesIconList.Filename
+'            Filename = filesIconList.Path 'textCurrentFolder.Text
+'            If Right$(Filename, 1) <> "\" Then Filename = Filename & "\"
+'            Filename = Filename & filesIconList.Filename
+            Filename = Filename & txtCurrentIcon.Text
+            
             ' refresh the image display on the map
             Call displayResizedImage(Filename, picRdMap(rdIconNumber), 32)
         End If
