@@ -3511,10 +3511,11 @@ Private Sub settingsTimer_Timer()
         
         If lastChangedByWhom = "steamyDock" And lastIconChanged <> 9999 Then
                     
-            thisQuestionText = " SteamyDock has modified the icon configuration, do you want to reload the map? "
+            thisQuestionText = " I notice that SteamyDock has modified the icon configuration, do you want to reload the map in the Icon Settings Utility? "
             If btnSet.Enabled = True Or mapImageChanged = True Then thisQuestionText = thisQuestionText & "Bear in mind that your recent changes will be lost."
-            
-            ans = msgBoxA(thisQuestionText, vbQuestion + vbYesNo, "Confirm Reload.")
+                        
+            ans = msgBoxA(thisQuestionText, vbQuestion + vbYesNo, "Icon Settings Utility.", True, "IconSettingsUtilityMapChange")
+
             If ans = 6 Then
                 Call copyDockSettingsFile
                 
