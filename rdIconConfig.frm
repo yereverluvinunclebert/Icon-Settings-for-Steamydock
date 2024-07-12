@@ -16833,7 +16833,7 @@ Public Sub readSettingsFile() '(ByVal location As String, ByVal PzGSettingsFile 
 
     If fFExists(toolSettingsFile) Then
 
-        sDIconSettingsDefaultEditor = GetINISetting("Software\IconSettings", "defaultEditor", toolSettingsFile)
+        sDIconSettingsDefaultEditor = GetINISetting("Software\IconSettings", "iconSettingsDefaultEditor", toolSettingsFile)
         rDDebugFlg = GetINISetting("Software\IconSettings", "debugFlg", toolSettingsFile)
         debugFlg = Val(rDDebugFlg)
 
