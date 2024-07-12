@@ -1224,61 +1224,57 @@ Public Function fbackupSettings() As String
     Dim srchSettingsFile As String
     Dim versionNumberAvailable As Integer
     Dim bkpfileFound As Boolean: bkpfileFound = False
-    
-    
-        ' set the name of the bkp file
-   
-   On Error GoTo fbackupSettings_Error
-      If debugFlg = 1 Then debugLog "%" & "fbackupSettings"
-
-        bkpSettingsFile = App.Path & "\backup\bkpSettings.ini"
-                
-        'check for any version of the ini file with a suffix exists
-        For useloop = 1 To 32767
-            srchSettingsFile = bkpSettingsFile & "." & useloop
-          
-            If fFExists(srchSettingsFile) Then
-              ' found a file
-              bkpfileFound = True
-            Else
-              ' no file found use this entry
-              GoTo l_exit_bkp_loop
-            End If
-        Next useloop
-        
-l_exit_bkp_loop:
-        
-        If bkpfileFound = True Then
-            bkpfileFound = False
-            versionNumberAvailable = useloop
+    Dim dockSettingsDir As String: dockSettingsDir = vbNullString
             
-            'if versionNumberAvailable >= 32767 then
-                'versionNumberAvailable = 1
-                'If fFExists(bkpSettingsFile) Then
-                    'delete bkpSettingsFile
-                'endif
-            'endif
+    On Error GoTo fbackupSettings_Error
+   
+    If debugFlg = 1 Then debugLog "%" & "fbackupSettings"
+    
+    dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" '
+
+    ' set the name of the bkp file
+    bkpSettingsFile = dockSettingsDir & "\backup\bkpSettings.ini"
+            
+    'check for any version of the ini file with a suffix exists
+    
+    For useloop = 1 To 32767
+        srchSettingsFile = bkpSettingsFile & "." & useloop
+      
+        If fFExists(srchSettingsFile) Then
+            ' found a file
+            bkpfileFound = True
         Else
-             versionNumberAvailable = 1
+            ' no file found use this entry
+            GoTo l_exit_bkp_loop
         End If
+    Next useloop
+            
+l_exit_bkp_loop:
+
+    'MsgBox "check for any version of the ini file with a suffix exists - DONE"
         
-        bkpSettingsFile = bkpSettingsFile & "." & Trim$(Str(versionNumberAvailable))
-        If Not fFExists(bkpSettingsFile) Then
-            ' copy the original settings file to a duplicate that we will keep as a safety backup
-'            If defaultDock = 0 Then ' rocketdock
-''                If fFExists(origSettingsFile) Then
-''                    FileCopy origSettingsFile, bkpSettingsFile
-''                Else
-'                    FileCopy interimSettingsFile, bkpSettingsFile
-''                End If
-'            Else    ' steamydock alone
-                If fFExists(dockSettingsFile) Then ' .41 DAEB 09/05/2021 rdIconConfig.frm fix copying the dock settings file for backups
-                    FileCopy dockSettingsFile, bkpSettingsFile
-                End If
-'            End If
+    If bkpfileFound = True Then
+        bkpfileFound = False
+        versionNumberAvailable = useloop
+        
+        'if versionNumberAvailable >= 32767 then
+            'versionNumberAvailable = 1
+            'If fFExists(bkpSettingsFile) Then
+                'delete bkpSettingsFile
+            'endif
+        'endif
+    Else
+         versionNumberAvailable = 1
+    End If
+    
+    bkpSettingsFile = bkpSettingsFile & "." & Trim$(Str(versionNumberAvailable))
+    If Not fFExists(bkpSettingsFile) Then
+        If fFExists(dockSettingsFile) Then ' .41 DAEB 09/05/2021 rdIconConfig.frm fix copying the dock settings file for backups
+            FileCopy dockSettingsFile, bkpSettingsFile
         End If
-        
-        fbackupSettings = bkpSettingsFile
+    End If
+    
+    fbackupSettings = bkpSettingsFile
 
    On Error GoTo 0
    Exit Function
