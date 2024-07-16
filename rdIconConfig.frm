@@ -918,7 +918,7 @@ Begin VB.Form rDIconConfigForm
          Left            =   1395
          List            =   "rdIconConfig.frx":41AF
          TabIndex        =   6
-         Text            =   "Use Global Setting"
+         Text            =   "Always"
          ToolTipText     =   "Choose what to do if the chosen app is already running"
          Top             =   2640
          Width           =   2145
@@ -2071,8 +2071,7 @@ Attribute VB_Exposed = False
 '
 '   test running with a blank dock settings file
 '
-'   Add subclass (?) scrolling to the main scrollbar using the latter method found in this thread:
-'       https://www.vbforums.com/showthread.php?898786-Easy-amp-ingenious-mousewheel-scrolling
+'   Add subclass (?) scrolling to the main scrollbar - done
 '
 '   reload the icon preview image and text details when the docksettings file changes, read the current icon from a new lastIconChanged field.
 '
@@ -2173,22 +2172,9 @@ Attribute VB_Exposed = False
 '
 '   10. Use the lightweight method of reading images from SteamyDock rather than LaVolpe's method using readFromStream.
 '
-'
-' https://classicvb.net/samples/HookXP/  CHookMouseWheel.cls
-'    Provides MouseWheel events, both vertical and horizontal, for any window that doesn't handle it natively. As Windows has evolved, the base classes
-'    that VB controls inherit from have slowly added scrollwheel support. But Windows passes the WM_MOUSEWHEEL message on up the parent chain when this
-'    isn't the case. So, one class can now monitor for any mousewheel activity that isn't already being responded to. This could help allow scrollbars in VB6
-'    to react to mousescrollwheel events. Especially iconSettings and the native scrollbar controls.
-
-' https://classicvb.net/samples/HookXP/   CHookMouseEvents.cls
-'    This class provides the mysterious MouseEnter, MouseHover, and MouseLeave events, as well as a few bonus features like when the user clicks the
-'    4th or 5th buttons on a 5 button mouse. It also provides a collection based scheme whereby you can add and remove windows to monitor just as
-'    you would to an ordinary collection. All events are raised with the associated hWnd so you can determine which control is under the mouse. This
-'    could help the prefs in Pz J. Clock and other tools enabling balloon tooltips on comboBoxes.
-
 ' Other Tasks:
 '
-'   Github
+'   Github - done
 '
 '   SD Messagebox msgBoxA module - ship the code to FCW to replace the native msgboxes.
 '
@@ -2299,11 +2285,11 @@ Option Explicit
 '           si_the_geek for his special folder code
 '           KPD-Team for the code to trawl a folder recursively KPDTeam@Allapi.net http://www.allapi.net
 '           Elroy's for the balloon tooltips
-' Rod Stephens vb-helper.com            Resize controls to fit when a form resizes
-' KPD-Team 1999 http://www.allapi.net/  Recursive search
-' IT researcher https://www.vbforums.com/showthread.php?784053-Get-installed-programs-list-both-32-and-64-bit-programs
+'           Dilettante - for the subclassing that enables the mousewheel on the vertical scrollbox.
+'           Rod Stephens vb-helper.com Resize controls to fit when a form resizes
+'           IT researcher https://www.vbforums.com/showthread.php?784053-Get-installed-programs-list-both-32-and-64-bit-programs
 '                                       For the idea of extracting the ununinstall keys from the registry
-' CREDIT Jacques Lebrun http://www.vb-helper.com/howto_get_shortcut_info.html
+'           CREDIT Jacques Lebrun http://www.vb-helper.com/howto_get_shortcut_info.html
 '
 ' Built using: VB6, MZ-TOOLS 3.0, CodeHelp Core IDE Extender Framework 2.2 & Rubberduck 2.4.1
 '
@@ -2555,8 +2541,6 @@ Private dockSettingsRunInterval As Long
 
 Private dragToDockOperating As Boolean
 
-
-
 Private Type LONG_JOINED
     Value As Long
 End Type
@@ -2569,52 +2553,70 @@ End Type
 Private LONG_JOINED As LONG_JOINED
 Private LONG_SPLIT As LONG_SPLIT
 
+' this procedure is at the top so it can easily be removed for debugging in the IDE
+'---------------------------------------------------------------------------------------
+' Procedure : SubclassProc
+' Author    : Dilettante
+' Date      : 16/07/2024
+' Purpose   : added scroll wheel subclassing to the thumbnail frame
+'---------------------------------------------------------------------------------------
+'
 Public Function SubclassProc( _
     ByRef hWnd As Long, _
     ByRef uMsg As Long, _
     ByRef wParam As Long, _
     ByRef lParam As Long, _
     ByVal dwRefData As Long) As Long
+        
+    Dim Sum As Integer: Sum = 0
     
     Const WM_MOUSEWHEEL As Long = &H20A&
-    Const WM_MOUSEHWHEEL As Long = &H20E& 'Requires Vista or later.
-    Dim Sum As Integer
     
+    On Error GoTo SubclassProc_Error
+
     LONG_JOINED.Value = wParam
     LSet LONG_SPLIT = LONG_JOINED
     
     Select Case uMsg
         Case WM_MOUSEWHEEL
-            With vScrollThumbs
-                If .Enabled Then
-                    Sum = .Value - LONG_SPLIT.HighValue \ 12
-                    If Sum < 0 Then
-                        .Value = 0
-                    ElseIf Sum > .Max Then
-                        .Value = .Max
-                    Else
-                        .Value = Sum
+            If picFrameThumbsGotFocus = True Then
+                With vScrollThumbs
+                    If .Enabled Then
+                        Sum = .Value - LONG_SPLIT.HighValue \ 12
+                        If Sum < 0 Then
+                            .Value = 0
+                        ElseIf Sum > .Max Then
+                            .Value = .Max
+                        Else
+                            .Value = Sum
+                        End If
                     End If
-                End If
-            End With
-        
-'        Case WM_MOUSEHWHEEL
-'            With HScroll1
-'                If .Enabled Then
-'                    Sum = .Value + LONG_SPLIT.HighValue \ 12
-'                    If Sum < 0 Then
-'                        .Value = 0
-'                    ElseIf Sum > .Max Then
-'                        .Value = .Max
-'                    Else
-'                        .Value = Sum
-'                    End If
-'                End If
-'            End With
+                End With
+            Else
+                With rdMapHScroll
+                    If .Enabled Then
+                        Sum = .Value - LONG_SPLIT.HighValue \ 12
+                        If Sum < 0 Then
+                            .Value = 0
+                        ElseIf Sum > .Max Then
+                            .Value = .Max
+                        Else
+                            .Value = Sum
+                        End If
+                    End If
+                End With
+            End If
         
         Case Else
             SubclassProc = DefSubclassProc(hWnd, uMsg, wParam, lParam)
     End Select
+
+   On Error GoTo 0
+   Exit Function
+
+SubclassProc_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure SubclassProc of Form rDIconConfigForm"
 End Function
 
 
@@ -3483,8 +3485,17 @@ End Sub
 
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : positionTimer_Timer
+' Author    : beededea
+' Date      : 16/07/2024
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub positionTimer_Timer()
     ' save the current X and y position of this form to allow repositioning when restarting
+   On Error GoTo positionTimer_Timer_Error
+
     rDIconConfigFormXPosTwips = rDIconConfigForm.Left
     rDIconConfigFormYPosTwips = rDIconConfigForm.Top
     
@@ -3493,11 +3504,27 @@ Private Sub positionTimer_Timer()
     ' now write those params to the toolSettings.ini
     PutINISetting "Software\IconSettings", "IconConfigFormXPos", rDIconConfigFormXPosTwips, toolSettingsFile
     PutINISetting "Software\IconSettings", "IconConfigFormYPos", rDIconConfigFormYPosTwips, toolSettingsFile
+
+   On Error GoTo 0
+   Exit Sub
+
+positionTimer_Timer_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure positionTimer_Timer of Form rDIconConfigForm"
 End Sub
 
 
 ' .68 DAEB 04/05/2022 rDIConConfig.frm Added a timer to activate Drag and drop from the thumbnails to the rdmap only after 25ms
+'---------------------------------------------------------------------------------------
+' Procedure : rdMapDragTimer_Timer
+' Author    : beededea
+' Date      : 16/07/2024
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub rdMapDragTimer_Timer()
+   On Error GoTo rdMapDragTimer_Timer_Error
+
     srcDragControl = "rdMap"
     rdMapDragTimerCounter = rdMapDragTimerCounter + 1
 
@@ -3509,6 +3536,13 @@ Private Sub rdMapDragTimer_Timer()
         rdMapDragTimer.Enabled = False
         rdMapDragTimerCounter = 0
     End If
+
+   On Error GoTo 0
+   Exit Sub
+
+rdMapDragTimer_Timer_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure rdMapDragTimer_Timer of Form rDIconConfigForm"
 
 End Sub
 
@@ -3757,6 +3791,7 @@ Private Sub Form_Load()
     ReDim thumbArray(12) As Integer
     
     On Error GoTo Form_Load_Error
+    
     If debugFlg = 1 Then debugLog "%" & "Form_Load"
             
     ' vars set to initial values
@@ -3785,9 +3820,12 @@ Private Sub Form_Load()
     
     lblBlankText.Visible = False
     
-    SubclassMe picFrameThumbs.hWnd, Me
+    ' Note: I use the obsolete 'call' statement as it forces brackets when there is a parameter, which looks better - to me!
     
-    ' Note: I use the obsolete call statement as it forces brackets when there is a parameter, which looks better to me!
+    ' add the sub classing code to intercept messages to the thumbnail frame to pump the VB6 scrollbar with mousewheel up/down.
+    Call SubclassMe(picFrameThumbs.hWnd, Me) ' this procedure call is at the top so it can easily be removed for debugging
+        
+    Call SubclassMe(picRdThumbFrame.hWnd, Me) ' this procedure call is at the top so it can easily be removed for debugging
         
     ' Clear all the message box "show again" entries in the registry
     Call clearAllMessageBoxes
