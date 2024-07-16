@@ -106,7 +106,7 @@ Public rDIconConfigFormYPosTwips As String
 ' APIs for querying the registry ENDS
 
 ' APIs for drawing icons START
-Private Declare Function DrawIconEx Lib "user32" (ByVal hdc As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
+Private Declare Function DrawIconEx Lib "user32" (ByVal hDC As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
 Private Declare Function ExtractIconEx Lib "shell32.dll" Alias "ExtractIconExA" (ByVal lpszFile As String, ByVal nIconIndex As Long, ByRef phiconLarge As Long, ByRef phiconSmall As Long, ByVal nIcons As Long) As Long
 
 Private Declare Function Ole_CreatePic Lib "olepro32" _
@@ -202,8 +202,8 @@ End Type
 
 Private Type FONTSTRUC
   lStructSize As Long
-  hwnd As Long
-  hdc As Long
+  hWnd As Long
+  hDC As Long
   lpLogFont As Long
   iPointSize As Long
   flags As Long
@@ -240,8 +240,8 @@ Private Declare Function GlobalAlloc Lib "kernel32" _
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
 (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
 Private Declare Function GetDeviceCaps Lib "gdi32" _
-  (ByVal hdc As Long, ByVal nIndex As Long) As Long
-Private Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
+  (ByVal hDC As Long, ByVal nIndex As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 ' .76 DAEB 28/05/2022 rdIconConfigForm.frm New font code synchronising method with FCW fixing tool not displaying previously chosen font ENDS
 
 ''------------------------------------------------------ STARTS
@@ -397,7 +397,7 @@ Public Sub displayEmbeddedIcons(ByVal Filename As String, ByRef targetPicBox As 
             Set .Picture = LoadPicture(vbNullString)
             .AutoRedraw = True
                
-            Call DrawIconEx(.hdc, 0, 0, hIcon(LBound(hIcon)), IconSize, IconSize, 0, 0, DI_NORMAL)
+            Call DrawIconEx(.hDC, 0, 0, hIcon(LBound(hIcon)), IconSize, IconSize, 0, 0, DI_NORMAL)
             .Refresh
 
         End With
@@ -552,7 +552,7 @@ Public Sub displayEmbeddedIconsOld(ByVal Filename As String, ByRef targetPicBox 
         Set .Picture = LoadPicture(vbNullString)
         .AutoRedraw = True
            
-        Call DrawIconEx(.hdc, 0, 0, glLargeIcons(lIndex), IconSize, IconSize, 0, 0, DI_NORMAL)
+        Call DrawIconEx(.hDC, 0, 0, glLargeIcons(lIndex), IconSize, IconSize, 0, 0, DI_NORMAL)
             
         .Refresh
     End With
@@ -1032,7 +1032,7 @@ Private Sub rdIconConfigSpecificFonts(ByRef formName As Object, ByRef fntFont As
     
     ' The comboboxes all autoselect when the font is changed, we need to reset this afterwards
     
-    formName.comboIconTypesFilter.SelLength = 0
+    formName.cmbIconTypesFilter.SelLength = 0
     formName.cmbDefaultDock.SelLength = 0
     formName.cmbRunState.SelLength = 0
     formName.cmbOpenRunning.SelLength = 0
@@ -1112,7 +1112,7 @@ Public Sub backupDockSettings(Optional ByVal askQuestion As Boolean = False)
                     ' .94 DAEB 26/06/2022 rDIConConfig.frm Backup and restore - fix the problem with dock entries being zeroed after a restore.
                     FileCopy bkpSettingsFile, dockSettingsFile
                     
-                    Call btnSaveRestart_Click_event(rDIconConfigForm.hwnd)
+                    Call btnSaveRestart_Click_event(rDIconConfigForm.hWnd)
                 End If
             End If
     

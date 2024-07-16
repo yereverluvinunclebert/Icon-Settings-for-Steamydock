@@ -22,6 +22,7 @@ Begin VB.Form rDIconConfigForm
    HasDC           =   0   'False
    Icon            =   "rdIconConfig.frx":0000
    LinkTopic       =   "Form1"
+   LockControls    =   -1  'True
    MaxButton       =   0   'False
    ScaleHeight     =   10065
    ScaleWidth      =   10230
@@ -45,7 +46,7 @@ Begin VB.Form rDIconConfigForm
       ScaleHeight     =   67
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   67
-      TabIndex        =   110
+      TabIndex        =   109
       Tag             =   "Do not delete"
       ToolTipText     =   "This is the currently selected icon scaled to 64 x 64 for the dragIcon to reside prior to conversion"
       Top             =   8835
@@ -231,7 +232,7 @@ Begin VB.Form rDIconConfigForm
          Picture         =   "rdIconConfig.frx":284B
          ScaleHeight     =   180
          ScaleWidth      =   270
-         TabIndex        =   102
+         TabIndex        =   101
          ToolTipText     =   "Hide the registry form showing where details are being read from and saved to."
          Top             =   3990
          Visible         =   0   'False
@@ -355,13 +356,13 @@ Begin VB.Form rDIconConfigForm
          BorderStyle     =   0  'None
          Height          =   360
          Left            =   165
-         TabIndex        =   122
+         TabIndex        =   121
          Top             =   4320
          Width           =   4035
          Begin VB.TextBox txtAppToTerminate 
             Height          =   345
             Left            =   1230
-            TabIndex        =   125
+            TabIndex        =   124
             ToolTipText     =   "Any program that must be terminated prior to the main program initiation will be shown here"
             Top             =   0
             Width           =   2205
@@ -380,7 +381,7 @@ Begin VB.Form rDIconConfigForm
             Height          =   345
             Left            =   3510
             Style           =   1  'Graphical
-            TabIndex        =   124
+            TabIndex        =   123
             ToolTipText     =   "Press to select a program to terminate prior to the main program initiation"
             Top             =   0
             Width           =   360
@@ -389,7 +390,7 @@ Begin VB.Form rDIconConfigForm
             Caption         =   "Terminate App :"
             Height          =   255
             Left            =   0
-            TabIndex        =   123
+            TabIndex        =   122
             ToolTipText     =   "If you want to run a second program after the program initiation, select it here"
             Top             =   0
             Width           =   1305
@@ -399,14 +400,14 @@ Begin VB.Form rDIconConfigForm
          BorderStyle     =   0  'None
          Height          =   660
          Left            =   4125
-         TabIndex        =   117
+         TabIndex        =   116
          Top             =   3840
          Width           =   1725
          Begin VB.OptionButton optRunSecondAppAfterward 
             Enabled         =   0   'False
             Height          =   240
             Left            =   45
-            TabIndex        =   119
+            TabIndex        =   118
             ToolTipText     =   "Determines whether the secondary program is run after the main program has started"
             Top             =   270
             Width           =   270
@@ -416,7 +417,7 @@ Begin VB.Form rDIconConfigForm
             Enabled         =   0   'False
             Height          =   225
             Left            =   45
-            TabIndex        =   118
+            TabIndex        =   117
             ToolTipText     =   "Determines whether the secondary program is run before the main program"
             Top             =   15
             Value           =   -1  'True
@@ -427,7 +428,7 @@ Begin VB.Form rDIconConfigForm
             Enabled         =   0   'False
             Height          =   165
             Left            =   330
-            TabIndex        =   121
+            TabIndex        =   120
             Tag             =   "this extra label compensates for the poor quality greying out on label captions"
             ToolTipText     =   "Determines whether the secondary program is run after the main program has started"
             Top             =   270
@@ -438,7 +439,7 @@ Begin VB.Form rDIconConfigForm
             Enabled         =   0   'False
             Height          =   165
             Left            =   330
-            TabIndex        =   120
+            TabIndex        =   119
             Tag             =   "this extra label compensates for the poor quality greying out on label captions"
             ToolTipText     =   "Determines whether the secondary program is run before the main program"
             Top             =   15
@@ -457,7 +458,7 @@ Begin VB.Form rDIconConfigForm
          EndProperty
          Height          =   225
          Left            =   2925
-         TabIndex        =   115
+         TabIndex        =   114
          ToolTipText     =   "If you want extra options to appear when you right click on an icon, enable this checkbox"
          Top             =   3045
          Width           =   240
@@ -472,7 +473,7 @@ Begin VB.Form rDIconConfigForm
          Picture         =   "rdIconConfig.frx":3121
          ScaleHeight     =   180
          ScaleWidth      =   270
-         TabIndex        =   103
+         TabIndex        =   102
          ToolTipText     =   "Hides the extra configuration section"
          Top             =   3360
          Visible         =   0   'False
@@ -482,7 +483,7 @@ Begin VB.Form rDIconConfigForm
          BorderStyle     =   0  'None
          Height          =   1065
          Left            =   4365
-         TabIndex        =   100
+         TabIndex        =   99
          Top             =   1875
          Width           =   1320
          Begin VB.Label lblRdIconNumber 
@@ -501,7 +502,7 @@ Begin VB.Form rDIconConfigForm
             ForeColor       =   &H00404040&
             Height          =   1140
             Left            =   390
-            TabIndex        =   101
+            TabIndex        =   100
             ToolTipText     =   "This is dock icon number one."
             Top             =   -75
             Width           =   480
@@ -511,7 +512,7 @@ Begin VB.Form rDIconConfigForm
          BorderStyle     =   0  'None
          Height          =   495
          Left            =   285
-         TabIndex        =   96
+         TabIndex        =   95
          Top             =   3885
          Width           =   4005
          Begin VB.CommandButton btnSecondApp 
@@ -528,7 +529,7 @@ Begin VB.Form rDIconConfigForm
             Height          =   345
             Left            =   3390
             Style           =   1  'Graphical
-            TabIndex        =   98
+            TabIndex        =   97
             ToolTipText     =   "Press to select a second program to run after the main program initiation"
             Top             =   30
             Width           =   360
@@ -536,7 +537,7 @@ Begin VB.Form rDIconConfigForm
          Begin VB.TextBox txtSecondApp 
             Height          =   345
             Left            =   1110
-            TabIndex        =   97
+            TabIndex        =   96
             ToolTipText     =   "Any second program to run after the main program initiation will be shown here"
             Top             =   30
             Width           =   2205
@@ -545,7 +546,7 @@ Begin VB.Form rDIconConfigForm
             Caption         =   "Second App :"
             Height          =   225
             Left            =   15
-            TabIndex        =   99
+            TabIndex        =   98
             ToolTipText     =   "If you want to run a second program after the program initiation, select it here"
             Top             =   75
             Width           =   1560
@@ -555,7 +556,7 @@ Begin VB.Form rDIconConfigForm
          BorderStyle     =   0  'None
          Height          =   285
          Left            =   45
-         TabIndex        =   90
+         TabIndex        =   89
          Top             =   3615
          Width           =   1590
          Begin VB.CheckBox chkQuickLaunch 
@@ -571,7 +572,7 @@ Begin VB.Form rDIconConfigForm
             EndProperty
             Height          =   225
             Left            =   1350
-            TabIndex        =   91
+            TabIndex        =   90
             ToolTipText     =   "Launch an application before the bounce has completed"
             Top             =   0
             Width           =   180
@@ -580,7 +581,7 @@ Begin VB.Form rDIconConfigForm
             Caption         =   "Quick Launch :"
             Height          =   225
             Left            =   165
-            TabIndex        =   92
+            TabIndex        =   91
             ToolTipText     =   "Launch an application before the bounce has completed"
             Top             =   0
             Width           =   1215
@@ -590,7 +591,7 @@ Begin VB.Form rDIconConfigForm
          BorderStyle     =   0  'None
          Height          =   210
          Left            =   1695
-         TabIndex        =   87
+         TabIndex        =   86
          Top             =   3345
          Width           =   1680
          Begin VB.CheckBox chkConfirmDialogAfter 
@@ -605,7 +606,7 @@ Begin VB.Form rDIconConfigForm
             EndProperty
             Height          =   225
             Left            =   1237
-            TabIndex        =   88
+            TabIndex        =   87
             ToolTipText     =   "Shows Confirmation Dialog after the command has run."
             Top             =   -15
             Width           =   240
@@ -614,7 +615,7 @@ Begin VB.Form rDIconConfigForm
             Caption         =   "Confirm After :"
             Height          =   225
             Left            =   0
-            TabIndex        =   89
+            TabIndex        =   88
             ToolTipText     =   "Shows Confirmation Dialog after the command has run."
             Top             =   -15
             Width           =   1110
@@ -624,7 +625,7 @@ Begin VB.Form rDIconConfigForm
          BorderStyle     =   0  'None
          Height          =   255
          Left            =   30
-         TabIndex        =   84
+         TabIndex        =   83
          Top             =   3315
          Width           =   1575
          Begin VB.CheckBox chkConfirmDialog 
@@ -639,7 +640,7 @@ Begin VB.Form rDIconConfigForm
             EndProperty
             Height          =   225
             Left            =   1365
-            TabIndex        =   86
+            TabIndex        =   85
             ToolTipText     =   "Adds a Confirmation Dialog prior to the command running allowing you to say yes or no at runtime"
             Top             =   15
             Width           =   180
@@ -648,7 +649,7 @@ Begin VB.Form rDIconConfigForm
             Caption         =   "Confirm Prior :"
             Height          =   225
             Left            =   240
-            TabIndex        =   85
+            TabIndex        =   84
             ToolTipText     =   "Adds a Confirmation Dialog prior to the command running allowing you to say yes or no at runtime"
             Top             =   0
             Width           =   1215
@@ -658,14 +659,14 @@ Begin VB.Form rDIconConfigForm
          BorderStyle     =   0  'None
          Height          =   255
          Left            =   45
-         TabIndex        =   82
+         TabIndex        =   81
          Top             =   3045
          Width           =   1320
          Begin VB.Label lblRunElevated 
             Caption         =   "Run Elevated :"
             Height          =   225
             Left            =   210
-            TabIndex        =   83
+            TabIndex        =   82
             ToolTipText     =   "If you want extra options to appear when you right click on an icon, enable this checkbox"
             Top             =   -15
             Width           =   1200
@@ -675,14 +676,14 @@ Begin VB.Form rDIconConfigForm
          BorderStyle     =   0  'None
          Height          =   330
          Left            =   90
-         TabIndex        =   80
+         TabIndex        =   79
          Top             =   2655
          Width           =   1245
          Begin VB.Label lblOpenRunning 
             Caption         =   "New instance:"
             Height          =   225
             Left            =   135
-            TabIndex        =   81
+            TabIndex        =   80
             Top             =   15
             Width           =   1515
          End
@@ -691,14 +692,14 @@ Begin VB.Form rDIconConfigForm
          BorderStyle     =   0  'None
          Height          =   330
          Left            =   75
-         TabIndex        =   78
+         TabIndex        =   77
          Top             =   2265
          Width           =   1260
          Begin VB.Label lblRun 
             Caption         =   "Window State:"
             Height          =   225
             Left            =   135
-            TabIndex        =   79
+            TabIndex        =   78
             Top             =   15
             Width           =   1215
          End
@@ -707,14 +708,14 @@ Begin VB.Form rDIconConfigForm
          BorderStyle     =   0  'None
          Height          =   330
          Left            =   90
-         TabIndex        =   76
+         TabIndex        =   75
          Top             =   1890
          Width           =   1260
          Begin VB.Label lblArgument 
             Caption         =   "Arguments:"
             Height          =   225
             Left            =   345
-            TabIndex        =   77
+            TabIndex        =   76
             Top             =   15
             Width           =   1215
          End
@@ -723,14 +724,14 @@ Begin VB.Form rDIconConfigForm
          BorderStyle     =   0  'None
          Height          =   315
          Left            =   120
-         TabIndex        =   74
+         TabIndex        =   73
          Top             =   1485
          Width           =   1245
          Begin VB.Label lblStartIn 
             Caption         =   "Start in:"
             Height          =   225
             Left            =   600
-            TabIndex        =   75
+            TabIndex        =   74
             Top             =   15
             Width           =   1215
          End
@@ -739,7 +740,7 @@ Begin VB.Form rDIconConfigForm
          BorderStyle     =   0  'None
          Height          =   330
          Left            =   60
-         TabIndex        =   72
+         TabIndex        =   71
          Tag             =   "This frame is only here to support a mouseover for the label"
          Top             =   1080
          Width           =   1290
@@ -747,7 +748,7 @@ Begin VB.Form rDIconConfigForm
             Caption         =   "Target:"
             Height          =   225
             Left            =   720
-            TabIndex        =   73
+            TabIndex        =   72
             Top             =   15
             Width           =   1215
          End
@@ -756,7 +757,7 @@ Begin VB.Form rDIconConfigForm
          BorderStyle     =   0  'None
          Height          =   255
          Left            =   105
-         TabIndex        =   70
+         TabIndex        =   69
          Tag             =   "This frame is only here to support a mouseover for the label"
          Top             =   735
          Width           =   1260
@@ -764,7 +765,7 @@ Begin VB.Form rDIconConfigForm
             Caption         =   "Current Icon:"
             Height          =   225
             Left            =   255
-            TabIndex        =   71
+            TabIndex        =   70
             Top             =   15
             Width           =   1215
          End
@@ -970,7 +971,7 @@ Begin VB.Form rDIconConfigForm
          BorderStyle     =   0  'None
          Height          =   270
          Left            =   1680
-         TabIndex        =   93
+         TabIndex        =   92
          Top             =   3615
          Width           =   1455
          Begin VB.CheckBox chkAutoHideDock 
@@ -986,7 +987,7 @@ Begin VB.Form rDIconConfigForm
             EndProperty
             Height          =   225
             Left            =   1245
-            TabIndex        =   94
+            TabIndex        =   93
             ToolTipText     =   "Automatically hides the dock for the default hiding period when the program is initiated"
             Top             =   0
             Width           =   240
@@ -995,7 +996,7 @@ Begin VB.Form rDIconConfigForm
             Caption         =   "Auto Hide :"
             Height          =   225
             Left            =   285
-            TabIndex        =   95
+            TabIndex        =   94
             ToolTipText     =   "Automatically hides the dock for the default hiding period when the program is initiated"
             Top             =   0
             Width           =   870
@@ -1005,7 +1006,7 @@ Begin VB.Form rDIconConfigForm
          Caption         =   "Icon Disabled :"
          Height          =   225
          Left            =   1710
-         TabIndex        =   116
+         TabIndex        =   115
          ToolTipText     =   "Shows Confirmation Dialog after the command has run."
          Top             =   3045
          Width           =   1110
@@ -1013,7 +1014,7 @@ Begin VB.Form rDIconConfigForm
       Begin VB.Label Label2 
          Height          =   285
          Left            =   3675
-         TabIndex        =   109
+         TabIndex        =   108
          Top             =   3015
          Width           =   2040
       End
@@ -1038,13 +1039,13 @@ Begin VB.Form rDIconConfigForm
          BorderStyle     =   0  'None
          Height          =   600
          Left            =   45
-         TabIndex        =   111
+         TabIndex        =   110
          Top             =   3870
          Width           =   3810
          Begin CCRSlider.Slider sliPreviewSize 
             Height          =   300
             Left            =   0
-            TabIndex        =   112
+            TabIndex        =   111
             ToolTipText     =   "Icon Size"
             Top             =   180
             Width           =   3945
@@ -1070,7 +1071,7 @@ Begin VB.Form rDIconConfigForm
             EndProperty
             Height          =   180
             Left            =   90
-            TabIndex        =   114
+            TabIndex        =   113
             Top             =   0
             Width           =   1950
          End
@@ -1087,7 +1088,7 @@ Begin VB.Form rDIconConfigForm
             EndProperty
             Height          =   255
             Left            =   2100
-            TabIndex        =   113
+            TabIndex        =   112
             Top             =   0
             Width           =   1785
          End
@@ -1248,7 +1249,7 @@ Begin VB.Form rDIconConfigForm
          Picture         =   "rdIconConfig.frx":4245
          ScaleHeight     =   180
          ScaleWidth      =   270
-         TabIndex        =   104
+         TabIndex        =   103
          ToolTipText     =   "Hide the map"
          Top             =   945
          Visible         =   0   'False
@@ -1331,7 +1332,7 @@ Begin VB.Form rDIconConfigForm
          Height          =   345
          Left            =   8430
          Style           =   1  'Graphical
-         TabIndex        =   126
+         TabIndex        =   125
          ToolTipText     =   "Cancel the current operation and close the window"
          Top             =   780
          Width           =   1470
@@ -1352,15 +1353,15 @@ Begin VB.Form rDIconConfigForm
          TabIndex        =   67
          Top             =   3960
          Width           =   3765
-         Begin VB.ComboBox comboIconTypesFilter 
+         Begin VB.ComboBox cmbIconTypesFilter 
             Height          =   330
             ItemData        =   "rdIconConfig.frx":45A1
-            Left            =   390
+            Left            =   465
             List            =   "rdIconConfig.frx":45B7
-            TabIndex        =   69
+            TabIndex        =   126
             Text            =   "All Normal Icons"
             ToolTipText     =   "Filter icon types to display"
-            Top             =   0
+            Top             =   30
             Width           =   2790
          End
          Begin VB.CommandButton btnKillIcon 
@@ -1467,7 +1468,7 @@ Begin VB.Form rDIconConfigForm
             Height          =   400
             Index           =   0
             Left            =   45
-            TabIndex        =   107
+            TabIndex        =   106
             Top             =   840
             Width           =   1185
             Begin VB.Label lblThumbName 
@@ -1485,7 +1486,7 @@ Begin VB.Form rDIconConfigForm
                Height          =   240
                Index           =   0
                Left            =   90
-               TabIndex        =   108
+               TabIndex        =   107
                Top             =   -30
                Width           =   1000
             End
@@ -1500,7 +1501,7 @@ Begin VB.Form rDIconConfigForm
             Left            =   105
             ScaleHeight     =   1080
             ScaleWidth      =   1095
-            TabIndex        =   105
+            TabIndex        =   104
             Top             =   105
             Width           =   1095
             Begin VB.PictureBox picThumbIcon 
@@ -1524,7 +1525,7 @@ Begin VB.Form rDIconConfigForm
                ScaleHeight     =   67
                ScaleMode       =   3  'Pixel
                ScaleWidth      =   67
-               TabIndex        =   106
+               TabIndex        =   105
                ToolTipText     =   "This is the currently selected icon scaled to fit the preview box"
                Top             =   -30
                Width           =   1000
@@ -2544,6 +2545,8 @@ Private dragToDockOperating As Boolean
 ' module level balloon tooltip variables for comboBoxes ONLY.
 Private gCmbRunStateBalloonTooltip As String
 Private gCmbOpenRunningBalloonTooltip As String
+Private gCmbIconTypesFilterBalloonTooltip As String
+
 
 Private Type LONG_JOINED
     Value As Long
@@ -3269,6 +3272,8 @@ End Sub
 
 
 
+
+
 Private Sub lblRdIconNumber_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
 
    If Button = 2 Then
@@ -3825,16 +3830,9 @@ Private Sub Form_Load()
     
     lblBlankText.Visible = False
     
-    If Not InIDE Then
-        ' sub classing code to intercept messages to the thumbnail frames to pump the VB6 scrollbar with mousewheel up/down.
-        Call SubclassMouseWheel(picFrameThumbs.hWnd, ObjPtr(picFrameThumbs))
-        Call SubclassMouseWheel(picRdThumbFrame.hWnd, ObjPtr(picRdThumbFrame))
+    ' subclass controls that need additional functionality that VB6 does not provide (scrollwheel/balloon tooltips)
+    Call subClassControls
             
-        ' sub classing code to intercept messages to the comboboxes frame to provide missing balloon tooltips functionality
-        Call SubclassComboBox(cmbRunState.hWnd, ObjPtr(cmbRunState))
-        Call SubclassComboBox(cmbOpenRunning.hWnd, ObjPtr(cmbOpenRunning))
-    End If
-        
     ' Clear all the message box "show again" entries in the registry
     Call clearAllMessageBoxes
     
@@ -3865,10 +3863,6 @@ Private Sub Form_Load()
     ' turn on the timer that tests every 10 secs whether the visual theme has changed
     Call checkClassicThemeCapable ' .13 DAEB 27/02/2021 rdIConConfigFrm moved to a subroutine for clarity
     
-'    If IsUserAnAdmin() = 0 And requiresAdmin = True Then
-'        msgBoxA "This tool requires to be run as administrator on Windows 8 and above in order to function. Admin access is NOT required on Win7 and below. If you aren't entirely happy with that then you'll need to remove the software now. This is a limitation imposed by Windows itself. To enable administrator access find this tool's exe and right-click properties, compatibility - run as administrator. YOU have to do this manually, I can't do it for you.", vbInformation + vbOKOnly, "Run as Administrator Warning"
-'    End If
-'
     ' check where rocketdock is installed
     ' Call checkRocketdockInstallation
         
@@ -4010,6 +4004,11 @@ Public Sub MouseMoveOnComboText(sComboName As String)
         sTitle = "Help on Open Running Behaviour."
         sText = gCmbOpenRunningBalloonTooltip
         If rDEnableBalloonTooltips = "1" Then CreateToolTip cboEditHwndFromHwnd(cmbOpenRunning.hWnd), sText, , sTitle, , , , True
+    Case "cmbIconTypesFilter"
+        sTitle = "Help on the Drop Down Icon Filter"
+        sText = gCmbIconTypesFilterBalloonTooltip
+        If rDEnableBalloonTooltips = "1" Then CreateToolTip cboEditHwndFromHwnd(cmbIconTypesFilter.hWnd), sText, , sTitle, , , , True
+
     End Select
 
    On Error GoTo 0
@@ -4249,7 +4248,7 @@ Private Sub setToolTips()
         chkToggleDialogs.ToolTipText = "This will toggle on/off most of the information pop-ups when running this utility. ie. confirmation on saves and deletes"
         btnDefaultIcon.ToolTipText = "Not implemented yet"
         frameIcons.ToolTipText = "Thumbnail or File Viewer Window"
-        comboIconTypesFilter.ToolTipText = "Filter icon types to display"
+        cmbIconTypesFilter.ToolTipText = "Filter icon types to display"
         btnKillIcon.ToolTipText = "Delete the currently selected icon file above. Use wisely!"
         btnAdd.ToolTipText = "Set the current selected icon into the dock (double-click on the icon)"
         btnRefresh.ToolTipText = "Refresh the Icon List"
@@ -4273,7 +4272,8 @@ Private Sub setToolTips()
         ' module level balloon tooltip variables for comboBoxes ONLY.
         gCmbRunStateBalloonTooltip = "This dropdown selects the Window mode for the program to operate within. If you want to force an application to run in a full screen size window then select Maximised (note this is not a requirement for most full screen-type apps such as games). You might also want to start an app fully minimised on the taskbar. In other cases choose normal."
         gCmbOpenRunningBalloonTooltip = "Choose whether to open a new instance if the chosen app is already running. The global setting normally determines whether you open new or existing instances of all apps but here you can set a specific action for particular programs."
-
+        gCmbIconTypesFilterBalloonTooltip = "This dropdown allows you to filter icon types to display in the icon file window above."
+        
         ' standard tooltips disabled (set to nothing)
         btnMapPrev.ToolTipText = ""
         btnMapNext.ToolTipText = ""
@@ -4332,7 +4332,7 @@ Private Sub setToolTips()
         chkToggleDialogs.ToolTipText = ""
         btnDefaultIcon.ToolTipText = ""
         frameIcons.ToolTipText = ""
-        comboIconTypesFilter.ToolTipText = ""
+        cmbIconTypesFilter.ToolTipText = ""
         btnKillIcon.ToolTipText = ""
         btnAdd.ToolTipText = ""
         btnRefresh.ToolTipText = ""
@@ -6953,21 +6953,21 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : comboIconTypesFilter_Click
+' Procedure : cmbIconTypesFilter_Click
 ' Author    : beededea
 ' Date      : 31/05/2019
 ' Purpose   : Selecting the type of icon that can be displayed from a dropbox
 '---------------------------------------------------------------------------------------
 '
-Private Sub comboIconTypesFilter_Click()
+Private Sub cmbIconTypesFilter_Click()
 
     Dim filterType As Integer: filterType = 0
     'Dim validIconTypes As String
     
-    On Error GoTo comboIconTypesFilter_Click_Error
-    If debugFlg = 1 Then debugLog "%" & "comboIconTypesFilter_Click"
+    On Error GoTo cmbIconTypesFilter_Click_Error
+    If debugFlg = 1 Then debugLog "%" & "cmbIconTypesFilter_Click"
 
-    filterType = comboIconTypesFilter.ListIndex
+    filterType = cmbIconTypesFilter.ListIndex
     
     ' read the current filter type and display the chosen images
     
@@ -7016,9 +7016,9 @@ Private Sub comboIconTypesFilter_Click()
    On Error GoTo 0
    Exit Sub
 
-comboIconTypesFilter_Click_Error:
+cmbIconTypesFilter_Click_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure comboIconTypesFilter_Click of Form rDIconConfigForm"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure cmbIconTypesFilter_Click of Form rDIconConfigForm"
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -16529,14 +16529,30 @@ Private Sub chkQuickLaunch_MouseMove(ByRef Button As Integer, ByRef Shift As Int
                   TTIconInfo, "Help on Quick Launch", , , , True
 End Sub
 
-Private Sub fraConfigSource_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-    If rDEnableBalloonTooltips = "1" Then CreateToolTip fraConfigSource.hWnd, "This Dropdown displays the currently selected dock. The current dock is configured in the dock settings utility, this is just for informational purposes only.", _
-                  TTIconInfo, "Help on the Dock Selection Dropdown", , , , True
-End Sub
+'Private Sub fraConfigSource_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+'    If rDEnableBalloonTooltips = "1" Then CreateToolTip fraConfigSource.hWnd, gCmbConfigSourceBalloonTooltip, _
+'                  TTIconInfo, "Help on the Dock Selection Dropdown", , , , True
+'End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : fraIconType_MouseMove
+' Author    : beededea
+' Date      : 16/07/2024
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub fraIconType_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-    If rDEnableBalloonTooltips = "1" Then CreateToolTip fraIconType.hWnd, "This dropdown allows yout to filter icon types to display in the icon file window above.", _
+   On Error GoTo fraIconType_MouseMove_Error
+
+    If rDEnableBalloonTooltips = "1" Then CreateToolTip fraIconType.hWnd, gCmbIconTypesFilterBalloonTooltip, _
                   TTIconInfo, "Help on the Drop Down Icon Filter", , , , True
+
+   On Error GoTo 0
+   Exit Sub
+
+fraIconType_MouseMove_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fraIconType_MouseMove of Form rDIconConfigForm"
 End Sub
 
 Private Sub fraLblArgument_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
@@ -17137,7 +17153,7 @@ End Sub
 ' Purpose   : validate the relevant entries from the settings.ini file in user appdata
 '---------------------------------------------------------------------------------------
 '
-Public Sub validateInputs()
+Private Sub validateInputs()
     
    On Error GoTo validateInputs_Error
             
@@ -17151,4 +17167,38 @@ Public Sub validateInputs()
 validateInputs_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure validateInputs of form modMain"
+End Sub
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : subClassControls
+' Author    : beededea
+' Date      : 16/07/2024
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub subClassControls()
+    
+   On Error GoTo subClassControls_Error
+
+    If InIDE Then
+        MsgBox "NOTE: Running in IDE so Sub classing is disabled" & vbCrLf & "Mousewheel will not scroll icon maps and balloon tooltips will not display on comboboxes"
+    Else
+        ' sub classing code to intercept messages to the thumbnail frames to pump the VB6 scrollbar with mousewheel up/down.
+        Call SubclassMouseWheel(picFrameThumbs.hWnd, ObjPtr(picFrameThumbs))
+        Call SubclassMouseWheel(picRdThumbFrame.hWnd, ObjPtr(picRdThumbFrame))
+            
+        ' sub classing code to intercept messages to the comboboxes frame to provide missing balloon tooltips functionality
+        Call SubclassComboBox(cmbRunState.hWnd, ObjPtr(cmbRunState))
+        Call SubclassComboBox(cmbOpenRunning.hWnd, ObjPtr(cmbOpenRunning))
+        Call SubclassComboBox(cmbIconTypesFilter.hWnd, ObjPtr(cmbIconTypesFilter))
+    End If
+
+   On Error GoTo 0
+   Exit Sub
+
+subClassControls_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure subClassControls of Form rDIconConfigForm"
 End Sub
