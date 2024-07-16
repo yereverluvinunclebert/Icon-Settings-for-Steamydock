@@ -2541,7 +2541,7 @@ Private dockSettingsRunInterval As Long
 
 Private dragToDockOperating As Boolean
 
-' module level balloon tooltip variables
+' module level balloon tooltip variables for comboBoxes ONLY.
 Private gCmbRunStateBalloonTooltip As String
 Private gCmbOpenRunningBalloonTooltip As String
 
@@ -3991,9 +3991,18 @@ Form_Load_Error:
                 
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : MouseMoveOnComboText
+' Author    : beededea
+' Date      : 16/07/2024
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Public Sub MouseMoveOnComboText(sComboName As String)
     Dim sTitle As String
     Dim sText As String
+
+   On Error GoTo MouseMoveOnComboText_Error
 
     Select Case sComboName
     Case "cmbRunState"
@@ -4005,11 +4014,27 @@ Public Sub MouseMoveOnComboText(sComboName As String)
         sText = gCmbOpenRunningBalloonTooltip
         If rDEnableBalloonTooltips = "1" Then CreateToolTip cboEditHwndFromHwnd(cmbOpenRunning.hWnd), sText, , sTitle, , , , True
     End Select
+
+   On Error GoTo 0
+   Exit Sub
+
+MouseMoveOnComboText_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure MouseMoveOnComboText of Form rDIconConfigForm"
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : MouseMoveOnFrame
+' Author    : beededea
+' Date      : 16/07/2024
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Public Sub MouseMoveOnFrame(sFrameName As String, ByVal wParam As Long)
     
     Dim Sum As Integer: Sum = 0
+
+   On Error GoTo MouseMoveOnFrame_Error
 
     LONG_JOINED.Value = wParam
     LSet LONG_SPLIT = LONG_JOINED
@@ -4041,10 +4066,26 @@ Public Sub MouseMoveOnFrame(sFrameName As String, ByVal wParam As Long)
             End If
         End With
     End If
+
+   On Error GoTo 0
+   Exit Sub
+
+MouseMoveOnFrame_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure MouseMoveOnFrame of Form rDIconConfigForm"
     
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : clearAllMessageBoxes
+' Author    : beededea
+' Date      : 16/07/2024
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub clearAllMessageBoxes()
+   On Error GoTo clearAllMessageBoxes_Error
+
     SaveSetting App.EXEName, "Options", "Show message" & "preButtonClick", 0
     SaveSetting App.EXEName, "Options", "Show message" & "btnAdd_Click", 0
     SaveSetting App.EXEName, "Options", "Show message" & "btnSet_Click", 0
@@ -4056,14 +4097,30 @@ Private Sub clearAllMessageBoxes()
     SaveSetting App.EXEName, "Options", "Show message" & "rdMapRefresh_Click", 0
     SaveSetting App.EXEName, "Options", "Show message" & "mnuHelpPdf_click", 0
     SaveSetting App.EXEName, "Options", "Show message" & "deleteRdMapPosition", 0
+
+   On Error GoTo 0
+   Exit Sub
+
+clearAllMessageBoxes_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure clearAllMessageBoxes of Form rDIconConfigForm"
 End Sub
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : checkBusyImageExistence
+' Author    : beededea
+' Date      : 16/07/2024
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub checkBusyImageExistence()
     Dim useloop As Integer: useloop = 0
     Dim busyCounter As Integer: busyCounter = 0
     Dim ans As VbMsgBoxResult: ans = vbYesNo
         
+   On Error GoTo checkBusyImageExistence_Error
+
     For useloop = 1 To 6
         busyCounter = useloop
         If Not fFExists(App.Path & "\resources\busy-F" & busyCounter & "-32x32x24.jpg") Then
@@ -4083,13 +4140,29 @@ Private Sub checkBusyImageExistence()
             End If
         End If
     Next useloop
+
+   On Error GoTo 0
+   Exit Sub
+
+checkBusyImageExistence_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure checkBusyImageExistence of Form rDIconConfigForm"
 End Sub
 
 
 ' .48 DAEB 20/04/2022 rDIConConfig.frm All tooltips move from IDE into code to allow them to disabled at will
+'---------------------------------------------------------------------------------------
+' Procedure : chkToggleDialogs_Click
+' Author    : beededea
+' Date      : 16/07/2024
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub chkToggleDialogs_Click()
     
     ' .70 DAEB 16/05/2022 rDIConConfig.frm Read the chkToggleDialogs value from a file and save the value for next time
+   On Error GoTo chkToggleDialogs_Click_Error
+
     If chkToggleDialogs.Value = 0 Then
        sdChkToggleDialogs = "0"
     Else
@@ -4098,6 +4171,13 @@ Private Sub chkToggleDialogs_Click()
     PutINISetting "Software\IconSettings", "sdChkToggleDialogs", sdChkToggleDialogs, toolSettingsFile
 
     Call setToolTips
+
+   On Error GoTo 0
+   Exit Sub
+
+chkToggleDialogs_Click_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure chkToggleDialogs_Click of Form rDIconConfigForm"
 End Sub
 
 ' .48 DAEB 20/04/2022 rDIConConfig.frm All tooltips move from IDE into code to allow them to disabled at will
@@ -4193,6 +4273,7 @@ Private Sub setToolTips()
     Else
         rDEnableBalloonTooltips = "1"
         
+        ' module level balloon tooltip variables for comboBoxes ONLY.
         gCmbRunStateBalloonTooltip = "This dropdown selects the Window mode for the program to operate within. If you want to force an application to run in a full screen size window then select Maximised (note this is not a requirement for most full screen-type apps such as games). You might also want to start an app fully minimised on the taskbar. In other cases choose normal."
         gCmbOpenRunningBalloonTooltip = "Choose whether to open a new instance if the chosen app is already running. The global setting normally determines whether you open new or existing instances of all apps but here you can set a specific action for particular programs."
 
