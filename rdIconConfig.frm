@@ -2534,17 +2534,21 @@ Private Declare Function GetTickCount Lib "kernel32" () As Long
 Private Declare Function GetLastInputInfo Lib "user32" (plii As Any) As Long
 '------------------------------------------------------ ENDS
 
-Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hdc As Long, ByVal nIndex As Long) As Long
+Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
 
 Private oldDockSettingsModificationTime  As Date
 Private dockSettingsRunInterval As Long
 
 Private dragToDockOperating As Boolean
 
+' module level balloon tooltip variables
+Private gCmbRunStateBalloonTooltip As String
+Private gCmbOpenRunningBalloonTooltip As String
+
 Private Type LONG_JOINED
     Value As Long
 End Type
-    
+
 Private Type LONG_SPLIT
     LowValue As Integer
     HighValue As Integer
@@ -2561,63 +2565,63 @@ Private LONG_SPLIT As LONG_SPLIT
 ' Purpose   : added scroll wheel subclassing to the thumbnail frame
 '---------------------------------------------------------------------------------------
 '
-Public Function SubclassProc( _
-    ByRef hWnd As Long, _
-    ByRef uMsg As Long, _
-    ByRef wParam As Long, _
-    ByRef lParam As Long, _
-    ByVal dwRefData As Long) As Long
-        
-    Dim Sum As Integer: Sum = 0
-    
-    Const WM_MOUSEWHEEL As Long = &H20A&
-    
-    On Error GoTo SubclassProc_Error
-
-    LONG_JOINED.Value = wParam
-    LSet LONG_SPLIT = LONG_JOINED
-    
-    Select Case uMsg
-        Case WM_MOUSEWHEEL
-            If picFrameThumbsGotFocus = True Then
-                With vScrollThumbs
-                    If .Enabled Then
-                        Sum = .Value - LONG_SPLIT.HighValue \ 12
-                        If Sum < 0 Then
-                            .Value = 0
-                        ElseIf Sum > .Max Then
-                            .Value = .Max
-                        Else
-                            .Value = Sum
-                        End If
-                    End If
-                End With
-            Else
-                With rdMapHScroll
-                    If .Enabled Then
-                        Sum = .Value - LONG_SPLIT.HighValue \ 12
-                        If Sum < 0 Then
-                            .Value = 0
-                        ElseIf Sum > .Max Then
-                            .Value = .Max
-                        Else
-                            .Value = Sum
-                        End If
-                    End If
-                End With
-            End If
-        
-        Case Else
-            SubclassProc = DefSubclassProc(hWnd, uMsg, wParam, lParam)
-    End Select
-
-   On Error GoTo 0
-   Exit Function
-
-SubclassProc_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure SubclassProc of Form rDIconConfigForm"
-End Function
+'Public Function SubclassProc( _
+'    ByRef hWnd As Long, _
+'    ByRef uMsg As Long, _
+'    ByRef wParam As Long, _
+'    ByRef lParam As Long, _
+'    ByVal dwRefData As Long) As Long
+'
+'    Dim Sum As Integer: Sum = 0
+'
+'    Const WM_MOUSEWHEEL As Long = &H20A&
+'
+'    On Error GoTo SubclassProc_Error
+'
+'    LONG_JOINED.Value = wParam
+'    LSet LONG_SPLIT = LONG_JOINED
+'
+'    Select Case uMsg
+'        Case WM_MOUSEWHEEL
+'            If picFrameThumbsGotFocus = True Then
+'                With vScrollThumbs
+'                    If .Enabled Then
+'                        Sum = .Value - LONG_SPLIT.HighValue \ 12
+'                        If Sum < 0 Then
+'                            .Value = 0
+'                        ElseIf Sum > .Max Then
+'                            .Value = .Max
+'                        Else
+'                            .Value = Sum
+'                        End If
+'                    End If
+'                End With
+'            Else
+'                With rdMapHScroll
+'                    If .Enabled Then
+'                        Sum = .Value - LONG_SPLIT.HighValue \ 12
+'                        If Sum < 0 Then
+'                            .Value = 0
+'                        ElseIf Sum > .Max Then
+'                            .Value = .Max
+'                        Else
+'                            .Value = Sum
+'                        End If
+'                    End If
+'                End With
+'            End If
+'
+'        Case Else
+'            SubclassProc = DefSubclassProc(hWnd, uMsg, wParam, lParam)
+'    End Select
+'
+'   On Error GoTo 0
+'   Exit Function
+'
+'SubclassProc_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure SubclassProc of Form rDIconConfigForm"
+'End Function
 
 
 '---------------------------------------------------------------------------------------
@@ -3823,9 +3827,16 @@ Private Sub Form_Load()
     ' Note: I use the obsolete 'call' statement as it forces brackets when there is a parameter, which looks better - to me!
     
     ' add the sub classing code to intercept messages to the thumbnail frame to pump the VB6 scrollbar with mousewheel up/down.
-    Call SubclassMe(picFrameThumbs.hWnd, Me) ' this procedure call is at the top so it can easily be removed for debugging
+'    Call SubclassMe(picFrameThumbs.hWnd, Me) ' this procedure call is at the top so it can easily be removed for debugging
+'
+'    Call SubclassMe(picRdThumbFrame.hWnd, Me) ' this procedure call is at the top so it can easily be removed for debugging
         
-    Call SubclassMe(picRdThumbFrame.hWnd, Me) ' this procedure call is at the top so it can easily be removed for debugging
+    Call SubclassMouseWheel(picFrameThumbs.hWnd, ObjPtr(picFrameThumbs))
+    Call SubclassMouseWheel(picRdThumbFrame.hWnd, ObjPtr(picRdThumbFrame))
+        
+    Call SubclassComboBox(cmbRunState.hWnd, ObjPtr(cmbRunState))
+    Call SubclassComboBox(cmbOpenRunning.hWnd, ObjPtr(cmbOpenRunning))
+    
         
     ' Clear all the message box "show again" entries in the registry
     Call clearAllMessageBoxes
@@ -3966,7 +3977,7 @@ Private Sub Form_Load()
     
     ' .48 DAEB 20/04/2022 rDIConConfig.frm All tooltips move from IDE into code to allow them to disabled at will
     Call setToolTips
-
+    
     settingsTimer.Enabled = True
     
 
@@ -3978,6 +3989,59 @@ Form_Load_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_Load of Form rDIconConfigForm"
                 
+End Sub
+
+Public Sub MouseMoveOnComboText(sComboName As String)
+    Dim sTitle As String
+    Dim sText As String
+
+    Select Case sComboName
+    Case "cmbRunState"
+        sTitle = "Help on Window Mode Selection."
+        sText = gCmbRunStateBalloonTooltip
+        If rDEnableBalloonTooltips = "1" Then CreateToolTip cboEditHwndFromHwnd(cmbRunState.hWnd), sText, , sTitle, , , , True
+    Case "cmbOpenRunning"
+        sTitle = "Help on Open Running Behaviour."
+        sText = gCmbOpenRunningBalloonTooltip
+        If rDEnableBalloonTooltips = "1" Then CreateToolTip cboEditHwndFromHwnd(cmbOpenRunning.hWnd), sText, , sTitle, , , , True
+    End Select
+End Sub
+
+Public Sub MouseMoveOnFrame(sFrameName As String, ByVal wParam As Long)
+    
+    Dim Sum As Integer: Sum = 0
+
+    LONG_JOINED.Value = wParam
+    LSet LONG_SPLIT = LONG_JOINED
+
+    If picFrameThumbsGotFocus = True Then
+        With vScrollThumbs
+            If .Enabled Then
+                Sum = .Value - LONG_SPLIT.HighValue \ 12
+                If Sum < 0 Then
+                    .Value = 0
+                ElseIf Sum > .Max Then
+                    .Value = .Max
+                Else
+                    .Value = Sum
+                End If
+            End If
+        End With
+    Else
+        With rdMapHScroll
+            If .Enabled Then
+                Sum = .Value - LONG_SPLIT.HighValue \ 12
+                If Sum < 0 Then
+                    .Value = 0
+                ElseIf Sum > .Max Then
+                    .Value = .Max
+                Else
+                    .Value = Sum
+                End If
+            End If
+        End With
+    End If
+    
 End Sub
 
 Private Sub clearAllMessageBoxes()
@@ -4051,6 +4115,7 @@ Private Sub setToolTips()
     If chkToggleDialogs.Value = 0 Then
         Call DestroyToolTip ' destroys the current tooltip
         rDEnableBalloonTooltips = "0" ' this is the flag used to determine wheter a new balloon toltip is generated
+        
     
         btnMapPrev.ToolTipText = "This will scroll the icon map to the left so that you can view additional icons"
         btnMapNext.ToolTipText = "This will scroll the icon map to the right so that you can view additional icons"
@@ -4128,6 +4193,10 @@ Private Sub setToolTips()
     Else
         rDEnableBalloonTooltips = "1"
         
+        gCmbRunStateBalloonTooltip = "This dropdown selects the Window mode for the program to operate within. If you want to force an application to run in a full screen size window then select Maximised (note this is not a requirement for most full screen-type apps such as games). You might also want to start an app fully minimised on the taskbar. In other cases choose normal."
+        gCmbOpenRunningBalloonTooltip = "Choose whether to open a new instance if the chosen app is already running. The global setting normally determines whether you open new or existing instances of all apps but here you can set a specific action for particular programs."
+
+        ' standard tooltips disabled (set to nothing)
         btnMapPrev.ToolTipText = ""
         btnMapNext.ToolTipText = ""
         btnPrev.ToolTipText = ""
@@ -4244,8 +4313,8 @@ Private Sub makeVisibleFormElements()
     mnupopmenu.Visible = False
     thumbmenu.Visible = False
     
-    screenHeightTwips = GetDeviceCaps(rDIconConfigForm.hdc, VERTRES) * screenTwipsPerPixelY
-    screenWidthTwips = GetDeviceCaps(rDIconConfigForm.hdc, HORZRES) * screenTwipsPerPixelX ' replaces buggy screen.width
+    screenHeightTwips = GetDeviceCaps(rDIconConfigForm.hDC, VERTRES) * screenTwipsPerPixelY
+    screenWidthTwips = GetDeviceCaps(rDIconConfigForm.hDC, HORZRES) * screenTwipsPerPixelX ' replaces buggy screen.width
     
     ' set the current position of the utility according to previously stored positions
     
@@ -15095,14 +15164,14 @@ Private Sub refreshPicBox(ByRef picBox As PictureBox, ByVal iconSizing As Intege
     
     If Not cShadow Is Nothing Then
         ' the 55 below is the shadow's opacity; hardcoded here but can be modified to your heart's delight
-        cShadow.Render picBox.hdc, X + newWidth \ 2 + ShadowOffset, Y + newHeight \ 2 + ShadowOffset, newWidth * mirrorOffsetX, newHeight * mirrorOffsetY, , , , , _
+        cShadow.Render picBox.hDC, X + newWidth \ 2 + ShadowOffset, Y + newHeight \ 2 + ShadowOffset, newWidth * mirrorOffsetX, newHeight * mirrorOffsetY, , , , , _
             55, , , , , LightAdjustment, 0, True
     End If
     
     Dim ttemp As Integer
     ttemp = -1
     
-    cImage.Render picBox.hdc, X + newWidth \ 2, Y + newHeight \ 2, newWidth * 1, newHeight * 1, , , , , _
+    cImage.Render picBox.hDC, X + newWidth \ 2, Y + newHeight \ 2, newWidth * 1, newHeight * 1, , , , , _
         100, , , , -1, 0, 0, True
     
     picBox.Refresh
@@ -16407,9 +16476,26 @@ Private Sub fraLblCurrentIcon_MouseMove(ByRef Button As Integer, ByRef Shift As 
                   TTIconInfo, "Help on the Icon Path Text Box", , , , True
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : fraLblOpenRunning_MouseMove
+' Author    : beededea
+' Date      : 16/07/2024
+' Purpose   : This is just the balloon pop up for the label next to the combobox.
+'             The balloon pop up for the combobox has to be done via subclassing - look for this variable to find the definition gCmbOpenRunningBalloonTooltip.
+'---------------------------------------------------------------------------------------
+'
 Private Sub fraLblOpenRunning_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-    If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblOpenRunning.hWnd, "Choose whether to open a new instance if the chosen app is already running. The global setting normally determines whether you open new or existing instances of all apps but here you can set a specific action for particular programs.", _
+   On Error GoTo fraLblOpenRunning_MouseMove_Error
+
+    If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblOpenRunning.hWnd, gCmbOpenRunningBalloonTooltip, _
                   TTIconInfo, "Help on Open Running Behaviour.", , , , True
+
+   On Error GoTo 0
+   Exit Sub
+
+fraLblOpenRunning_MouseMove_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fraLblOpenRunning_MouseMove of Form rDIconConfigForm"
 End Sub
 
 Private Sub fraLblPopUp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
@@ -16428,9 +16514,26 @@ Private Sub fraLblRdIconNumber_MouseMove(ByRef Button As Integer, ByRef Shift As
                   TTIconInfo, "Help on Icon Numbering", , , , True
 End Sub
 
+
+'---------------------------------------------------------------------------------------
+' Procedure : fraLblRun_MouseMove
+' Author    : beededea
+' Date      : 16/07/2024
+' Purpose   : This is just the balloon pop up for the label next to the combobox.
+'             The balloon pop up for the combobox has to be done via subclassing - look for this variable to find the definition gCmbRunStateBalloonTooltip.
+'---------------------------------------------------------------------------------------
+'
 Private Sub fraLblRun_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-    If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblRun.hWnd, "This dropdown selects the Window mode for the program to operate within. If you want to force an application to run in a full screen size window then select Maximised (note this is not a requirement for most full screen-type apps such as games). You might also want to start an app fully minimised on the taskbar. In other cases choose normal.", _
-                  TTIconInfo, "Help on Window Mode Selection", , , , True
+   On Error GoTo fraLblRun_MouseMove_Error
+
+    If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblRun.hWnd, gCmbRunStateBalloonTooltip, TTIconInfo, "Help on Window Mode Selection", , , , True
+
+   On Error GoTo 0
+   Exit Sub
+
+fraLblRun_MouseMove_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fraLblRun_MouseMove of Form rDIconConfigForm"
 End Sub
 
 Private Sub fraLblStartIn_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
