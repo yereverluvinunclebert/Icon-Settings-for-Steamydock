@@ -1,4 +1,11 @@
 Attribute VB_Name = "Subclasser"
+'---------------------------------------------------------------------------------------
+' Module    : Subclasser
+' Author    : Elroy
+' Date      : 16/07/2024
+' Purpose   :
+'---------------------------------------------------------------------------------------
+
 Option Explicit
 
 Private Declare Function SetWindowSubclass Lib "comctl32" Alias "#410" (ByVal hWnd As Long, ByVal pfnSubclass As Long, ByVal uIdSubclass As Long, Optional ByVal dwRefData As Long) As Long
@@ -68,12 +75,21 @@ Public Sub SubclassComboBox(CtlHwnd As Long, TheObjPtr As Long)
     SubclassSomeWindow CtlHwnd, AddressOf ComboBox_Proc, TheObjPtr
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : MouseWheel_Proc
+' Author    : beededea
+' Date      : 16/07/2024
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Function MouseWheel_Proc(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal uIdSubclass As Long, ByVal dwRefData As Long) As Long
 
     Const WM_DESTROY                    As Long = &H2&  ' All other needed constants are declared within the procedures.
     Const WM_MOUSEWHEEL As Long = &H20A&
     Dim fra             As Object
     
+   On Error GoTo MouseWheel_Proc_Error
+
     If uMsg = WM_DESTROY Then
         UnSubclassSomeWindow hWnd, AddressOf_MouseWheel_Proc, uIdSubclass
         MouseWheel_Proc = NextSubclassProcOnChain(hWnd, uMsg, wParam, lParam)
@@ -91,12 +107,28 @@ Private Function MouseWheel_Proc(ByVal hWnd As Long, ByVal uMsg As Long, ByVal w
 
     ' If we fell out, just proceed as normal.
     MouseWheel_Proc = NextSubclassProcOnChain(hWnd, uMsg, wParam, lParam)
+
+   On Error GoTo 0
+   Exit Function
+
+MouseWheel_Proc_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure MouseWheel_Proc of Module Subclasser"
     
 End Function
     
 
+'---------------------------------------------------------------------------------------
+' Procedure : ComboBox_Proc
+' Author    : Elroy
+' Date      : 16/07/2024
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Function ComboBox_Proc(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal uIdSubclass As Long, ByVal dwRefData As Long) As Long
     Const WM_DESTROY                    As Long = &H2&  ' All other needed constants are declared within the procedures.
+   On Error GoTo ComboBox_Proc_Error
+
     If uMsg = WM_DESTROY Then
         UnSubclassSomeWindow hWnd, AddressOf_ComboBox_Proc, uIdSubclass
         ComboBox_Proc = NextSubclassProcOnChain(hWnd, uMsg, wParam, lParam)
@@ -139,6 +171,13 @@ Private Function ComboBox_Proc(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wPa
     '
     ' If we fell out, just proceed as normal.
     ComboBox_Proc = NextSubclassProcOnChain(hWnd, uMsg, wParam, lParam)
+
+   On Error GoTo 0
+   Exit Function
+
+ComboBox_Proc_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ComboBox_Proc of Module Subclasser"
 End Function
 
 Private Function AddressOf_MouseWheel_Proc() As Long

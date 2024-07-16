@@ -3787,6 +3787,7 @@ End Sub
 ' Author    : beededea
 ' Date      : 20/06/2019
 ' Purpose   : The initial subroutine for the program after the graphics code has done its stuff.
+'             Note: I use the obsolete 'call' statement as it forces brackets when there is a parameter, which looks better - to me!
 '---------------------------------------------------------------------------------------
 '
 Private Sub Form_Load()
@@ -3824,19 +3825,15 @@ Private Sub Form_Load()
     
     lblBlankText.Visible = False
     
-    ' Note: I use the obsolete 'call' statement as it forces brackets when there is a parameter, which looks better - to me!
-    
-    ' add the sub classing code to intercept messages to the thumbnail frame to pump the VB6 scrollbar with mousewheel up/down.
-'    Call SubclassMe(picFrameThumbs.hWnd, Me) ' this procedure call is at the top so it can easily be removed for debugging
-'
-'    Call SubclassMe(picRdThumbFrame.hWnd, Me) ' this procedure call is at the top so it can easily be removed for debugging
-        
-    Call SubclassMouseWheel(picFrameThumbs.hWnd, ObjPtr(picFrameThumbs))
-    Call SubclassMouseWheel(picRdThumbFrame.hWnd, ObjPtr(picRdThumbFrame))
-        
-    Call SubclassComboBox(cmbRunState.hWnd, ObjPtr(cmbRunState))
-    Call SubclassComboBox(cmbOpenRunning.hWnd, ObjPtr(cmbOpenRunning))
-    
+    If Not InIDE Then
+        ' sub classing code to intercept messages to the thumbnail frames to pump the VB6 scrollbar with mousewheel up/down.
+        Call SubclassMouseWheel(picFrameThumbs.hWnd, ObjPtr(picFrameThumbs))
+        Call SubclassMouseWheel(picRdThumbFrame.hWnd, ObjPtr(picRdThumbFrame))
+            
+        ' sub classing code to intercept messages to the comboboxes frame to provide missing balloon tooltips functionality
+        Call SubclassComboBox(cmbRunState.hWnd, ObjPtr(cmbRunState))
+        Call SubclassComboBox(cmbOpenRunning.hWnd, ObjPtr(cmbOpenRunning))
+    End If
         
     ' Clear all the message box "show again" entries in the registry
     Call clearAllMessageBoxes
@@ -4034,7 +4031,7 @@ Public Sub MouseMoveOnFrame(sFrameName As String, ByVal wParam As Long)
     
     Dim Sum As Integer: Sum = 0
 
-   On Error GoTo MouseMoveOnFrame_Error
+    On Error GoTo MouseMoveOnFrame_Error
 
     LONG_JOINED.Value = wParam
     LSet LONG_SPLIT = LONG_JOINED
