@@ -4038,7 +4038,7 @@ Public Sub MouseMoveOnFrame(sFrameName As String, ByVal wParam As Long)
     If picFrameThumbsGotFocus = True Then
         With vScrollThumbs
             If .Enabled Then
-                Sum = .Value - LONG_SPLIT.HighValue \ 12
+                Sum = .Value - LONG_SPLIT.HighValue \ 28
                 If Sum < 0 Then
                     .Value = 0
                 ElseIf Sum > .Max Then
@@ -4051,7 +4051,7 @@ Public Sub MouseMoveOnFrame(sFrameName As String, ByVal wParam As Long)
     Else
         With rdMapHScroll
             If .Enabled Then
-                Sum = .Value - LONG_SPLIT.HighValue \ 12
+                Sum = .Value - LONG_SPLIT.HighValue \ 28
                 If Sum < 0 Then
                     .Value = 0
                 ElseIf Sum > .Max Then
