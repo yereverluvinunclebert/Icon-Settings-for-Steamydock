@@ -103,17 +103,30 @@ Example folder structure:
 	E:\VB6\docksettings	! from https://github.com/yereverluvinunclebert/dockSettings
 	E:\VB6\rocketdock		! this repo.
 
-o Krools replacement for the Microsoft Windows Common Controls found in
-mscomctl.ocx (treeview, slider) are replicated by the addition of two
+o Krool's replacement for the Microsoft Windows Common Controls found in
+mscomctl.ocx (treeview, slider) are replicated by the addition of three
 dedicated OCX files that are shipped with this package.
+
+During development these should be copied to C:\windows\syswow64 and should be registered.
 
 - CCRImageList.ocx
 - CCRSlider.ocx
 - CCRTreeView.ocx
 
-These OCX will reside in the program folder. The program reference to these
-OCX is contained within the supplied resource file Panzer Earth Gauge.RES.
-It is compiled into the binary.
+Register these using regsvr32, ie. in a CMD window with administrator privileges.
+
+c:
+cd \windows\syswow64
+regsvr32 CCRImageList.ocx
+
+Do the same for all three OCX. This will allow the custom controls to be accessible to the VB6 IDE
+at design time and the sliders, treeview and imagelist will function as intended (if these ocx are
+not registered correctly then the relevant controls will be replaced by picture boxes).
+
+No need to do the above at runtime. At runtime these OCX will reside in the program folder. The program reference to these
+OCX is contained within the supplied resource file, IconSettings.RES. The reference to these 
+files is compiled into the binary. As long as the three OCX are in the same folder as the binary
+the program will run without need to register the three OCX.
 
 o OLEGuids.tlb
 
