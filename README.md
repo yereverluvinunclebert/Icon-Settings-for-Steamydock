@@ -113,15 +113,10 @@ During development these should be copied to C:\windows\syswow64 and should be r
 - CCRSlider.ocx
 - CCRTreeView.ocx
 
-Register these using regsvr32, ie. in a CMD window with administrator privileges.
-	
-<<<<<<< Updated upstream
+Register these using regsvr32, ie. in a CMD window with administrator privileges.	
+
 	c:    ! set device to boot drive with Windows
-	cd \windows\syswow64s	! change default folder to syswow64
-=======
-	c:                          ! set device to boot drive with Windows
 	cd \windows\syswow64s	    ! change default folder to syswow64
->>>>>>> Stashed changes
 	regsvr32 CCRImageList.ocx	! register the ocx
 
 Do the same for all three OCX. This will allow the custom controls to be accessible to the VB6 IDE
