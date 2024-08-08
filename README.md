@@ -114,10 +114,9 @@ During development these should be copied to C:\windows\syswow64 and should be r
 - CCRTreeView.ocx
 
 Register these using regsvr32, ie. in a CMD window with administrator privileges.
-
-c:
-cd \windows\syswow64
-regsvr32 CCRImageList.ocx
+	c:
+	cd \windows\syswow64
+	regsvr32 CCRImageList.ocx
 
 Do the same for all three OCX. This will allow the custom controls to be accessible to the VB6 IDE
 at design time and the sliders, treeview and imagelist will function as intended (if these ocx are
