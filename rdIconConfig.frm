@@ -1,15 +1,14 @@
 VERSION 5.00
-Object = "{FB95F7DD-5143-4C75-88F9-A53515A946D7}#2.0#0"; "CCRTreeView.ocx"
+Object = "{FB95F7DD-5143-4C75-88F9-A53515A946D7}#2.0#0"; "ccrtreeview.ocx"
 Object = "{13E244CC-5B1A-45EA-A5BC-D3906B9ABB79}#1.0#0"; "CCRSlider.ocx"
-Object = "{FA5FEA4A-5ED5-4004-A509-2DABC30D42A7}#1.0#0"; "CCRImageList.ocx"
+Object = "{FA5FEA4A-5ED5-4004-A509-2DABC30D42A7}#1.0#0"; "ccrimagelist.ocx"
 Begin VB.Form rDIconConfigForm 
    Appearance      =   0  'Flat
-   BorderStyle     =   1  'Fixed Single
    Caption         =   "SteamyDock Icon Settings VB6"
-   ClientHeight    =   10065
-   ClientLeft      =   150
-   ClientTop       =   150
-   ClientWidth     =   10230
+   ClientHeight    =   10365
+   ClientLeft      =   165
+   ClientTop       =   165
+   ClientWidth     =   10365
    BeginProperty Font 
       Name            =   "Arial"
       Size            =   8.25
@@ -22,10 +21,8 @@ Begin VB.Form rDIconConfigForm
    HasDC           =   0   'False
    Icon            =   "rdIconConfig.frx":0000
    LinkTopic       =   "Form1"
-   LockControls    =   -1  'True
-   MaxButton       =   0   'False
-   ScaleHeight     =   10065
-   ScaleWidth      =   10230
+   ScaleHeight     =   10365
+   ScaleWidth      =   10365
    Begin VB.PictureBox picTemporaryStore 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -99,11 +96,11 @@ Begin VB.Form rDIconConfigForm
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   705
-      Left            =   90
+      Left            =   180
       ScaleHeight     =   705
       ScaleWidth      =   9660
       TabIndex        =   36
-      Top             =   4545
+      Top             =   4530
       Visible         =   0   'False
       Width           =   9660
       Begin VB.HScrollBar rdMapHScroll 
@@ -193,19 +190,19 @@ Begin VB.Form rDIconConfigForm
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   180
-      Left            =   9840
+      Left            =   9900
       Picture         =   "rdIconConfig.frx":20E6
       ScaleHeight     =   180
       ScaleWidth      =   270
       TabIndex        =   35
       ToolTipText     =   "Hide the map"
-      Top             =   4485
+      Top             =   4530
       Visible         =   0   'False
       Width           =   270
    End
    Begin VB.CommandButton rdMapRefresh 
       Height          =   270
-      Left            =   9885
+      Left            =   9945
       Picture         =   "rdIconConfig.frx":2442
       Style           =   1  'Graphical
       TabIndex        =   41
@@ -217,7 +214,7 @@ Begin VB.Form rDIconConfigForm
    Begin VB.Frame FrameFolders 
       Caption         =   "Folders"
       Height          =   4500
-      Left            =   120
+      Left            =   180
       TabIndex        =   9
       ToolTipText     =   "The current list of known icon folders"
       Top             =   15
@@ -335,22 +332,22 @@ Begin VB.Form rDIconConfigForm
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   180
-      Left            =   9735
+      Left            =   9780
       Picture         =   "rdIconConfig.frx":2E77
       ScaleHeight     =   180
       ScaleWidth      =   375
       TabIndex        =   34
       ToolTipText     =   "Show the Rocketdock Map"
-      Top             =   4485
+      Top             =   4530
       Width           =   375
    End
    Begin VB.Frame fraProperties 
       Caption         =   "Properties"
       Height          =   4800
-      Left            =   4230
+      Left            =   4290
       TabIndex        =   0
       ToolTipText     =   "The Icon Properties Window"
-      Top             =   4530
+      Top             =   5370
       Width           =   5895
       Begin VB.Frame fraLblAppToTerminate 
          BorderStyle     =   0  'None
@@ -1030,10 +1027,10 @@ Begin VB.Form rDIconConfigForm
    Begin VB.Frame framePreview 
       Caption         =   "Preview"
       Height          =   4500
-      Left            =   135
+      Left            =   195
       TabIndex        =   47
       ToolTipText     =   "The Preview Pane"
-      Top             =   4515
+      Top             =   4530
       Width           =   4000
       Begin VB.Frame fraSizeSlider 
          BorderStyle     =   0  'None
@@ -1234,11 +1231,11 @@ Begin VB.Form rDIconConfigForm
    End
    Begin VB.Frame frameButtons 
       BorderStyle     =   0  'None
-      Height          =   1200
-      Left            =   210
+      Height          =   1170
+      Left            =   255
       TabIndex        =   25
-      Top             =   8490
-      Width           =   10080
+      Top             =   9015
+      Width           =   9945
       Begin VB.PictureBox picHideConfig 
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
@@ -1341,7 +1338,7 @@ Begin VB.Form rDIconConfigForm
    Begin VB.Frame frameIcons 
       Caption         =   "Icons"
       Height          =   4500
-      Left            =   4230
+      Left            =   4290
       TabIndex        =   12
       ToolTipText     =   "Thumbnail or File Viewer Window"
       Top             =   15
@@ -1569,6 +1566,24 @@ Begin VB.Form rDIconConfigForm
       Top             =   3900
       Visible         =   0   'False
       Width           =   1800
+   End
+   Begin VB.Label lblDragCorner 
+      Caption         =   "o"
+      BeginProperty Font 
+         Name            =   "Marlett"
+         Size            =   8.25
+         Charset         =   2
+         Weight          =   500
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   165
+      Left            =   10155
+      TabIndex        =   127
+      ToolTipText     =   "drag me"
+      Top             =   10155
+      Width           =   345
    End
    Begin VB.Menu mnuTrgtMenu 
       Caption         =   "Target Menu"
@@ -2560,6 +2575,34 @@ End Type
 Private LONG_JOINED As LONG_JOINED
 Private LONG_SPLIT As LONG_SPLIT
 
+
+
+'------------------------------------------------------ STARTS
+' Constants and APIs to create and subclass the dragCorner
+Private Declare Function ReleaseCapture Lib "user32" () As Long
+
+Private Declare Function SendMessage Lib "user32" _
+   Alias "SendMessageA" _
+  (ByVal hWnd As Long, _
+   ByVal wMsg As Long, _
+   ByVal wParam As Long, _
+   lParam As Any) As Long
+
+Private Const WM_NCLBUTTONDOWN = &HA1
+Private Const HTBOTTOMRIGHT = 17
+'------------------------------------------------------ ENDS
+
+
+
+'------------------------------------------------------ STARTS
+' Private Types for determining prefs sizing
+Private lastFormHeight As Long
+Private gblRatio As Long
+Private Const cFormHeight As Long = 9525
+Private Const cFormWidth  As Long = 10485
+'------------------------------------------------------ ENDS
+
+
 ' this procedure is at the top so it can easily be removed for debugging in the IDE
 '---------------------------------------------------------------------------------------
 ' Procedure : SubclassProc
@@ -2655,14 +2698,14 @@ btnAppToTerminate_Click_Error:
     End With
 End Sub
 
-Private Sub btnAppToTerminate_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnAppToTerminate_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnAppToTerminate.hWnd, "This button will allow you to select any program that must be terminated prior to the main program initiation. The result is: When you click on the icon in the dock SteamyDock will do its very best to terminate the chosen application in advance but be aware that closing another application cannot be guaranteed - use this functionality with great care! ", _
                   TTIconInfo, "Help on Terminating an Application", , , , True
 End Sub
 
 
 
-Private Sub btnBackup_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnBackup_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     '.100 DAEB 09/11/2022 rDIConConfig.frm Add the right click menu to all the buttons and recently added frames.
     If Button = 2 Then
         mnuAddPreviewIcon.Visible = False
@@ -2672,7 +2715,7 @@ Private Sub btnBackup_MouseDown(ByRef Button As Integer, ByRef Shift As Integer,
     End If
 End Sub
 
-Private Sub btnCancel_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnCancel_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     '.100 DAEB 09/11/2022 rDIConConfig.frm Add the right click menu to all the buttons and recently added frames.
     If Button = 2 Then
         mnuAddPreviewIcon.Visible = False
@@ -2688,12 +2731,12 @@ End Sub
 
 
 
-Private Sub btnClose_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub btnClose_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnClose.hWnd, "This button closes the window.", _
                   TTIconInfo, "Help on the Close Button", , , , True
 End Sub
 
-Private Sub btnGenerate_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnGenerate_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     '.100 DAEB 09/11/2022 rDIConConfig.frm Add the right click menu to all the buttons and recently added frames.
     If Button = 2 Then
         mnuAddPreviewIcon.Visible = False
@@ -2703,7 +2746,7 @@ Private Sub btnGenerate_MouseDown(ByRef Button As Integer, ByRef Shift As Intege
     End If
 End Sub
 
-Private Sub btnGetMore_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnGetMore_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     '.100 DAEB 09/11/2022 rDIConConfig.frm Add the right click menu to all the buttons and recently added frames.
     If Button = 2 Then
         mnuAddPreviewIcon.Visible = False
@@ -2713,7 +2756,7 @@ Private Sub btnGetMore_MouseDown(ByRef Button As Integer, ByRef Shift As Integer
     End If
 End Sub
 
-Private Sub btnHelp_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnHelp_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     '.100 DAEB 09/11/2022 rDIConConfig.frm Add the right click menu to all the buttons and recently added frames.
     If Button = 2 Then
         mnuAddPreviewIcon.Visible = False
@@ -2855,7 +2898,7 @@ End Sub
 
 
 
-Private Sub btnSaveRestart_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnSaveRestart_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     '.100 DAEB 09/11/2022 rDIConConfig.frm Add the right click menu to all the buttons and recently added frames.
     If Button = 2 Then
         mnuAddPreviewIcon.Visible = False
@@ -2865,7 +2908,7 @@ Private Sub btnSaveRestart_MouseDown(ByRef Button As Integer, ByRef Shift As Int
     End If
 End Sub
 
-Private Sub btnSet_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnSet_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     '.100 DAEB 09/11/2022 rDIConConfig.frm Add the right click menu to all the buttons and recently added frames.
     If Button = 2 Then
         mnuAddPreviewIcon.Visible = False
@@ -2922,7 +2965,7 @@ Private Sub btnSettingsUp_Click()
 End Sub
 
 
-Private Sub btnWorking_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnWorking_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     '.100 DAEB 09/11/2022 rDIConConfig.frm Add the right click menu to all the buttons and recently added frames.
     If Button = 2 Then
         mnuAddPreviewIcon.Visible = False
@@ -3007,7 +3050,7 @@ chkDisabled_Click_Error:
     End With
 End Sub
 
-Private Sub chkDisabled_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub chkDisabled_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip chkDisabled.hWnd, "This checkbox will cause the icon to stop responding to a mouse click. It disables the icon.", _
                   TTIconInfo, "Help on Disabling", , , , True
 
@@ -3176,8 +3219,51 @@ End Sub
 
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : Form_Resize
+' Author    : beededea
+' Date      : 30/05/2023
+' Purpose   : If the form is NOT to be resized then restrain the height/width. Otherwise,
+'             maintain the aspect ratio. When minimised and a resize is called then simply exit.
+'---------------------------------------------------------------------------------------
+'
+Private Sub Form_Resize()
+    'Dim ratio As Double: ratio = 0
+    Dim currentFont As Long: currentFont = 0
+    
+    On Error GoTo Form_Resize_Error
+    
+    If Me.WindowState = vbMinimized Then Exit Sub
+    
+    ' move the drag corner label along with the form's bottom right corner
+    lblDragCorner.Move Me.ScaleLeft + Me.ScaleWidth - (lblDragCorner.Width + 40), _
+               Me.ScaleTop + Me.ScaleHeight - (lblDragCorner.Height + 40)
+               
+    rDIconConfigForm.Width = rDIconConfigForm.Height / gblRatio ' maintain the aspect ratio, note: this change calls this routine again...
+    
+    currentFont = CLng(SDSuppliedFontSize)
+    
+        Exit Sub
 
-Private Sub fraIconType_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+'    Call resizeControls(Me, controlPositions(), gblCurrentWidth, gblCurrentHeight, currentFont)
+'    Call tweakPrefsControlPositions(Me, gblCurrentWidth, gblCurrentHeight)
+    
+    ' Call loadHigherResPrefsImages
+                
+    On Error GoTo 0
+    Exit Sub
+
+Form_Resize_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_Resize of Form rDIconConfigForm"
+            Resume Next
+          End If
+    End With
+End Sub
+
+Private Sub fraIconType_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     '.100 DAEB 09/11/2022 rDIConConfig.frm Add the right click menu to all the buttons and recently added frames.
     If Button = 2 Then
         mnuAddPreviewIcon.Visible = False
@@ -3190,7 +3276,7 @@ End Sub
 
 
 
-Private Sub fraOptionButtons_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub fraOptionButtons_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip fraOptionButtons.hWnd, "An additional secondary program can be made to run before or after the main program launch has completed. These controls will be disabled until a program has been selected.", _
                   TTIconInfo, "Help on Second Application", , , , True
 End Sub
@@ -3274,7 +3360,7 @@ End Sub
 
 
 
-Private Sub lblRdIconNumber_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub lblRdIconNumber_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
 
    If Button = 2 Then
         mnuAddPreviewIcon.Visible = False
@@ -3488,7 +3574,7 @@ Private Sub optRunSecondAppBeforehand_Click()
     btnClose.Visible = False
 End Sub
 
-Private Sub picRdMap_OLEDragOver(ByRef Index As Integer, ByRef Data As DataObject, ByRef Effect As Long, ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single, ByRef State As Integer)
+Private Sub picRdMap_OLEDragOver(ByRef Index As Integer, ByRef Data As DataObject, ByRef Effect As Long, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single, ByRef State As Integer)
     rdIconNumber = Index
 End Sub
 
@@ -3557,7 +3643,7 @@ End Sub
 
 
 
-Private Sub Text1_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub Text1_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If Button = 2 Then
         Me.PopupMenu mnuTrgtMenu, vbPopupMenuRightButton
     End If
@@ -3663,7 +3749,7 @@ settingsTimer_Timer_Error:
     End With
 End Sub
 
-Private Sub textCurrentFolder_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub textCurrentFolder_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If Button = 2 Then
         mnuAddPreviewIcon.Visible = False
         textCurrentFolder.Enabled = False
@@ -3672,7 +3758,7 @@ Private Sub textCurrentFolder_MouseDown(ByRef Button As Integer, ByRef Shift As 
     End If
 End Sub
 
-Private Sub textCurrIconPath_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub textCurrIconPath_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If Button = 2 Then
         mnuAddPreviewIcon.Visible = False
         textCurrIconPath.Enabled = False
@@ -3682,7 +3768,7 @@ Private Sub textCurrIconPath_MouseDown(ByRef Button As Integer, ByRef Shift As I
 End Sub
 
 ' .77 DAEB 28/05/2022 rDIConConfig.frm Balloon tooltip on the icon name text box
-Private Sub textCurrIconPath_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub textCurrIconPath_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip textCurrIconPath.hWnd, "This displays the filename of the currently selected icon.", _
                   TTIconInfo, "Help on the Current Folder Path", , , , True
 
@@ -3704,7 +3790,7 @@ Private Sub thumbnailDragTimer_Timer()
 
 End Sub
 
-Private Sub filesIconList_MouseUp(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub filesIconList_MouseUp(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
 ' .67 DAEB 04/05/2022 rDIConConfig.frm Drag and drop from the filelist to the rdmap
     filesIconList.Drag vbEndDrag
 End Sub
@@ -3827,8 +3913,23 @@ Private Sub Form_Load()
     fraProperties.Height = 3630
     fraProperties.Top = 4530
     frameButtons.Top = 7925 ' .43 DAEB 16/04/2022 rdIconConfig.frm increase the whole form height and move the bootom buttons set down
+    lblDragCorner.Top = 9650
+    lblDragCorner.Left = 10100
     
     lblBlankText.Visible = False
+        
+    With lblDragCorner
+      .ForeColor = &H80000015
+      .BackStyle = vbTransparent
+      .AutoSize = True
+      .Font.Size = 12
+      .Font.Name = "Marlett"
+      .Caption = "o"
+      .Font.Bold = False
+      '.Visible = False
+    End With
+    
+    gblRatio = cFormHeight / cFormWidth
     
     ' subclass controls that need additional functionality that VB6 does not provide (scrollwheel/balloon tooltips)
     Call subClassControls
@@ -4431,14 +4532,17 @@ Private Sub makeVisibleFormElements()
     ' if only one monitor - is it offscreen?
     ' if two monitors - is it on monitor one or monitor two? If neither center it on monitor one
     
-    'As a result of the menus being enabled in the IDE the form height is disturbed so it needs to be corrected manually.
-    ' .99 DAEB 26/06/2022 rDIConConfig.frm With the round borders of Win 11, there is insufficient space from the frame to the border, Windows cuts it off arbitrarily. Extend.
-    rDIconConfigForm.Height = 9495 '9780
     
-    ' if Windows 10/11 then add 250 twips to the bottom of the main form
-    If Left$(LCase$(windowsVersionString), 10) = "windows 10" Then
-        Me.Height = Me.Height + 100
-    End If
+    Call setRdIconConfigFormHeight
+    
+'    'As a result of the menus being enabled in the IDE the form height is disturbed so it needs to be corrected manually.
+'    ' .99 DAEB 26/06/2022 rDIConConfig.frm With the round borders of Win 11, there is insufficient space from the frame to the border, Windows cuts it off arbitrarily. Extend.
+'    rDIconConfigForm.Height = 9525
+'
+'    ' if Windows 10/11 then add 250 twips to the bottom of the main form
+'    If Left$(LCase$(windowsVersionString), 10) = "windows 10" Then
+'        rDIconConfigForm.Height = rDIconConfigForm.Height + 100
+'    End If
         
     ' state and position of a few manually placed controls (easier here than in the IDE)
     picRdThumbFrame.Visible = False
@@ -6254,7 +6358,7 @@ End Sub
 
 
 Private Sub picMoreConfigUp_Click()
-        Dim amountToDrop As Integer: amountToDrop = 0
+        Dim amountToRaise As Integer: amountToRaise = 0
         
 
         picMoreConfigDown.Visible = True
@@ -6262,16 +6366,18 @@ Private Sub picMoreConfigUp_Click()
         picHideConfig.Visible = False
         fraProperties.Height = 3630
         moreConfigVisible = False
-        amountToDrop = 1200
+        amountToRaise = 1200
 
         ' .43 DAEB 16/04/2022 rdIconConfig.frm increase the whole form height and move the bottom buttons set down
-        frameButtons.Top = frameButtons.Top - amountToDrop
-        rDIconConfigForm.Height = rDIconConfigForm.Height - amountToDrop
+        frameButtons.Top = frameButtons.Top - amountToRaise
+        lblDragCorner.Top = lblDragCorner.Top - amountToRaise
+        fraSizeSlider.Top = fraSizeSlider.Top - amountToRaise
+        rDIconConfigForm.Height = rDIconConfigForm.Height - amountToRaise
         
-        framePreview.Height = framePreview.Height - amountToDrop
-        fraSizeSlider.Top = fraSizeSlider.Top - amountToDrop
-        btnNext.Height = btnNext.Height - amountToDrop
-        btnPrev.Height = btnPrev.Height - amountToDrop
+        framePreview.Height = framePreview.Height - amountToRaise
+        btnNext.Height = btnNext.Height - amountToRaise
+        btnPrev.Height = btnPrev.Height - amountToRaise
+        
 
         If chkToggleDialogs.Value = 0 Then picMoreConfigDown.ToolTipText = "Shows extra configuration items"
 End Sub
@@ -9227,7 +9333,7 @@ End Sub
 ' Purpose   : show the standard menu - this has to be done for each control that requires a menu
 '---------------------------------------------------------------------------------------
 '
-Private Sub filesIconList_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub filesIconList_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     On Error GoTo filesIconList_MouseDown_Error
     If debugFlg = 1 Then debugLog "%" & "filesIconList_MouseDown"
 
@@ -9607,7 +9713,7 @@ End Sub
 ' Purpose   : show the standard menu - this has to be done for each area that requires a menu
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub Form_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
    On Error GoTo Form_MouseDown_Error
    If debugFlg = 1 Then debugLog "%" & "Form_MouseDown"
    
@@ -9637,7 +9743,7 @@ End Sub
 ' Purpose   : show the standard menu - this has to be done for each area that requires a menu
 '---------------------------------------------------------------------------------------
 '
-Private Sub frameButtons_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub frameButtons_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
    On Error GoTo frameButtons_MouseDown_Error
    If debugFlg = 1 Then debugLog "%" & "frameButtons_MouseDown"
    
@@ -9664,7 +9770,7 @@ End Sub
 ' Purpose   : show the standard menu - this has to be done for each area that requires a menu
 '---------------------------------------------------------------------------------------
 '
-Private Sub FrameFolders_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub FrameFolders_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
    On Error GoTo FrameFolders_MouseDown_Error
       If debugFlg = 1 Then debugLog "%" & "FrameFolders_MouseDown"
 
@@ -9691,7 +9797,7 @@ End Sub
 ' Purpose   : show the standard menu - this has to be done for each area that requires a menu
 '---------------------------------------------------------------------------------------
 '
-Private Sub frameIcons_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub frameIcons_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     On Error GoTo frameIcons_MouseDown_Error
     If debugFlg = 1 Then debugLog "%" & "frameIcons_MouseDown"
 
@@ -9720,7 +9826,7 @@ End Sub
 ' Purpose   : show the standard menu - this has to be done for each area that requires a menu
 '---------------------------------------------------------------------------------------
 '
-Private Sub framePreview_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub framePreview_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
    On Error GoTo framePreview_MouseDown_Error
     If debugFlg = 1 Then debugLog "%" & "framePreview_MouseDown"
 
@@ -9748,7 +9854,7 @@ End Sub
 ' Purpose   : show the standard menu - this has to be done for each area that requires a menu
 '---------------------------------------------------------------------------------------
 '
-Private Sub fraProperties_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub fraProperties_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
    On Error GoTo fraProperties_MouseDown_Error
     If debugFlg = 1 Then debugLog "%" & "fraProperties_MouseDown"
    
@@ -9823,11 +9929,14 @@ Private Sub picMoreConfigDown_Click()
         ' .43 DAEB 16/04/2022 rdIconConfig.frm increase the whole form height and move the bootom buttons set down
         rDIconConfigForm.Height = rDIconConfigForm.Height + amountToDrop
         frameButtons.Top = frameButtons.Top + amountToDrop
+        fraSizeSlider.Top = fraSizeSlider.Top + amountToDrop
+        lblDragCorner.Top = lblDragCorner.Top + amountToDrop
         
         framePreview.Height = framePreview.Height + amountToDrop
-        fraSizeSlider.Top = fraSizeSlider.Top + amountToDrop
         btnPrev.Height = btnPrev.Height + amountToDrop
         btnNext.Height = btnNext.Height + amountToDrop
+        
+
         
         
         If chkToggleDialogs.Value = 0 Then picMoreConfigDown.ToolTipText = "Hides the extra configuration items"
@@ -9870,7 +9979,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 ' .59 DAEB 01/05/2022 rDIConConfig.frm Added Drag and drop functionality
-Private Sub picRdMap_DragDrop(Index As Integer, Source As Control, X As Single, Y As Single)
+Private Sub picRdMap_DragDrop(Index As Integer, Source As Control, x As Single, y As Single)
 
    On Error GoTo picRdMap_DragDrop_Error
        
@@ -10273,7 +10382,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 ' .61 DAEB 01/05/2022 rDIConConfig.frm Added highlighting to the rdIconMap during Drag and drop.
-Private Sub picRdMap_DragOver(ByRef Index As Integer, ByRef Source As Control, ByRef X As Single, ByRef Y As Single, ByRef State As Integer)
+Private Sub picRdMap_DragOver(ByRef Index As Integer, ByRef Source As Control, ByRef x As Single, ByRef y As Single, ByRef State As Integer)
 
    On Error GoTo picRdMap_DragOver_Error
    
@@ -10299,7 +10408,7 @@ End Sub
 '
 
 ' .68 DAEB 04/05/2022 rDIConConfig.frm Added a timer to activate Drag and drop from the thumbnails to the rdmap only after 25ms
-Private Sub picRdMap_MouseUp(ByRef Index As Integer, ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub picRdMap_MouseUp(ByRef Index As Integer, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     rdMapIconMouseDown = False
     
     ' add a vbEndDrag here
@@ -10307,7 +10416,7 @@ Private Sub picRdMap_MouseUp(ByRef Index As Integer, ByRef Button As Integer, By
 End Sub
 
 ' .61 DAEB 01/05/2022 rDIConConfig.frm Added highlighting to the rdIconMap during Drag and drop.
-Private Sub picRdThumbFrame_DragOver(ByRef Source As Control, ByRef X As Single, ByRef Y As Single, ByRef State As Integer)
+Private Sub picRdThumbFrame_DragOver(ByRef Source As Control, ByRef x As Single, ByRef y As Single, ByRef State As Integer)
     ' as you leave the map the frame surrounds and gaps are interspersed between the map elements
     ' if the rdMap already has a highlighted icon, then clear the highlight
     picRdMap(lastHighlightedRdMapIndex).BorderStyle = 0
@@ -10371,7 +10480,7 @@ picThumbIconMouseDown_event_Error:
 End Sub
 
 ' .59 DAEB 01/05/2022 rDIConConfig.frm Added Drag and drop functionality, moved mouseDown code to dragDrop event STARTS
-Private Sub picThumbIcon_MouseUp(ByRef Index As Integer, ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub picThumbIcon_MouseUp(ByRef Index As Integer, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     picThumbIconMouseDown = False
     picThumbIcon(Index).Drag vbEndDrag
     'MsgBox "Dropped"
@@ -10469,7 +10578,7 @@ End Sub
 ' Purpose   : strange code to enable a menu right click on a text area
 '---------------------------------------------------------------------------------------
 '
-Private Sub txtAppToTerminate_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub txtAppToTerminate_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     On Error GoTo txtAppToTerminate_MouseDown_Error
 
     If Button = 2 Then
@@ -10492,7 +10601,7 @@ txtAppToTerminate_MouseDown_Error:
     End With
 End Sub
 
-Private Sub txtAppToTerminate_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub txtAppToTerminate_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip txtAppToTerminate.hWnd, "Any program that must be terminated prior to the main program initiation will be shown here. The text placed here must be the correct and full path/filename of the application to kill. The program name is selected using the program selection button on the right. The result is: when you click on the icon in the dock SteamyDock will do its very best to terminate the chosen application in advance but be aware that closing another application cannot be guaranteed - use this functionality with great care! ", _
                   TTIconInfo, "Help on Terminating an Application", , , , True
 End Sub
@@ -10504,7 +10613,7 @@ End Sub
 ' Purpose   : strange code to enable a menu right click on a text area
 '---------------------------------------------------------------------------------------
 '
-Private Sub txtArguments_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub txtArguments_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     ' .98 DAEB 26/06/2022 rDIConConfig.frm For all the text boxes swap the IME right click menu for a useful one, in context.
 
     On Error GoTo txtArguments_MouseDown_Error
@@ -10529,7 +10638,7 @@ txtArguments_MouseDown_Error:
     End With
 End Sub
 
-Private Sub txtCurrentIcon_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub txtCurrentIcon_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     ' .98 DAEB 26/06/2022 rDIConConfig.frm For all the text boxes swap the IME right click menu for a useful one, in context.
 
     If Button = 2 Then
@@ -10540,7 +10649,7 @@ Private Sub txtCurrentIcon_MouseDown(ByRef Button As Integer, ByRef Shift As Int
     End If
 End Sub
 
-Private Sub txtLabelName_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub txtLabelName_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     ' .98 DAEB 26/06/2022 rDIConConfig.frm For all the text boxes swap the IME right click menu for a useful one, in context.
 
     If Button = 2 Then
@@ -10710,7 +10819,7 @@ txtLabelName_Change_Error:
 End Sub
 
 
-Private Sub txtSecondApp_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub txtSecondApp_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     ' .98 DAEB 26/06/2022 rDIConConfig.frm For all the text boxes swap the IME right click menu for a useful one, in context.
 
     If Button = 2 Then
@@ -10772,7 +10881,7 @@ End Sub
 ' Purpose   : strange code to enable a menu right click on a text area
 '---------------------------------------------------------------------------------------
 '
-Private Sub txtStartIn_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub txtStartIn_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     ' .98 DAEB 26/06/2022 rDIConConfig.frm For all the text boxes swap the IME right click menu for a useful one, in context.
 
     On Error GoTo txtStartIn_MouseDown_Error
@@ -11259,7 +11368,7 @@ End Sub
 ' Purpose   : Each frame in VB6 has a mousedown to catch a right click and select which menu to display.
 '---------------------------------------------------------------------------------------
 '
-Private Sub picFrameThumbs_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub picFrameThumbs_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
    On Error GoTo picFrameThumbs_MouseDown_Error
    If debugFlg = 1 Then debugLog "%picFrameThumbs_MouseDown"
 
@@ -11288,7 +11397,7 @@ End Sub
 '             control which in turn shows a preview
 '---------------------------------------------------------------------------------------
 ' Initially, changed from a click to a mousedown as it allows it to catch the right button press and retain the index
-Private Sub picThumbIcon_MouseDown(ByRef Index As Integer, ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub picThumbIcon_MouseDown(ByRef Index As Integer, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     
     thisRoutine = "picThumbIcon_MouseDown"
     picThumbIconMouseDown = True
@@ -11428,7 +11537,7 @@ End Sub
 ' Purpose   : As the mouse is moved over the icons bring the label to the fore
 '---------------------------------------------------------------------------------------
 '
-Private Sub picThumbIcon_MouseMove(ByRef Index As Integer, ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub picThumbIcon_MouseMove(ByRef Index As Integer, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
    On Error GoTo picThumbIcon_MouseMove_Error
    'If debugFlg = 1 Then debugLog  "%" & "picThumbIcon_MouseMove"
 
@@ -11522,7 +11631,7 @@ End Sub
 '             this has to be done for each area that requires a menu
 '---------------------------------------------------------------------------------------
 '
-Private Sub picPreview_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub picPreview_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     On Error GoTo picPreview_MouseDown_Error
     If debugFlg = 1 Then debugLog "%" & "picPreview_MouseDown"
    
@@ -11599,7 +11708,7 @@ End Sub
 '             if the right click is selected it offers the choice to add or delete an icon
 '---------------------------------------------------------------------------------------
 '
-Private Sub picRdMap_MouseDown(ByRef Index As Integer, ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub picRdMap_MouseDown(ByRef Index As Integer, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     Dim useloop As Integer: useloop = 0
     Dim answer As VbMsgBoxResult: answer = vbNo
     
@@ -11714,7 +11823,7 @@ picRdMap_MouseDown_event_Error:
 
 End Sub
 
-Private Sub picRdMap_MouseMove(ByRef Index As Integer, ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub picRdMap_MouseMove(ByRef Index As Integer, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
 ' code retained in case I want to do a graphical drag and drop of one item in the map to another
 
 ' Dim picX As Integer
@@ -11958,7 +12067,7 @@ End Sub
 '               change the displayed tooltip
 '---------------------------------------------------------------------------------------
 '
-Private Sub folderTreeView_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub folderTreeView_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
    ' this next line is the MSCOMTCL.OCX usage of a Treeview node
    'Dim n As Node
    
@@ -11968,7 +12077,7 @@ Private Sub folderTreeView_MouseMove(ByRef Button As Integer, ByRef Shift As Int
   On Error GoTo folderTreeView_MouseMove_Error
    'If debugFlg = 1 Then debugLog  "%" & "folderTreeView_MouseMove" ' we don't want too many notifications in the debug log
 
-  Set N = folderTreeView.HitTest(X, Y)
+  Set N = folderTreeView.HitTest(x, y)
    If N Is Nothing Then
     folderTreeView.ToolTipText = "Click a folder to show the icons contained within"
     ElseIf N.Text = "icons" Then
@@ -12155,7 +12264,7 @@ End Sub
 ' Purpose   : show the standard menu - this has to be done for each area that requires a menu
 '---------------------------------------------------------------------------------------
 '
-Private Sub folderTreeView_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub folderTreeView_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
    On Error GoTo folderTreeView_MouseDown_Error
     If debugFlg = 1 Then debugLog "%" & "folderTreeView_MouseDown"
     
@@ -12215,7 +12324,7 @@ End Sub
 
 
 
-Private Sub txtTarget_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub txtTarget_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     ' .97 DAEB 26/06/2022 rDIConConfig.frm For the target text box swap the IME right click menu for the target selection menu.
     If Button = 2 Then
         mnuAddPreviewIcon.Visible = False
@@ -15196,8 +15305,8 @@ Private Sub refreshPicBox(ByRef picBox As PictureBox, ByVal iconSizing As Intege
     Dim mirrorOffsetX As Long: mirrorOffsetX = 0
     Dim mirrorOffsetY As Long: mirrorOffsetY = 0
     
-    Dim X As Long: X = 0
-    Dim Y As Long: Y = 0
+    Dim x As Long: x = 0
+    Dim y As Long: y = 0
     
     Dim ShadowOffset As Long: ShadowOffset = 0
     Dim LightAdjustment As Single
@@ -15210,8 +15319,8 @@ Private Sub refreshPicBox(ByRef picBox As PictureBox, ByVal iconSizing As Intege
 
     newWidth = iconSizing: newHeight = iconSizing
     
-    X = (picBox.ScaleWidth - newWidth) \ 2
-    Y = (picBox.ScaleHeight - newHeight) \ 2
+    x = (picBox.ScaleWidth - newWidth) \ 2
+    y = (picBox.ScaleHeight - newHeight) \ 2
     
     picBox.Cls
     If Not cShadow Is Nothing Then
@@ -15242,14 +15351,14 @@ Private Sub refreshPicBox(ByRef picBox As PictureBox, ByVal iconSizing As Intege
     
     If Not cShadow Is Nothing Then
         ' the 55 below is the shadow's opacity; hardcoded here but can be modified to your heart's delight
-        cShadow.Render picBox.hDC, X + newWidth \ 2 + ShadowOffset, Y + newHeight \ 2 + ShadowOffset, newWidth * mirrorOffsetX, newHeight * mirrorOffsetY, , , , , _
+        cShadow.Render picBox.hDC, x + newWidth \ 2 + ShadowOffset, y + newHeight \ 2 + ShadowOffset, newWidth * mirrorOffsetX, newHeight * mirrorOffsetY, , , , , _
             55, , , , , LightAdjustment, 0, True
     End If
     
     Dim ttemp As Integer
     ttemp = -1
     
-    cImage.Render picBox.hDC, X + newWidth \ 2, Y + newHeight \ 2, newWidth * 1, newHeight * 1, , , , , _
+    cImage.Render picBox.hDC, x + newWidth \ 2, y + newHeight \ 2, newWidth * 1, newHeight * 1, , , , , _
         100, , , , -1, 0, 0, True
     
     picBox.Refresh
@@ -15346,7 +15455,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub btnTarget_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnTarget_MouseDown(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
    On Error GoTo btnTarget_MouseDown_Error
    If debugFlg = 1 Then debugLog "%btnTarget_MouseDown"
 
@@ -15886,16 +15995,18 @@ Private Sub subBtnArrowDown_Click()
         
         Call setRdIconConfigFormHeight
         
-        rDIconConfigForm.Height = rDIconConfigForm.Height + growBit
+        rDIconConfigForm.Height = rDIconConfigForm.Height + growBit + 75
 
         framePreview.Top = 4545 + growBit
         fraProperties.Top = 4545 + growBit
         frameButtons.Top = 7925 + growBit
+       ' lblDragCorner.Top = 8430 + growBit
                 
         ' .75 DAEB 22/05/2022 rDIConConfig.frm The dropdown disclose function is calculating the positions incorrectly when the map is toggled hidden/shown.
         If moreConfigVisible = True Then
             rDIconConfigForm.Height = rDIconConfigForm.Height + amountToDrop
             frameButtons.Top = frameButtons.Top + amountToDrop
+            lblDragCorner.Top = 8430 + amountToDrop
         End If
                 
         btnArrowUp.Visible = True
@@ -15955,7 +16066,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub btnArrowDown_MouseUp(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnArrowDown_MouseUp(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
    On Error GoTo btnArrowDown_MouseUp_Error
    If debugFlg = 1 Then debugLog "%btnArrowDown_MouseUp"
 
@@ -15987,7 +16098,8 @@ Private Sub btnArrowUp_Click()
         framePreview.Top = 4545
         fraProperties.Top = 4545
         frameButtons.Top = 7910
-        
+        lblDragCorner.Top = 8430
+         
         Call setRdIconConfigFormHeight
     
         'rDIconConfigForm.dllFrame.Top = 7530
@@ -15996,6 +16108,7 @@ Private Sub btnArrowUp_Click()
         If moreConfigVisible = True Then
             rDIconConfigForm.Height = rDIconConfigForm.Height - 750
             frameButtons.Top = frameButtons.Top - 750
+            lblDragCorner.Top = lblDragCorner.Top - 750
         End If
         
         
@@ -16038,7 +16151,7 @@ Private Sub setRdIconConfigFormHeight()
         
         ' if Windows 10/11 then add 250 twips to the bottom of the main form
         If Left$(LCase$(windowsVersionString), 10) = "windows 10" Then
-            Me.Height = Me.Height + 100
+            rDIconConfigForm.Height = rDIconConfigForm.Height + 100
         End If
 
     On Error GoTo 0
@@ -16356,175 +16469,175 @@ End Sub
 
 ' .49 DAEB 20/04/2022 rDIConConfig.frm Added balloon tooltips STARTS
 
-Private Sub txtTarget_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub txtTarget_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
 If rDEnableBalloonTooltips = "1" Then CreateToolTip txtTarget.hWnd, "This field should contain the full path and filename of the target application.", _
                   TTIconInfo, "Help on the Target Path Box", , , , True
 End Sub
 
-Private Sub btnSet_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnSet_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnSet.hWnd, "This button sets and stores the icon characteristics that you have entered. However, you will need to press the save and restart button below to make it 'fix' onto the running dock. ", _
                   TTIconInfo, "Help on Additional Arguments", , , , True
 End Sub
 
-Private Sub btnAdd_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnAdd_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnAdd.hWnd, "This button takes the currently selected icon and places it onto the Dock Map, the same as double-clicking on an icon.", _
                   TTIconInfo, "Help on the Add an Icon Button", , , , True
 End Sub
 
-Private Sub btnAddFolder_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnAddFolder_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnAddFolder.hWnd, "This button works with the folder treelist above. It allows you to add an existing folder location to SteamyDock so that you can also select your own icons.", _
                   TTIconInfo, "Help on Adding a Folder", , , , True
 End Sub
 
-Private Sub btnArrowDown_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnArrowDown_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnArrowDown.hWnd, "This small button will show the icon map.", _
                   TTIconInfo, "Help on the Show Icon Map Button", , , , True
 End Sub
 
-Private Sub btnArrowUp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnArrowUp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnArrowUp.hWnd, "This small button will hide the icon map.", _
                   TTIconInfo, "Help on the Hide Icon Map Button", , , , True
 End Sub
 
-Private Sub btnBackup_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnBackup_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnBackup.hWnd, "This button takes an immediate backup and optionally opens the backup folder so that you can review the backup files.", _
                   TTIconInfo, "Help on the Backup Button", , , , True
 End Sub
 
-Private Sub btnCancel_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnCancel_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnCancel.hWnd, "This button cancels the current operation.", _
                   TTIconInfo, "Help on the Cancel Button", , , , True
 End Sub
 
-Private Sub btnFileListView_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnFileListView_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnFileListView.hWnd, "This button switches from image display mode to file detail mode in icon file display window.", _
                   TTIconInfo, "Help on the File Detail Mode Button", , , , True
 End Sub
 
-Private Sub btnGenerate_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnGenerate_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnGenerate.hWnd, "Pressing this button causes a utility to appear that will wipe the dock and make a whole NEW dock -  use with care! ", _
                   TTIconInfo, "Help on Auto-Generating a Dock", , , , True
 End Sub
 
-Private Sub btnGetMore_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnGetMore_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnGetMore.hWnd, "This button will open the browser at a page where you can download more icons.", _
                   TTIconInfo, "Help on the More Icons Button", , , , True
 End Sub
 
-Private Sub btnHelp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnHelp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnHelp.hWnd, "This button opens the help page in your default browser.", _
                   TTIconInfo, "Help on the Help Button", , , , True
 End Sub
 
-Private Sub btnIconSelect_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnIconSelect_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnIconSelect.hWnd, "Press this button to select an icon manually using a file browser. Select a PNG, ICO, JPG or BMP file. Ensure the file is square and is an icon.", _
                   TTIconInfo, "Help on the Manual Icon Select Button", , , , True
 End Sub
 
-Private Sub btnKillIcon_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnKillIcon_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnKillIcon.hWnd, "This button allows you to delete the currently selected icon in the icon file window above. Use wisely! Once it has gone, it has gone forever!", _
                   TTIconInfo, "Help on the Delete Icon Button", , , , True
 End Sub
 
-Private Sub btnMapNext_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnMapNext_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnMapNext.hWnd, "This will scroll the icon map to the right so that you can view additional icons.", _
                   TTIconInfo, "Help on the Scroll Map Right Button", , , , True
 End Sub
 
-Private Sub btnMapPrev_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnMapPrev_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnMapPrev.hWnd, "This will scroll the icon map to the left so that you can view additional icons.", _
                   TTIconInfo, "Help on the Scroll Map Left Button", , , , True
 End Sub
 
-Private Sub btnNext_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnNext_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnNext.hWnd, "This will select the next icon to the right within the icon map.", _
                   TTIconInfo, "Help on the Next Icon Button", , , , True
 End Sub
 
-Private Sub btnPrev_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnPrev_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnPrev.hWnd, "This will select the next icon to the left within the icon map.", _
                   TTIconInfo, "Help on the Refresh Icon Map Button", , , , True
 End Sub
 
-Private Sub btnRefresh_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnRefresh_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnRefresh.hWnd, "This button refreshes the icon file display.", _
                   TTIconInfo, "Help on the Refresh Button", , , , True
 End Sub
 
-Private Sub btnRemoveFolder_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnRemoveFolder_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnRemoveFolder.hWnd, "This button works with the folder treelist above. It will allow you to remove the selected folder from the folder treelist. Note that the default application folders cannot be removed, only those that you add manually.", _
                   TTIconInfo, "Help on Removing a Folder", , , , True
 
 End Sub
 
-Private Sub btnSaveRestart_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnSaveRestart_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnSaveRestart.hWnd, "A press of the save and restart button is required when any icon changes have been made. This causes the dock to restart and in so doing, it picks up the latest changes and displays them.", _
                   TTIconInfo, "Help on Saving and Restarting", , , , True
 End Sub
 
-Private Sub btnSecondApp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnSecondApp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnSecondApp.hWnd, "This button will open a file explorer window allowing you to specify any additional secondary program to run after the main program launch has completed. ", _
                   TTIconInfo, "Help on Second Application Selection Button", , , , True
 End Sub
 
-Private Sub btnSelectStart_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnSelectStart_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
 If rDEnableBalloonTooltips = "1" Then CreateToolTip btnSelectStart.hWnd, "Press this button to select a target folder for this icon, using a folder browser from which you can select a specific folder. Some apps require a default folder from which to operate. If you double click on the empty text box to the left then it will automatically fill in the folder using the folder of the target application. ", _
                   TTIconInfo, "Help on the Start Folder Select Button", , , , True
 End Sub
 
 
-Private Sub btnSettingsDown_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnSettingsDown_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnSettingsDown.hWnd, "This button displays the location of the current settings. This tells you where the configuration details are being stored and where they are being read from and saved to. The help has more information.", _
                   TTIconInfo, "Help on the cConfiguration Settings Location", , , , True
 End Sub
-Private Sub btnSettingsUp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnSettingsUp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnSettingsUp.hWnd, "Hide the registry form showing where details are being read from and saved to.", _
                   TTIconInfo, "Help on hiding the Configuration Settings", , , , True
 'Hide the registry form showing where details are being read from and saved to.
 End Sub
 
-Private Sub btnTarget_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnTarget_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnTarget.hWnd, "This button will open a file browser from which you can select an application for this icon. Typically, you would select a binary or a .EXE file to run when the selected icon is clicked upon. If you RIGHT CLICK ON THIS BUTTON, a menu will become visible where you can select a target and all the fields will be filled out automatically.", _
                   TTIconInfo, "Help on the Target Application Button", , , , True
 End Sub
 
-Private Sub btnThumbnailView_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnThumbnailView_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnThumbnailView.hWnd, "This button switches from file detail mode to image display mode in icon file display window.", _
                   TTIconInfo, "Help on the Image Mode Button", , , , True
 End Sub
 
-Private Sub btnWorking_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub btnWorking_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip btnWorking.hWnd, "This is an informational button that simply tells you that this utility is doing something...", _
                   TTIconInfo, "Help on the Working Button", , , , True
 End Sub
 
-Private Sub chkAutoHideDock_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub chkAutoHideDock_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip chkAutoHideDock.hWnd, "This causes the dock to hide immediately before the application launches. This allows full screen apps to run uninterrupted by the dock. The dock will re-appear 1.5 seconds after the application is closed. ", _
                   TTIconInfo, "Help on Auto-Hiding the Dock", , , , True
 End Sub
 
-Private Sub chkConfirmDialog_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub chkConfirmDialog_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip chkConfirmDialog.hWnd, "This causes a Confirmation Dialog to pop up prior to the specified command running, allowing you a chance to say yes or no at runtime. ", _
                   TTIconInfo, "Help on Confirming Beforehand", , , , True
 End Sub
 
-Private Sub chkConfirmDialogAfter_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub chkConfirmDialogAfter_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip chkConfirmDialogAfter.hWnd, "Some programs run without producing any output. Checking this causes a Confirmation Dialog to pop up after the specified command has run. Please note it does not confirm the application was successful in its task, it just gives you confirmation that the command was successfully issued.", _
                   TTIconInfo, "Help on Confirming Afterward", , , , True
 
 End Sub
 
-Private Sub chkRunElevated_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub chkRunElevated_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip chkRunElevated.hWnd, "When this checkbox is ticked, the associated app will run with elevated privileges, ie. as administrator. Some programs require this in order to operate.", _
                   TTIconInfo, "Help on Running Elevated", , , , True
 End Sub
 
-Private Sub chkToggleDialogs_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub chkToggleDialogs_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip chkToggleDialogs.hWnd, "When this checkbox is ticked this will display the information pop-ups (the confirmation on saves and deletes) and balloon tooltips. When it is unchecked only the standard single-line tooltips will appear and there will be no warning dialogs. ", _
                   TTIconInfo, "Help on the Dialog Checkbox", , , , True
 End Sub
 
-Private Sub chkQuickLaunch_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub chkQuickLaunch_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip chkQuickLaunch.hWnd, "This causes the application to launch before any dock animation has occurred speeding up launch times. This setting can also be controlled globally via the Dock Settings Utility in the Icon Behaviour Pane via the setting named Icon Attention Effect", _
                   TTIconInfo, "Help on Quick Launch", , , , True
 End Sub
@@ -16541,7 +16654,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub fraIconType_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub fraIconType_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
    On Error GoTo fraIconType_MouseMove_Error
 
     If rDEnableBalloonTooltips = "1" Then CreateToolTip fraIconType.hWnd, gCmbIconTypesFilterBalloonTooltip, _
@@ -16555,17 +16668,17 @@ fraIconType_MouseMove_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fraIconType_MouseMove of Form rDIconConfigForm"
 End Sub
 
-Private Sub fraLblArgument_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub fraLblArgument_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblArgument.hWnd, "An optional field, add any additional arguments that the target file operation requires, eg. -s -t 00 -f . ", _
                   TTIconInfo, "Help on Additional Arguments", , , , True
 End Sub
 
-Private Sub fraLblConfirmDialogAfter_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub fraLblConfirmDialogAfter_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblConfirmDialogAfter.hWnd, "Some programs run without producing any output. Checking this causes a Confirmation Dialog to pop up after the specified command has run. Please note it does not confirm the application was successful in its task, it just gives you confirmation that the command was successfully issued.", _
                   TTIconInfo, "Help on Confirming Afterward", , , , True
 End Sub
 
-Private Sub fraLblCurrentIcon_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub fraLblCurrentIcon_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblCurrentIcon.hWnd, "This displays the full path of the currently selected icon. Just double-click on an icon in the icon window above and it will automatically populate this field, replacing the current icon.", _
                   TTIconInfo, "Help on the Icon Path Text Box", , , , True
 End Sub
@@ -16578,7 +16691,7 @@ End Sub
 '             The balloon pop up for the combobox has to be done via subclassing - look for this variable to find the definition gCmbOpenRunningBalloonTooltip.
 '---------------------------------------------------------------------------------------
 '
-Private Sub fraLblOpenRunning_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub fraLblOpenRunning_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
    On Error GoTo fraLblOpenRunning_MouseMove_Error
 
     If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblOpenRunning.hWnd, gCmbOpenRunningBalloonTooltip, _
@@ -16592,17 +16705,17 @@ fraLblOpenRunning_MouseMove_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fraLblOpenRunning_MouseMove of Form rDIconConfigForm"
 End Sub
 
-Private Sub fraLblPopUp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub fraLblPopUp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblPopUp.hWnd, "When this checkbox is ticked, the associated app will run with elevated privileges, ie. as administrator. Some programs require this in order to operate.", _
                   TTIconInfo, "Help on Running Elevated", , , , True
 End Sub
 
-Private Sub fraLblQuickLaunch_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub fraLblQuickLaunch_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblQuickLaunch.hWnd, "This causes the application to launch before any dock animation has occurred speeding up launch times. This setting can also be controlled globally via the Dock Settings Utility in the Icon Behaviour Pane via the setting named Icon Attention Effect", _
                   TTIconInfo, "Help on Quick Launch", , , , True
 End Sub
 
-Private Sub fraLblRdIconNumber_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub fraLblRdIconNumber_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
 
     If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblRdIconNumber.hWnd, "This is number of the current icon that is being displayed in the preview or in the map above.", _
                   TTIconInfo, "Help on Icon Numbering", , , , True
@@ -16617,7 +16730,7 @@ End Sub
 '             The balloon pop up for the combobox has to be done via subclassing - look for this variable to find the definition gCmbRunStateBalloonTooltip.
 '---------------------------------------------------------------------------------------
 '
-Private Sub fraLblRun_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub fraLblRun_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
    On Error GoTo fraLblRun_MouseMove_Error
 
     If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblRun.hWnd, gCmbRunStateBalloonTooltip, TTIconInfo, "Help on Window Mode Selection", , , , True
@@ -16630,95 +16743,95 @@ fraLblRun_MouseMove_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fraLblRun_MouseMove of Form rDIconConfigForm"
 End Sub
 
-Private Sub fraLblStartIn_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub fraLblStartIn_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblStartIn.hWnd, "An optional field, that only needs to contain a value if the starting app requires a start folder. Press the square button on the right to select a start folder for this icon. If you double click here then it will automatically fill in the folder using the target file path immediately above. ", _
                   TTIconInfo, "Help on Start Folder Selection", , , , True
 End Sub
 
-Private Sub fraLblTarget_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub fraLblTarget_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblTarget.hWnd, "This field should contain the full path and filename of the target application.", _
                   TTIconInfo, "Help on the Target Path Box", , , , True
 End Sub
 
-Private Sub fraLblConfirmDialog_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub fraLblConfirmDialog_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblConfirmDialog.hWnd, "Adds a Confirmation Dialog prior to the command running allowing you to say yes or no at runtime.", _
                   TTIconInfo, "Help on the Confirming Dialog", , , , True
 End Sub
 
-Private Sub fraLblSecondApp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub fraLblSecondApp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblSecondApp.hWnd, "Specify any additional secondary program to run after the main program launch has completed. ", _
                   TTIconInfo, "Help on Second Application", , , , True
 End Sub
 
-Private Sub fraLblAppToTerminate_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub fraLblAppToTerminate_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip fraLblAppToTerminate.hWnd, "Specify any program that must be terminated prior to the main program initiation will be shown here. ", _
                   TTIconInfo, "Help on Terminating an Application", , , , True
 End Sub
-Private Sub frmLblAutoHideDock_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub frmLblAutoHideDock_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip frmLblAutoHideDock.hWnd, "This causes the dock to hide immediately before the application launches. This allows full screen apps to run uninterrupted by the dock. The dock will re-appear 1.5 seconds after the application is closed. ", _
                   TTIconInfo, "Help on Auto-Hiding the Dock", , , , True
 End Sub
 
 
-Private Sub picHideConfig_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub picHideConfig_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip picHideConfig.hWnd, "Hides the extra configuration section.", _
                   TTIconInfo, "Help on Hiding Configuration", , , , True
 End Sub
-Private Sub picMoreConfigUp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub picMoreConfigUp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip picMoreConfigUp.hWnd, "Hides the extra configuration section.", _
                   TTIconInfo, "Help on Hiding Configuration", , , , True
 End Sub
 
-Private Sub txtLabelName_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub txtLabelName_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip txtLabelName.hWnd, "This field should contain the label of the icon as it appears on the dock.", _
                   TTIconInfo, "Help on the Icon Label", , , , True
 End Sub
 
-Private Sub picMoreConfigDown_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub picMoreConfigDown_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip picMoreConfigDown.hWnd, "Press this button to display extra configuration items in the dropdown area at the base of this utility.", _
                   TTIconInfo, "Help on the More Configuration Button", , , , True
 End Sub
 
-Private Sub picPreview_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub picPreview_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip picPreview.hWnd, "This is the currently selected icon scaled to fit the preview box, the size is controlled using the slider below.", _
                   TTIconInfo, "Help on the Icon Preview", , , , True
 End Sub
 
-Private Sub picRdThumbFrame_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub picRdThumbFrame_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
    If rDEnableBalloonTooltips = "1" Then CreateToolTip picRdThumbFrame.hWnd, "This is the icon map. It maps your dock exactly, showing you the same icons that appear in your dock. You can add or delete icons to/from the map. Press save and restart and they will appear in your dock.", _
                   TTIconInfo, "Help on the Icon Map", , , , True
 End Sub
 
-Private Sub rdMapRefresh_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub rdMapRefresh_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip rdMapRefresh.hWnd, "This button refreshes the Icon Map. If you ever worry about mistakes in about your recent changes, just refresh.", _
                   TTIconInfo, "Help on the Refresh Icon Map Button", , , , True
 End Sub
 
-Private Sub sliPreviewSize_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub sliPreviewSize_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip sliPreviewSize.hWnd, "This will size the chosen icon so you can see how it looks when it is shown at different sizes in the dock.", _
                   TTIconInfo, "Help on the Icon Size Slider", , , , True
 End Sub
 
-Private Sub textCurrentFolder_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub textCurrentFolder_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip textCurrentFolder.hWnd, "This displays the full path of the currently selected folder in the treelist.", _
                   TTIconInfo, "Help on the Current Folder Path", , , , True
 End Sub
 
-Private Sub txtArguments_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub txtArguments_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip txtArguments.hWnd, "An optional field, add any additional arguments that the target file operation requires, eg. -s -t 00 -f . ", _
                   TTIconInfo, "Help on Additional Arguments", , , , True
 End Sub
 
-Private Sub txtCurrentIcon_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub txtCurrentIcon_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip txtCurrentIcon.hWnd, "This displays the full path of the currently selected icon. Just double-click on an icon in the icon window above and it will automatically populate this field, replacing the current icon.", _
                   TTIconInfo, "Help on the Icon Path Text Box", , , , True
 End Sub
 
-Private Sub txtSecondApp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub txtSecondApp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip txtSecondApp.hWnd, "Specify any additional secondary program to run after the main program launch has completed. ", _
                   TTIconInfo, "Help on Second Application", , , , True
 End Sub
-Private Sub txtStartIn_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub txtStartIn_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
     If rDEnableBalloonTooltips = "1" Then CreateToolTip txtStartIn.hWnd, "An optional field, that only needs to contain a value if the starting app requires a start folder. Press the square button on the right to select a start folder for this icon. If you double click here then it will automatically fill in the folder using the target file path immediately above. ", _
                   TTIconInfo, "Help on Start Folder Selection", , , , True
 End Sub
@@ -16751,7 +16864,7 @@ End Sub
 '             This IS STEAMYDOCK!
 '---------------------------------------------------------------------------------------
 '
-Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObject, ByRef Effect As Long, ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObject, ByRef Effect As Long, ByRef Button As Integer, ByRef Shift As Integer, ByRef x As Single, ByRef y As Single)
 
     'The Format numbers used in the OLE DragDrop data structure, are:
     'Text = 1 (vbCFText)
@@ -17170,6 +17283,52 @@ validateInputs_Error:
 End Sub
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : lblDragCorner_MouseDown
+' Author    : beededea
+' Date      : 07/10/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub lblDragCorner_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+
+    On Error GoTo lblDragCorner_MouseDown_Error
+    
+    If Button = vbLeftButton Then
+        ReleaseCapture
+        SendMessage Me.hWnd, WM_NCLBUTTONDOWN, HTBOTTOMRIGHT, 0
+    End If
+    
+    On Error GoTo 0
+    Exit Sub
+
+lblDragCorner_MouseDown_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure lblDragCorner_MouseDown of Form widgetPrefs"
+
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : lblDragCorner_MouseMove
+' Author    : beededea
+' Date      : 07/10/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub lblDragCorner_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+
+    On Error GoTo lblDragCorner_MouseMove_Error
+
+    lblDragCorner.MousePointer = 8
+
+    On Error GoTo 0
+    Exit Sub
+
+lblDragCorner_MouseMove_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure lblDragCorner_MouseMove of Form widgetPrefs"
+   
+End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : subClassControls
@@ -17202,3 +17361,5 @@ subClassControls_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure subClassControls of Form rDIconConfigForm"
 End Sub
+
+

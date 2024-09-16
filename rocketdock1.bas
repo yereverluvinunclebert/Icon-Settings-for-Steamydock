@@ -953,9 +953,11 @@ Public Sub changeFont(ByRef formName As Object, ByRef fntNow As Boolean, ByRef f
     ' .TBD DAEB 26/05/2022 rdIconConfig.frm Add listboxes to the types handled
     For Each Ctrl In formName.Controls
          If (TypeOf Ctrl Is CommandButton) Or (TypeOf Ctrl Is ListBox) Or (TypeOf Ctrl Is TextBox) Or (TypeOf Ctrl Is FileListBox) Or (TypeOf Ctrl Is Label) Or (TypeOf Ctrl Is ComboBox) Or (TypeOf Ctrl Is CheckBox) Or (TypeOf Ctrl Is OptionButton) Or (TypeOf Ctrl Is Frame) Then
-           If fntFont <> "" Then Ctrl.Font.Name = fntFont
-           If fntSize > 0 Then Ctrl.Font.Size = fntSize
-            Ctrl.Font.Italic = fntItalics
+            If Ctrl.Name <> "lblDragCorner" Then
+                If fntFont <> "" Then Ctrl.Font.Name = fntFont
+                If fntSize > 0 Then Ctrl.Font.Size = fntSize
+                Ctrl.Font.Italic = fntItalics
+            End If
         End If
     Next
     
