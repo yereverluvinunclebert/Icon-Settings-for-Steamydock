@@ -327,13 +327,13 @@ Public Sub displayEmbeddedIcons(ByVal Filename As String, ByRef targetPicBox As 
     Dim nIcons As Long: nIcons = 0
     Dim Result As Long: Result = 0
     Dim flags As Long: flags = 0
-    Dim i As Long: i = 0
+    Dim I As Long: I = 0
     Dim pic As IPicture
     
     On Error Resume Next
 
     lIconIndex = 0
-    i = 2 ' need some experimentation here
+    I = 2 ' need some experimentation here
     
     'the boundaries of the icons you wish to extract packed into a 32bit LONG for an API call
     xSize = make32BitLong(CInt("256"), CInt("16")) ' 1048832
@@ -382,7 +382,7 @@ Public Sub displayEmbeddedIcons(ByVal Filename As String, ByRef targetPicBox As 
     '126
         
     ' create an icon with a handle
-    Set pic = CreateIcon(hIcon(i + lIconIndex - 1)) ' 2054427849
+    Set pic = CreateIcon(hIcon(I + lIconIndex - 1)) ' 2054427849
     
     ' resize and place the target picbox according to the size of the icon
     ' (rather than placing the icon in the middle of the picbox as I should)
@@ -403,7 +403,7 @@ Public Sub displayEmbeddedIcons(ByVal Filename As String, ByRef targetPicBox As 
         End With
     End If
     ' get rid of the icons we created
-    Call DestroyIcon(hIcon(i + lIconIndex - 1))
+    Call DestroyIcon(hIcon(I + lIconIndex - 1))
     'Call DestroyIcon(hIcon(LBound(hIcon))
 
 End Sub

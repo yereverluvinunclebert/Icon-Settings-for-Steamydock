@@ -1,0 +1,171 @@
+' Tasks Done:
+' ===========
+
+' when dropping down the additional button options, stretch the image box downward too?
+' we need to fill the space below the image preview.
+'       For win 11 bottom cut off - need to add another 100 twips
+' added option buttons for running the second app beforehand/afterwards
+' added new field and selection button for choosing an application to terminate
+' added initialisation, reading/writing parameters to handle the beforehand/afterwards saving and setting
+' added initialisation, reading/writing parameters to handle the application to terminate
+' added balloon tooltip handling to new controls
+' modified code to enlarge the dropdown area and pull it back as required.
+' modify help to document the application to terminate and run second app beforehand/afterwards.
+' take the X/Y position and store it, when restarting, set it as per FCW.
+' menu option to move the utility to the centre of the main monitor
+' code added to find whether the utility is off screen - works for monitor one.
+' rDIconConfigForm - all routines are now byVal or byRef
+' rDIconConfigForm - all routines have their local variables initialised
+' adjust Form Position on startup placing form onto Correct Monitor when placed off screen due to monitor/resolution changes
+' checks the date and time of the dock settings file and reloads the map after re-reading the icon details
+' fixed the prev/next button msgbox, message box now shows the question icon and title bar.
+' add themeing to the dock generation form taken from the main utility.
+' pulled the prev/next button code together so it shares the same code
+' Messagebox msgBoxA module to save the context of the message to allow specific msgboxes to go away
+' pulled the map prev/next button code together so it shares the same code
+' test for the folderTreeView.DropHighlight.Key and checking that (folderTreeView.SelectedItem Is Nothing) to determine which item in the folder tree to open.
+' no longer attempts to style above the number of icons we actually have
+
+
+
+' Current Task:
+' =============
+
+' form sizing on Windows 10 - wip
+' tree to the resizing list
+' vertical slider to the resizing list
+' horizontal slider to the resizing list
+' tree to the resizing list
+' button images to be resized on buttons left/right
+' dropdown button - not to trigger resize code
+
+
+
+' remove persistentDebug.exe and replace with logging to a file as per FCW.
+' test for the height of the window using the titlebar size to properly size the main form as per the Pz Earth VB6 widget prefs that size incorrectly on Win 10/11.
+' win 10 specifics
+
+' Status:
+' =======
+'
+'   Generally the tool is complete barring some bugs to resolve and new features I would like to implement.
+'
+' Tasks:
+'
+'   test running with a blank tool settings file
+'
+'   test running with a blank dock settings file
+'
+'   Add subclass (?) scrolling to the main scrollbar - done
+'
+'   reload the icon preview image and text details when the docksettings file changes, read the current icon from a new lastIconChanged field.
+'
+'   add the settings timer functionality to the dockSettings tool - could be instant with no msgbox?
+'
+'   create an interim migration tool from rocketdock or reassess the docksettings tool's capability to read the settings file as a one-off?
+'
+'   flag - if you are making changes now and another to determine if you have made any changes that will be lost of the map is refreshed.
+'       to be tested in the settingsTimer
+'
+'   add to credits
+'       Procedure : adjustFormPositionToCorrectMonitor
+'       Author    : Hypetia from TekTips https://www.tek-tips.com/userinfo.cfm?member=Hypetia
+'
+'   Krool's CCRImageList.ocx component to replace the MS imageList, we are using this already - WIP
+'       OCX built successfully after OLEGUIDS.TLB problem, not available and incorrect version.
+'       Dropped the ocx onto the component toolbar manually
+'       Dropped the new imagelist onto the form
+'       Using the new image list and populating it at run time by loading images from an existing picbox, the image comes out pure black.
+'       We need to use Krool's latest code from his panoply of controls, replace the current code, rebuild OCX and re-test.
+'       Then raise a problem report on the CCR thread. DONE.
+'       change to adding the .picture to workaround the bug in Krool's imageList failing to convert to an HIcon.
+'       Workaround providing a white drag box around the image when using .picture instead of .image.
+'       Await a permanent bugfix from Krool
+'       Test and implement new version of Krool's imageList control with new bugfix
+'       When it arrives, apply the bugfix manually (compare the code and see if you can make the changes yourself)
+'
+'       Create a new resource file with the three OCXs inserted as well as the custom manifest #24
+'           Test locally and on desktop with the new RES file.
+'           You might have to do this each time there is a new version of CCRimageList.ocx
+'
+' Bugs:
+' =====
+'
+'       when editing an icon, dragging and dropping to the map, the set button is not enabled
+'       when editing an icon, dragging and dropping to the map, the close button does not change to cancel
+'       cancel does not revert the icon dragged to the dock
+'
+'       read the docksettings and determine chkRetainIcons
+'
+'       the value of chkRetainIcons must be used to determine whether the icon is automatically pulled from the embedded icon or the collection
+'
+'       why is embeddedIcons called three times? - need to figure that out.
+'
+'       update the help file.
+'
+'       note: - Compile the other associated projects regularly as they use shared code in modules 2 & 3.
+'
+'       appIdent.csv - complete the list using the registry entries - test existing utilities used
+'
+'       appIdent.csv - add icon references to the list
+'           hwinfo64 hwinfo64.png
+'
+'       rubberduck the code
+'
+'       add the build instructions
+'
+'       build the manifest - test the manifest for 64 bit & win 11 systems - no admin required, DPI needed.
+'
+'       Elroy's code to add balloon tips to comboBox
+'       https://www.vbforums.com/showthread.php?893844-VB6-QUESTION-How-to-capture-the-MouseOver-Event-on-a-comboBox
+'
+' There are a few new functions that I'd like to add in the task list:
+' ====================================================================
+'
+'    1. When adding a shortcut to the dock we need to determine the built-in ico and give the option to extract that.
+'       The class code uses GDI+ to read the PNG files.
+'       GdipLoadImageFromFile
+'       GdipGetImageBounds
+'       GdipCreateFromHdc
+'       GdipDrawImageRectRectI
+'       It is rendered into a picturebox.
+'
+'    2. Test with empty dock and first run with no prior install of anything.
+'
+'    3. Ensure the laptop OCX configuration pulls all the OCX from the local versions of the three OCX
+'       Ensure the desktop OCX configuration matches that of the desktop so the build on the desktop works with the embedded RES file.
+'       The OCXs should be in the same folder.
+'
+'    4.
+'
+'    5. I would like to replicate those main icons in a drawn style using the Wacom pad  Very Low Priority
+'
+'    6. Resize all the controls in the same way that we resize the generateDock form - I'd like to have that but all the icons would
+'       need dynamic resizing and that would take time. This would need a re-engineering of the map. VERY LOW PRIORITY.
+'
+'    7. ANY controls loaded at runtime, MUST be Unloaded when close the form - we need to check this.
+'
+'>   8. Elroy's balloon tooltip adaptation for drop down controls - important to complete the balloon tips.
+'       The thread on how to do this is here:
+'       https://www.vbforums.com/showthread.php?893844-VB6-QUESTION-How-to-capture-the-MouseOver-Event-on-a-comboBox&p=5540805&highlight=#post5540805
+'       unfortunately it requires subclassing and that is bad for development within the IDE, stop button crashes &c.
+'       So, it is something to do right at the very end when you have completed all the other development.
+'       Now medium priority but still to be done last. Reason for this is that the other docksettings tool makes frequent use of
+'       drop downs and so it needs to be implemented to complete the balloon tooltips there.
+'
+'   9.  Skin the interface in a medieval manner!  Very Low Priority.
+'
+'   10. Use the lightweight method of reading images from SteamyDock rather than LaVolpe's method using readFromStream.
+'
+' Other Tasks:
+'
+'   Github - done
+'
+'   SD Messagebox msgBoxA module - ship the code to FCW to replace the native msgboxes.
+'
+'   SD DirectX 2D Jacob Roman's training utilities to implement 2D graphics in place of GDI+
+'      in addition there is the VB6 dock version from the same author as the original GDI+ dock used as inspiration here,
+'      that uses DirectX 2D.
+'
+'   SD Avant manager - test the animation routine for the dock, circledock might be worth looking at?
+'
