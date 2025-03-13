@@ -88,6 +88,8 @@ Public Sub resizeControls(ByRef thisForm As Form, ByRef m_ControlPositions() As 
     ' Get the form's current scale factors.
     x_scale = thisForm.ScaleWidth / m_FormWid
     y_scale = thisForm.ScaleHeight / m_FormHgt
+    
+    gblResizeRatio = x_scale
 
     ' Position the controls.
     I = 1

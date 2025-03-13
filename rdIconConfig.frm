@@ -53,7 +53,7 @@ Begin VB.Form rDIconConfigForm
    Begin VB.Timer themeTimer 
       Enabled         =   0   'False
       Interval        =   10000
-      Left            =   450
+      Left            =   465
       Top             =   5760
    End
    Begin VB.Frame Frame 
@@ -1202,7 +1202,7 @@ Begin VB.Form rDIconConfigForm
          Begin VB.Timer busyTimer 
             Enabled         =   0   'False
             Interval        =   50
-            Left            =   30
+            Left            =   90
             Top             =   180
          End
          Begin VB.Label lblBlankText 
@@ -3109,7 +3109,7 @@ End Sub
 '
 Private Sub Form_Resize_Event()
 
-    Dim ratio As Double: ratio = 0
+    Dim constraintRatio As Double: constraintRatio = 0
     Dim currentFontSize As Single: currentFontSize = 0
     
     On Error GoTo Form_Resize_Event_Error
@@ -3121,11 +3121,11 @@ Private Sub Form_Resize_Event()
                Me.ScaleTop + Me.ScaleHeight - (lblDragCorner.Height + 40)
                
     ' constrain the height/width ratio
-    ratio = pvtCFormHeight / pvtCFormWidth
+    constraintRatio = pvtCFormHeight / pvtCFormWidth
         
     If pvtFormResizedByDrag = True Then
     
-        rDIconConfigForm.Width = rDIconConfigForm.Height / ratio ' maintain the aspect ratio, note: this change calls this routine again...
+        rDIconConfigForm.Width = rDIconConfigForm.Height / constraintRatio ' maintain the aspect ratio, note: this change calls this routine again...
         
         If SDSuppliedFontSize = "" Then SDSuppliedFontSize = Val(GetINISetting("Software\IconSettings", "defaultSize", toolSettingsFile))
         currentFontSize = CSng(Val(SDSuppliedFontSize))
@@ -3133,6 +3133,8 @@ Private Sub Form_Resize_Event()
         Call resizeControls(Me, rdFormControlPositions(), pvtCFormWidth, pvtCFormHeight, currentFontSize)
         
         'Call tweakPrefsControlPositions(Me, gblCurrentWidth, gblCurrentHeight)
+        
+        Call populateThumbnails(gblBaseThumbImageSize, gblThumbnailStartPosition)
         
     Else
         If Me.WindowState = 0 Then ' normal
@@ -3802,6 +3804,7 @@ Private Sub Form_Load()
     sDIconSettingsDefaultEditor = "" ' "E:\vb6\rocketdock\iconsettings.vbp"
     rDDebugFlg = ""
     pvtFormResizedByDrag = False
+    gblResizeRatio = 1
     
     ' theme variables
     
@@ -3927,9 +3930,9 @@ Private Sub Form_Load()
     fileIconListPosition = 0
     
     ' .54 DAEB 25/04/2022 rDIConConfig.frm Added rDThumbImageSize saved variable to allow the tool to open the thumbnail explorer in small or large mode
-'    rDThumbImageSize = GetINISetting("Software\SteamyDockSettings", "thumbImageSize", toolSettingsFile)
+'    rDThumbImageSize = GetINISetting("Software\SteamyDockSettings", "gblBaseThumbImageSize", toolSettingsFile)
 '    If rDThumbImageSize = "" Then rDThumbImageSize = "64"
-'    thumbImageSize = Val(rDThumbImageSize)
+'    gblBaseThumbImageSize = Val(rDThumbImageSize)
     Call refreshThumbnailViewPanel
     
     ' we indicate that all changes have been lost when changes to fields are made by the program and not the user
@@ -5262,9 +5265,10 @@ Private Sub readIconsAndConfiguration()
 '    End If
 
     ' .71 DAEB 16/05/2022 rDIConConfig.frm Move the reading of recent settings into the main read configuration procedure STARTS
-    rDThumbImageSize = GetINISetting("Software\IconSettings", "thumbImageSize", toolSettingsFile)
+    rDThumbImageSize = GetINISetting("Software\IconSettings", "gblBaseThumbImageSize", toolSettingsFile)
     If rDThumbImageSize = "" Then rDThumbImageSize = "64" ' validate
-    thumbImageSize = Val(rDThumbImageSize) ' set
+    gblBaseThumbImageSize = Val(rDThumbImageSize) ' set
+    
 
     ' .70 DAEB 16/05/2022 rDIConConfig.frm Read the chkToggleDialogs value from a file and save the value for next time
     sdChkToggleDialogs = GetINISetting("Software\IconSettings", "sdChkToggleDialogs", toolSettingsFile)
@@ -6086,9 +6090,9 @@ Private Sub btnRefresh_Click_Event()
         ' if the thumbnail view is displaying then repopulate the thumbnail view
         
         vScrollThumbs.Value = vScrollThumbs.Min
-        
+                
         ' using the current filelist as the start point on the list, repopulate the thumbs
-        Call populateThumbnails(thumbImageSize, filesIconList.ListIndex)
+        Call populateThumbnails(gblBaseThumbImageSize, filesIconList.ListIndex)
         
         If picFrameThumbs.Visible = True Then
             picFrameThumbs.SetFocus
@@ -6101,10 +6105,10 @@ Private Sub btnRefresh_Click_Event()
 
         'highlight the current thumbnail
         thumbIndexNo = 0
-        If thumbImageSize = 64 Then 'larger
+        If gblBaseThumbImageSize = 64 Then 'larger
             picFraPicThumbIcon(thumbIndexNo).BorderStyle = 1
             'picThumbIcon(thumbIndexNo).BorderStyle = 1
-        ElseIf thumbImageSize = 32 Then
+        ElseIf gblBaseThumbImageSize = 32 Then
             lblThumbName(thumbIndexNo).BackColor = RGB(212, 208, 200)
         End If
     
@@ -7540,138 +7544,9 @@ rdMapPageUp_Press_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure rdMapPageUp_Press of Form rDIconConfigForm"
 End Sub
-''---------------------------------------------------------------------------------------
-'' Procedure : readRegistryOnce
-'' Author    : beededea
-'' Date      : 20/06/2019
-'' Purpose   : read the registry and set obtain the necessary icon data for the specific icon
-''---------------------------------------------------------------------------------------
-''
-'Private Sub readRegistryOnce(ByVal iconNumberToRead As Integer)
-'    ' read the settings from the registry
-'   On Error GoTo readRegistryOnce_Error
-'   If debugFlg = 1 Then debugLog  "%" & "readRegistryOnce"
-'
-'
-'
-'    sFilename = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-FileName")
-'    sFileName2 = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-FileName2")
-'    sTitle = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-Title")
-'    sCommand = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-Command")
-'    sArguments = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-Arguments")
-'    sWorkingDirectory = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-WorkingDirectory")
-'    sShowCmd = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-ShowCmd")
-'    sOpenRunning = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-OpenRunning")
-'    sIsSeparator = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-IsSeparator")
-'    sUseContext = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-UseContext")
-'    sDockletFile = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-DockletFile")
-'
-'   On Error GoTo 0
-'   Exit Sub
-'
-'readRegistryOnce_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readRegistryOnce of Form rDIconConfigForm"
-'
-'End Sub
-
-''---------------------------------------------------------------------------------------
-'' Procedure : writeRegistryOnce
-'' Author    : beededea
-'' Date      : 20/06/2019
-'' Purpose   :
-''---------------------------------------------------------------------------------------
-''
-'Private Sub writeRegistryOnce(ByVal iconNumberToWrite As Integer)
-'
-'   On Error GoTo writeRegistryOnce_Error
-'    If debugFlg = 1 Then debugLog  "%" & "writeRegistryOnce"
-'
-'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-FileName", sFilename)
-'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-FileName2", sFileName2)
-'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-Title", sTitle)
-'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-Command", sCommand)
-'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-Arguments", sArguments)
-'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-WorkingDirectory", sWorkingDirectory)
-'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-ShowCmd", sShowCmd)
-'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-OpenRunning", sOpenRunning)
-'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-IsSeparator", sIsSeparator)
-'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-UseContext", sUseContext)
-'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-DockletFile", sDockletFile)
-'
-'   On Error GoTo 0
-'   Exit Sub
-'
-'writeRegistryOnce_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeRegistryOnce of Form rDIconConfigForm"
-'End Sub
-''---------------------------------------------------------------------------------------
-'' Procedure : ExtractSuffix
-'' Author    : beededea
-'' Date      : 20/06/2019
-'' Purpose   :
-''---------------------------------------------------------------------------------------
-''
-'Private Function ExtractSuffix(ByVal strPath As String) As String
-'    Dim AY() As String ' string array
-'    Dim Max As Integer
-'
-'    On Error GoTo ExtractSuffix_Error
-'    If debugFlg = 1 Then debugLog  "%" & "ExtractSuffix"
-'
-'    If strPath = "" Then
-'        ExtractSuffix = ""
-'        Exit Function
-'    End If
-'
-'    AY = Split(strPath, ".")
-'    Max = UBound(AY)
-'    ExtractSuffix = Trim$(AY(Max))
-'
-'   On Error GoTo 0
-'   Exit Function
-'
-'ExtractSuffix_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ExtractSuffix of Form rDIconConfigForm"
-'End Function
 
 
-''---------------------------------------------------------------------------------------
-'' Procedure : ExtractSuffixWithDot
-'' Author    : beededea
-'' Date      : 20/06/2019
-'' Purpose   :
-''---------------------------------------------------------------------------------------
-''
-'Public Function ExtractSuffixWithDot(ByVal strPath As String) As String
-'    Dim AY() As String ' string array
-'    Dim Max As Integer
-'
-'    On Error GoTo ExtractSuffixWithDot_Error
-'    If debugFlg = 1 Then debugLog "%" & "ExtractSuffixWithDot"
-'
-'    If strPath = vbNullString Then
-'        ExtractSuffixWithDot = vbNullString
-'        Exit Function
-'    End If
-'
-'    If InStr(strPath, ".") <> 0 Then
-'        AY = Split(strPath, ".")
-'        Max = UBound(AY)
-'        ExtractSuffixWithDot = Trim$("." & AY(Max))
-'    Else
-'        ExtractSuffixWithDot = Trim$(strPath)
-'    End If
-'
-'   On Error GoTo 0
-'   Exit Function
-'
-'ExtractSuffixWithDot_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ExtractSuffixWithDot of Form dock"
-'End Function
+
 '---------------------------------------------------------------------------------------
 ' Procedure : displayResizedImage was previously displayPreviewImage
 ' Author    : beededea
@@ -7683,13 +7558,18 @@ End Sub
 '             both methods are supplied by LaVolpe.
 '---------------------------------------------------------------------------------------
 '
-Private Sub displayResizedImage(ByRef Filename As String, ByRef targetPicBox As PictureBox, ByRef IconSize As Integer)
+Private Sub displayResizedImage(ByVal Filename As String, ByRef targetPicBox As PictureBox, ByVal thisBaseImageSize As Integer)
     Dim suffix As String: suffix = vbNullString
     Dim picWidth As Long: picWidth = 0
     Dim picHeight As Long: picHeight = 0
     Dim picSize As Long: picSize = 0
+    Dim thisImageSize As Long: thisImageSize = 0
+    
+    Static cnt As Integer
+    cnt = cnt + 1
                 
     On Error GoTo displayResizedImage_Error
+    
     If debugFlg = 1 Then debugLog "%" & "displayResizedImage"
     ' .36 DAEB 20/04/2021 rdIconConfig.frm Add a final check that the chosen image file actually exists
     If Not fFExists(Filename) Then
@@ -7708,6 +7588,15 @@ Private Sub displayResizedImage(ByRef Filename As String, ByRef targetPicBox As 
     
     suffix = Trim$(ExtractSuffix(Filename))
     
+    ' determine the displayed (resized) imagesize from the base image size
+    
+    ' multiply the base ImageSize by the resize ratio to obtain the displayed image size
+    thisImageSize = thisBaseImageSize * gblResizeRatio
+    
+    If cnt = 10 Then
+        MsgBox thisImageSize
+    End If
+    
     ' using Lavolpe's later method as it allows for resizing of PNGs and all other types
     If InStr("png,jpg,bmp,jpeg,tif,gif", LCase$(suffix)) <> 0 Then
         If targetPicBox.Name = "picPreview" Then
@@ -7718,8 +7607,8 @@ Private Sub displayResizedImage(ByRef Filename As String, ByRef targetPicBox As 
         End If
         
         Set cImage = New c32bppDIB
-        cImage.LoadPictureFile Filename, IconSize, IconSize, False, 32
-        Call refreshPicBox(targetPicBox, IconSize)
+        cImage.LoadPictureFile Filename, thisImageSize, thisImageSize, False, 32
+        Call refreshPicBox(targetPicBox, thisImageSize)
         
         ' see ref point 0001 in cPNGparser.cls for PNG size extraction
         lblWidthHeight.Caption = " width " & origWidth & " height " & origHeight & " (pixels)"
@@ -7731,10 +7620,9 @@ Private Sub displayResizedImage(ByRef Filename As String, ByRef targetPicBox As 
         
         'because the earlier method draws the ico images from the top left of the
         'pictureBox we have to manually set the picbox to size and position for each icon size
-        Call centrePreviewImage(targetPicBox, IconSize)
-        Set targetPicBox.Picture = StdPictureEx.LoadPicture(Filename, lpsCustom, , IconSize, IconSize)
+        Call centrePreviewImage(targetPicBox, thisImageSize)
+        Set targetPicBox.Picture = StdPictureEx.LoadPicture(Filename, lpsCustom, , thisImageSize, thisImageSize)
     End If
-
 
     ' display the sizes from the image types that are native to VB6
     
@@ -7772,8 +7660,8 @@ handleResizing_Error:
              Set targetPicBox.Picture = Nothing
 
              Set cImage = New c32bppDIB
-             cImage.LoadPictureFile Filename, IconSize, IconSize, False, 32
-             Call refreshPicBox(targetPicBox, IconSize)
+             cImage.LoadPictureFile Filename, thisImageSize, thisImageSize, False, 32
+             Call refreshPicBox(targetPicBox, thisImageSize)
 
              lblWidthHeight.Caption = " This is a damaged icon." ' < must go here.
 
@@ -7804,7 +7692,7 @@ displaySizes:
         
     ' DAEB TBD
     If InStr("exe,dll", LCase$(suffix)) <> 0 Then
-                Call displayEmbeddedIcons(Filename, targetPicBox, IconSize)
+                Call displayEmbeddedIcons(Filename, targetPicBox, thisImageSize)
                 picSize = FileLen(Filename)
                 lblFileInfo.Caption = "File Size: " & Format(picSize, "###,###,###") & " bytes (binary)"
     End If
@@ -8435,7 +8323,7 @@ Private Sub refreshThumbnailViewPanel()
 
     Call busyStart
     
-    Call populateThumbnails(thumbImageSize, thumbnailStartPosition) '< this one
+    Call populateThumbnails(gblBaseThumbImageSize, gblThumbnailStartPosition) '< this one
 
     picFrameThumbs.Visible = True
     filesIconList.Visible = False
@@ -8447,10 +8335,10 @@ Private Sub refreshThumbnailViewPanel()
     'highlight the current thumb
     If thumbIndexNo >= 0 Then ' -1 when there are no icons as a result of an empty filter pattern
         If thumbArray(thumbIndexNo) = 0 Or (thumbArray(thumbIndexNo) And thumbArray(thumbIndexNo) <= vScrollThumbs.Max) Then
-            If thumbImageSize = 64 Then 'larger
+            If gblBaseThumbImageSize = 64 Then 'larger
                 picFraPicThumbIcon(thumbIndexNo).BorderStyle = 1
                 'picThumbIcon(thumbIndexNo).BorderStyle = 1
-            ElseIf thumbImageSize = 32 Then
+            ElseIf gblBaseThumbImageSize = 32 Then
                 lblThumbName(thumbIndexNo).BackColor = RGB(10, 36, 106) ' blue
                 lblThumbName(thumbIndexNo).ForeColor = RGB(255, 255, 255) ' white
             End If
@@ -8494,7 +8382,7 @@ End Sub
 '
 '---------------------------------------------------------------------------------------
 '
-Private Sub populateThumbnails(ByVal imageSize As Integer, ByRef startItem As Integer)
+Private Sub populateThumbnails(ByVal baseImageSize As Long, ByRef startItem As Integer)
 
     Dim useloop As Integer: useloop = 0
     Dim fullFilePath As String: fullFilePath = vbNullString
@@ -8561,15 +8449,16 @@ Private Sub populateThumbnails(ByVal imageSize As Integer, ByRef startItem As In
                 picThumbIcon(useloop).Picture = LoadPicture(fullFilePath)
                 
                 ' display the image within the specified picturebox
-                Call displayResizedImage(fullFilePath, picThumbIcon(useloop), imageSize)
+                Call displayResizedImage(fullFilePath, picThumbIcon(useloop), baseImageSize)
             End If
             
             If filesIconList.List(useloop + startItem) <> vbNullString Then ' check it has a filename in the list
             
-                picThumbIcon(useloop).Width = 1000  ' these set here specifically so I can play
-                picThumbIcon(useloop).Height = 1000
-                picFraPicThumbIcon(useloop).Width = 1000  ' these set here specifically so I can play
-                picFraPicThumbIcon(useloop).Height = 1000
+'                picThumbIcon(useloop).Width = 1000  ' these set here specifically so I can play
+'                picThumbIcon(useloop).Height = 1000
+'                picFraPicThumbIcon(useloop).Width = 1000  ' these set here specifically so I can play
+'                picFraPicThumbIcon(useloop).Height = 1000
+
                 fraThumbLabel(useloop).BorderStyle = 0
                 fraThumbLabel(useloop).BackColor = vbWhite
                 lblThumbName(useloop).BackColor = vbWhite
@@ -8591,7 +8480,7 @@ Private Sub populateThumbnails(ByVal imageSize As Integer, ByRef startItem As In
                     
                     ' first the top left rendering ICOs.
                     If suffix = "ico" Then
-                        If thumbImageSize = 32 Then
+                        If gblBaseThumbImageSize = 32 Then
                             If useloop = 0 Or useloop = 4 Or useloop = 8 Then storeLeft = 165 ' reset left on each row
                             If useloop >= 0 And useloop <= 3 Then storeTop = 100
                             If useloop >= 4 And useloop <= 7 Then storeTop = 1150
@@ -8614,10 +8503,9 @@ Private Sub populateThumbnails(ByVal imageSize As Integer, ByRef startItem As In
                             picThumbIcon(useloop).Left = 0
                             picThumbIcon(useloop).Top = 0
                         End If
-                        picFraPicThumbIcon(useloop).Left = storeLeft - 60
-                        picFraPicThumbIcon(useloop).Top = storeTop
+
                     Else
-                        If thumbImageSize = 32 Then
+                        If gblBaseThumbImageSize = 32 Then
                             If useloop = 0 Or useloop = 4 Or useloop = 8 Then storeLeft = 165 ' reset left on each row
                             If useloop >= 0 And useloop <= 3 Then storeTop = -200
                             If useloop >= 4 And useloop <= 7 Then storeTop = 880
@@ -8637,10 +8525,11 @@ Private Sub populateThumbnails(ByVal imageSize As Integer, ByRef startItem As In
                             If useloop >= 4 And useloop <= 7 Then storeTop = 1080
                             If useloop >= 8 And useloop <= 11 Then storeTop = 2100
                         End If
-                        picFraPicThumbIcon(useloop).Left = storeLeft - 60
-                        picFraPicThumbIcon(useloop).Top = storeTop
                     End If
                     
+                    picFraPicThumbIcon(useloop).Left = (storeLeft - 60) * gblResizeRatio
+                    picFraPicThumbIcon(useloop).Top = (storeTop) * gblResizeRatio
+                   
                     picThumbIcon(useloop).ZOrder ' give it topmost
                     fraThumbLabel(useloop).ZOrder
                     
@@ -8677,8 +8566,9 @@ Private Sub populateThumbnails(ByVal imageSize As Integer, ByRef startItem As In
                         ' display the image within the specified picturebox but extract from the cache
                         picThumbIcon(useloop).Picture = imlThumbnailCache.ListImages("cache" & textCurrentFolder.Text & useloop + startItem).ExtractIcon
                     Else
+                        
                         ' display the image (from file) within the specified picturebox
-                        Call displayResizedImage(fullFilePath, picThumbIcon(useloop), imageSize)
+                        Call displayResizedImage(fullFilePath, picThumbIcon(useloop), baseImageSize)
                                                                         
                         If cacheingFlg = True Then
                             thisThumbnailCacheCount = Val(sdThumbnailCacheCount)
@@ -11074,7 +10964,7 @@ Private Sub thumbnailGetKeyPress(ByVal KeyCode As Integer)
                  If filesIconList.ListIndex - thumbIndexNo > 3 Then
                    ' there are any icons preceding this do we will scroll to them
                    refreshThumbnailView = True
-                    thumbnailStartPosition = thumbnailStartPosition - 4
+                    gblThumbnailStartPosition = gblThumbnailStartPosition - 4
                     If vScrollThumbs.Value - 4 < vScrollThumbs.Min Then
                         vScrollThumbs.Value = vScrollThumbs.Min
                         'the above line does not trigger a change to vscroll
@@ -11124,11 +11014,11 @@ Private Sub thumbnailGetKeyPress(ByVal KeyCode As Integer)
                  ' if there are any icons preceding this then scroll to it
                  If filesIconList.ListIndex > 0 Then
                     refreshThumbnailView = True
-                    thumbnailStartPosition = thumbnailStartPosition - 1
+                    gblThumbnailStartPosition = gblThumbnailStartPosition - 1
                     If vScrollThumbs.Value > vScrollThumbs.Min Then
                         vScrollThumbs.Value = vScrollThumbs.Value - 1
                     Else
-                        thumbnailStartPosition = thumbnailStartPosition - 1
+                        gblThumbnailStartPosition = gblThumbnailStartPosition - 1
                         vScrollThumbs.Value = vScrollThumbs.Value
                     End If
 
@@ -11356,7 +11246,7 @@ Private Sub picThumbIcon_MouseDown(ByRef Index As Integer, ByRef Button As Integ
         ' .image property is a bitmap handle to the actual rendered "canvas" of the (resized) container
         
         ' .80 DAEB 28/05/2022 rDIConConfig.frm Change to adding the .picture to workaround the bug in Krool's imageList failing to convert to an HIcon.
-        If thumbImageSize = 32 Then
+        If gblBaseThumbImageSize = 32 Then
             Set picTemporaryStore.Picture = picTemporaryStore.Image
             imlDragIconConverter.ListImages.Add , "arse", picTemporaryStore.Picture
         Else
@@ -11506,16 +11396,16 @@ l_found_file:
 
     ' using the current preview image as the start point on the list, repopulate the thumbs
     If picFrameThumbs.Visible = True Then
-        Call populateThumbnails(thumbImageSize, filesIconList.ListIndex)
+        Call populateThumbnails(gblBaseThumbImageSize, filesIconList.ListIndex)
     
         removeThumbHighlighting
 
         'highlight the current thumbnail
         thumbIndexNo = 0
-        If thumbImageSize = 64 Then 'larger
+        If gblBaseThumbImageSize = 64 Then 'larger
             picFraPicThumbIcon(thumbIndexNo).BorderStyle = 1
             'picThumbIcon(thumbIndexNo).BorderStyle = 1
-        ElseIf thumbImageSize = 32 Then
+        ElseIf gblBaseThumbImageSize = 32 Then
 
             lblThumbName(thumbIndexNo).BackColor = RGB(212, 208, 200)
         End If
@@ -12329,15 +12219,15 @@ Private Sub vScrollThumbs_Change()
     
     ' if a specific thumbnail is selected or if the vscrollbar is used on its own without an icon being selected
     If thumbIndexNo > 0 Or triggerStartCalc = True Then
-        thumbnailStartPosition = (filesIconList.ListIndex - thumbIndexNo)
+        gblThumbnailStartPosition = (filesIconList.ListIndex - thumbIndexNo)
         triggerStartCalc = False
     Else
         
     End If
     
     ' if the thumbnail start position is negative then remove that portion to obtain the correct thumbnail position in the array
-    If thumbnailStartPosition < 0 Then
-        thumbIndexNo = thumbIndexNo - Abs(thumbnailStartPosition)
+    If gblThumbnailStartPosition < 0 Then
+        thumbIndexNo = thumbIndexNo - Abs(gblThumbnailStartPosition)
     End If
     
     If thumbIndexNo = 0 And thumbPos0Pressed = False Then
@@ -12345,8 +12235,8 @@ Private Sub vScrollThumbs_Change()
         thumbPos0Pressed = False
     End If
 
-    If thumbnailStartPosition <= 0 Then
-        thumbnailStartPosition = 0
+    If gblThumbnailStartPosition <= 0 Then
+        gblThumbnailStartPosition = 0
     End If
             
     'sometimes we want to refresh and other times we do not
@@ -12362,10 +12252,10 @@ Private Sub vScrollThumbs_Change()
     'highlight the current thumb
     If thumbIndexNo >= 0 Then ' -1 when there are no icons as a result of an empty filter pattern
         If thumbArray(thumbIndexNo) = 0 Or (thumbArray(thumbIndexNo) And thumbArray(thumbIndexNo) <= vScrollThumbs.Max) Then
-            If thumbImageSize = 64 Then 'larger
+            If gblBaseThumbImageSize = 64 Then 'larger
                 picFraPicThumbIcon(thumbIndexNo).BorderStyle = 1
                 'picThumbIcon(thumbIndexNo).BorderStyle = 1
-            ElseIf thumbImageSize = 32 Then
+            ElseIf gblBaseThumbImageSize = 32 Then
                 ' .58 DAEB 25/04/2022 rDIConConfig.frm second click on a thumbnail should be blue.
                 lblThumbName(thumbIndexNo).BackColor = RGB(10, 36, 106) ' blue
                 lblThumbName(thumbIndexNo).ForeColor = RGB(255, 255, 255) ' white
@@ -14986,13 +14876,13 @@ Private Sub menuSmallerIcons_Click()
     On Error GoTo menuSmallerIcons_Click_Error
     If debugFlg = 1 Then debugLog "%" & "menuSmallerIcons_Click"
    
-    If thumbImageSize = 64 Then ' change to 32
-        thumbImageSize = 32
+    If gblBaseThumbImageSize = 64 Then ' change to 32
+        gblBaseThumbImageSize = 32
     End If
     
     ' .54 DAEB 25/04/2022 rDIConConfig.frm Added rDThumbImageSize saved variable to allow the tool to open the thumbnail explorer in small or large mode
-    rDThumbImageSize = Str$(thumbImageSize)
-    PutINISetting "Software\IconSettings", "thumbImageSize", rDThumbImageSize, toolSettingsFile
+    rDThumbImageSize = Str$(gblBaseThumbImageSize)
+    PutINISetting "Software\IconSettings", "gblBaseThumbImageSize", rDThumbImageSize, toolSettingsFile
     
     removeThumbHighlighting
     
@@ -15023,13 +14913,13 @@ Private Sub menuLargerThumbs_Click()
     On Error GoTo menuLargerThumbs_Click_Error
     If debugFlg = 1 Then debugLog "%" & "menuLargerThumbs_Click"
     
-    If thumbImageSize = 32 Then
-        thumbImageSize = 64
+    If gblBaseThumbImageSize = 32 Then
+        gblBaseThumbImageSize = 64
     End If
       
     ' .54 DAEB 25/04/2022 rDIConConfig.frm Added rDThumbImageSize saved variable to allow the tool to open the thumbnail explorer in small or large mode
-    rDThumbImageSize = Str$(thumbImageSize)
-    PutINISetting "Software\IconSettings", "thumbImageSize", rDThumbImageSize, toolSettingsFile
+    rDThumbImageSize = Str$(gblBaseThumbImageSize)
+    PutINISetting "Software\IconSettings", "gblBaseThumbImageSize", rDThumbImageSize, toolSettingsFile
 
     imlThumbnailCache.ListImages.Clear
 

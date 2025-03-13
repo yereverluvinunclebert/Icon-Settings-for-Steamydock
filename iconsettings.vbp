@@ -48,7 +48,7 @@ Description="SteamyDock's icon settings utility"
 CompatibleMode="0"
 MajorVer=0
 MinorVer=9
-RevisionVer=1893
+RevisionVer=1920
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="Pre-release version. Alpha."
@@ -1487,5 +1487,3 @@ Status=2
 Priority=1
 AssignedTo=
 Comment=All external images in a separate imagelist loaded upfront. This specifically will be used to store the themeing images on buttons and the like. Imagelists can be front-loaded at design time. An imageList would appear to be a good choice for this but all the images stored in an imageList need to be the same size, so not useful! 
-
-

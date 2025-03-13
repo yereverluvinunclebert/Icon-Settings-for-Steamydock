@@ -55,7 +55,7 @@ Public picRdMapGotFocus As Boolean
 Public keyPressOccurred As Boolean
 Public previewFrameGotFocus As Boolean
 Public filesIconListGotFocus As Boolean
-Public thumbImageSize As Integer
+Public gblBaseThumbImageSize As Long
 Public storeLeft As Long
 Public storedIndex As Integer
 Public glLargeIcons() As Long
@@ -68,7 +68,7 @@ Public boxSpacing As Integer
 Public busyCounter As Integer
 
 Public thumbIndexNo As Integer
-Public thumbnailStartPosition As Integer
+Public gblThumbnailStartPosition As Integer
 Public refreshThumbnailView As Boolean
 Public displayHourglass As Boolean
 Public triggerStartCalc As Boolean
@@ -202,7 +202,7 @@ End Type
 
 Private Type FONTSTRUC
   lStructSize As Long
-  hWnd As Long
+  hwnd As Long
   hDC As Long
   lpLogFont As Long
   iPointSize As Long
@@ -241,7 +241,7 @@ Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
 (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
 Private Declare Function GetDeviceCaps Lib "gdi32" _
   (ByVal hDC As Long, ByVal nIndex As Long) As Long
-Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
 ' .76 DAEB 28/05/2022 rdIconConfigForm.frm New font code synchronising method with FCW fixing tool not displaying previously chosen font ENDS
 
 ''------------------------------------------------------ STARTS
@@ -577,7 +577,7 @@ End Sub
 ' because the icon images are drawn from the top left of the
 ' preview pictureBox we have to manually set the picbox to size and position for each icon size
 ' this could be done with padding but it matches the VB6 method (no padding there)
-Public Sub centrePreviewImage(ByRef targetPicBox As PictureBox, ByRef IconSize As Integer)
+Public Sub centrePreviewImage(ByRef targetPicBox As PictureBox, ByVal IconSize As Integer)
 
     If targetPicBox.Name = "picPreview" Then
         If IconSize = 16 Then
@@ -1114,7 +1114,7 @@ Public Sub backupDockSettings(Optional ByVal askQuestion As Boolean = False)
                     ' .94 DAEB 26/06/2022 rDIConConfig.frm Backup and restore - fix the problem with dock entries being zeroed after a restore.
                     FileCopy bkpSettingsFile, dockSettingsFile
                     
-                    Call btnSaveRestart_Click_event(rDIconConfigForm.hWnd)
+                    Call btnSaveRestart_Click_event(rDIconConfigForm.hwnd)
                 End If
             End If
     
