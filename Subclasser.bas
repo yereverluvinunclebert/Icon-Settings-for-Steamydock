@@ -75,6 +75,10 @@ Public Sub SubclassComboBox(CtlHwnd As Long, TheObjPtr As Long)
     SubclassSomeWindow CtlHwnd, AddressOf ComboBox_Proc, TheObjPtr
 End Sub
 
+Public Sub SubclassForm(CtlHwnd As Long, TheObjPtr As Long)
+    SubclassSomeWindow CtlHwnd, AddressOf Form_Proc, TheObjPtr
+End Sub
+
 '---------------------------------------------------------------------------------------
 ' Procedure : MouseWheel_Proc
 ' Author    : beededea
@@ -180,12 +184,57 @@ ComboBox_Proc_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ComboBox_Proc of Module Subclasser"
 End Function
 
+
+'---------------------------------------------------------------------------------------
+' Procedure : Form_Proc
+' Author    : Elroy
+' Date      : 16/07/2024
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Function Form_Proc(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal uIdSubclass As Long, ByVal dwRefData As Long) As Long
+    Const WM_DESTROY            As Long = &H2&  ' All other needed constants are declared within the procedures.
+    'Const WM_MOVE               As Long = &H3  ' called all during any form move
+    Const WM_EXITSIZEMOVE       As Long = &H232 ' called only when all movement is completed
+    
+    Dim frm As Object
+    
+    On Error GoTo Form_Proc_Error
+
+    If uMsg = WM_DESTROY Then
+        UnSubclassSomeWindow hWnd, AddressOf_Form_Proc, uIdSubclass
+        Form_Proc = NextSubclassProcOnChain(hWnd, uMsg, wParam, lParam)
+        Exit Function
+    End If
+    '
+    If uMsg = WM_EXITSIZEMOVE Then     ' Mouse-Move.
+        Set frm = ComObjectFromPtr(dwRefData)
+        On Error Resume Next        ' Protect in case programmer forgot to put in procedure.
+            frm.Form_Moved frm.Name
+        On Error GoTo 0
+        Set frm = Nothing
+    End If
+    '
+    ' If we fell out, just proceed as normal.
+    Form_Proc = NextSubclassProcOnChain(hWnd, uMsg, wParam, lParam)
+
+   On Error GoTo 0
+   Exit Function
+
+Form_Proc_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_Proc of Module Subclasser"
+End Function
+
 Private Function AddressOf_MouseWheel_Proc() As Long
     AddressOf_MouseWheel_Proc = ProcedureAddress(AddressOf MouseWheel_Proc)
 End Function
 
 Private Function AddressOf_ComboBox_Proc() As Long
     AddressOf_ComboBox_Proc = ProcedureAddress(AddressOf ComboBox_Proc)
+End Function
+Private Function AddressOf_Form_Proc() As Long
+    AddressOf_Form_Proc = ProcedureAddress(AddressOf Form_Proc)
 End Function
 
 Private Function ProcedureAddress(AddressOf_TheProc As Long) As Long
