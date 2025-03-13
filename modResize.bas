@@ -131,8 +131,8 @@ Public Sub resizeControls(ByRef thisForm As Form, ByRef m_ControlPositions() As 
         I = I + 1
     Next Ctrl
     
-    Dim W: W = thisForm.ScaleX(thisForm.ScaleWidth, thisForm.ScaleMode, vbPixels)
-    Dim H: H = thisForm.ScaleY(thisForm.ScaleHeight, thisForm.ScaleMode, vbPixels)
+'    Dim W: W = thisForm.ScaleX(thisForm.ScaleWidth, thisForm.ScaleMode, vbPixels)
+'    Dim H: H = thisForm.ScaleY(thisForm.ScaleHeight, thisForm.ScaleMode, vbPixels)
         
    On Error GoTo 0
    Exit Sub

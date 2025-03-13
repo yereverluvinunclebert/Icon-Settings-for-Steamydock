@@ -1401,12 +1401,12 @@ Begin VB.Form rDIconConfigForm
       End
       Begin VB.CommandButton btnRefresh 
          Height          =   270
-         Left            =   5085
+         Left            =   5100
          Picture         =   "rdIconConfig.frx":484F
          Style           =   1  'Graphical
          TabIndex        =   30
          ToolTipText     =   "Refresh the Icon List"
-         Top             =   225
+         Top             =   240
          Width           =   210
       End
       Begin VB.TextBox textCurrIconPath 
@@ -3134,6 +3134,7 @@ Private Sub Form_Resize_Event()
         
         'Call tweakPrefsControlPositions(Me, gblCurrentWidth, gblCurrentHeight)
         
+        imlThumbnailCache.ListImages.Clear
         Call populateThumbnails(gblBaseThumbImageSize, gblThumbnailStartPosition)
         
     Else
@@ -7564,9 +7565,6 @@ Private Sub displayResizedImage(ByVal Filename As String, ByRef targetPicBox As 
     Dim picHeight As Long: picHeight = 0
     Dim picSize As Long: picSize = 0
     Dim thisImageSize As Long: thisImageSize = 0
-    
-    Static cnt As Integer
-    cnt = cnt + 1
                 
     On Error GoTo displayResizedImage_Error
     
@@ -7592,10 +7590,6 @@ Private Sub displayResizedImage(ByVal Filename As String, ByRef targetPicBox As 
     
     ' multiply the base ImageSize by the resize ratio to obtain the displayed image size
     thisImageSize = thisBaseImageSize * gblResizeRatio
-    
-    If cnt = 10 Then
-        MsgBox thisImageSize
-    End If
     
     ' using Lavolpe's later method as it allows for resizing of PNGs and all other types
     If InStr("png,jpg,bmp,jpeg,tif,gif", LCase$(suffix)) <> 0 Then
@@ -15815,19 +15809,20 @@ Private Sub subBtnArrowDown_Click()
         Call setRdIconConfigFormHeight
         
         gblFormResizedInCode = True
-        rDIconConfigForm.Height = rDIconConfigForm.Height + growBit + 75
+        rDIconConfigForm.Height = rDIconConfigForm.Height + ((growBit + 75) * gblResizeRatio)
 
-        framePreview.Top = 4545 + growBit
-        fraProperties.Top = 4545 + growBit
-        frameButtons.Top = 7925 + growBit
+        framePreview.Top = (4545 + growBit * gblResizeRatio)
+        fraProperties.Top = (4545 + growBit * gblResizeRatio)
+        frameButtons.Top = (7925 + growBit * gblResizeRatio)
+       
        ' lblDragCorner.Top = 8430 + growBit
                 
         ' .75 DAEB 22/05/2022 rDIConConfig.frm The dropdown disclose function is calculating the positions incorrectly when the map is toggled hidden/shown.
         If moreConfigVisible = True Then
             gblFormResizedInCode = True
-            rDIconConfigForm.Height = rDIconConfigForm.Height + amountToDrop
-            frameButtons.Top = frameButtons.Top + amountToDrop
-            lblDragCorner.Top = 8430 + amountToDrop
+            rDIconConfigForm.Height = rDIconConfigForm.Height + (amountToDrop * gblResizeRatio)
+            frameButtons.Top = frameButtons.Top + (amountToDrop * gblResizeRatio)
+            lblDragCorner.Top = 8430 + (amountToDrop * gblResizeRatio)
         End If
                 
         btnArrowUp.Visible = True
@@ -15916,10 +15911,10 @@ Private Sub btnArrowUp_Click()
 '        rDIconConfigForm.Height = rDIconConfigForm.Height + 645
 '        frameButtons.Top = frameButtons.Top + 645
 
-        framePreview.Top = 4545
-        fraProperties.Top = 4545
-        frameButtons.Top = 7910
-        lblDragCorner.Top = 8430
+        framePreview.Top = (4545 * gblResizeRatio)
+        fraProperties.Top = (4545 * gblResizeRatio)
+        frameButtons.Top = (7910 * gblResizeRatio)
+        lblDragCorner.Top = (8430 * gblResizeRatio)
          
         Call setRdIconConfigFormHeight
     
@@ -15928,9 +15923,9 @@ Private Sub btnArrowUp_Click()
         ' .75 DAEB 22/05/2022 rDIConConfig.frm The dropdown disclose function is calculating the positions incorrectly when the map is toggled hidden/shown.
         If moreConfigVisible = True Then
             gblFormResizedInCode = True
-            rDIconConfigForm.Height = rDIconConfigForm.Height - 750
-            frameButtons.Top = frameButtons.Top - 750
-            lblDragCorner.Top = lblDragCorner.Top - 750
+            rDIconConfigForm.Height = rDIconConfigForm.Height - (750 * gblResizeRatio)
+            frameButtons.Top = frameButtons.Top - (750 * gblResizeRatio)
+            lblDragCorner.Top = lblDragCorner.Top - (750 * gblResizeRatio)
         End If
         
         
@@ -15970,7 +15965,7 @@ Private Sub setRdIconConfigFormHeight()
     On Error GoTo setRdIconConfigFormHeight_Error
 
         gblFormResizedInCode = True
-        rDIconConfigForm.Height = 9525
+        rDIconConfigForm.Height = (9525 * gblResizeRatio)
         
         ' if Windows 10/11 then add 250 twips to the bottom of the main form
         If Left$(LCase$(windowsVersionString), 10) = "windows 10" Then

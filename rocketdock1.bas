@@ -1489,7 +1489,12 @@ Public Sub setThemeShade(ByRef thisForm As Form, ByVal redC As Integer, ByVal gr
         thisForm.picCover.BackColor = RGB(redC, greenC, blueC)
         thisForm.back.BackColor = RGB(redC, greenC, blueC)
         thisForm.sliPreviewSize.BackColor = RGB(redC, greenC, blueC)
-    
+        
+        thisForm.picBusy.BackColor = RGB(redC, greenC, blueC)
+        thisForm.picMoreConfigUp.BackColor = RGB(redC, greenC, blueC)
+        thisForm.picMoreConfigDown.BackColor = RGB(redC, greenC, blueC)
+        thisForm.btnArrowUp.BackColor = RGB(redC, greenC, blueC)
+        thisForm.btnArrowDown.BackColor = RGB(redC, greenC, blueC)
     End If
     
     PutINISetting "Software\IconSettings", "SkinTheme", rDSkinTheme, toolSettingsFile ' now saved to the toolsettingsfile ' 17/11/2020 rDIconConfigForm.frm .05 DAEB Added the missing code to read/write the current theme to the tool's own settings file

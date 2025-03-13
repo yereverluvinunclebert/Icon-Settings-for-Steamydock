@@ -32,14 +32,11 @@
 ' =============
 
 ' form sizing on Windows 10 - wip
-' tree to the resizing list
-' vertical slider to the resizing list
-' horizontal slider to the resizing list
-' tree to the resizing list
+
+' after a resize do not read from the cache
+
 ' button images to be resized on buttons left/right
 ' dropdown button - not to trigger resize code
-
-
 
 ' remove persistentDebug.exe and replace with logging to a file as per FCW.
 ' test for the height of the window using the titlebar size to properly size the main form as per the Pz Earth VB6 widget prefs that size incorrectly on Win 10/11.
