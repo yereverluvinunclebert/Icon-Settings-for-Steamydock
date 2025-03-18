@@ -45,7 +45,7 @@ Public debugFlg As Integer
 Public fileIconListPosition As Integer
 Public rdIconNumber As Integer
 
-Public icoSizePreset As Integer
+Public gblIcoSizePreset As Integer
 Public thumbArray() As Integer
 Public rdIconMaximum As Integer
 Public theCount As Integer
@@ -57,15 +57,15 @@ Public previewFrameGotFocus As Boolean
 Public filesIconListGotFocus As Boolean
 Public gblBaseThumbImageSize As Long
 Public storeLeft As Long
-Public storedIndex As Integer
+Public gblStoredIndex As Integer
 Public glLargeIcons() As Long
 Public glSmallIcons() As Long
 Public lIcons         As Long
 Public relativePath As String
 Public dotCount As Integer
 Public iconChanged As Boolean
-Public boxSpacing As Integer
-Public busyCounter As Integer
+Public gblBoxSpacing As Integer
+Public gblBusyCounter As Integer
 
 Public thumbIndexNo As Integer
 Public gblThumbnailStartPosition As Integer
@@ -73,8 +73,8 @@ Public refreshThumbnailView As Boolean
 Public displayHourglass As Boolean
 Public triggerStartCalc As Boolean
 Public triggerRdMapRefresh As Boolean
-Public classicTheme As Boolean
-Public storeThemeColour As Long
+Public gblClassicTheme As Boolean
+Public gblStoreThemeColour As Long
 
 Public CTRL_1 As Boolean
 Public CTRL_2 As Boolean
@@ -137,7 +137,7 @@ Public rDMonitor      As String
 
 Public origWidth As Long
 Public origHeight As Long
-Public rDEnableBalloonTooltips As Boolean
+Public gblRdEnableBalloonTooltips As Boolean
 
 Public picFrameThumbsLostFocus As Boolean
 Public thisRoutine As String
@@ -264,8 +264,8 @@ Public Type Link
     CustomIcon As String
 End Type
 
-' .91 DAEB 25/06/2022 rDIConConfig.frm Deleting an icon from the icon thumbnail display causes a cache imageList error. Added cacheingFlg.
-Public cacheingFlg As Boolean
+' .91 DAEB 25/06/2022 rDIConConfig.frm Deleting an icon from the icon thumbnail display causes a cache imageList error. Added gblCacheingFlg.
+Public gblCacheingFlg As Boolean
 
 Public sdChkToggleDialogs As String ' .70 DAEB 16/05/2022 rDIConConfig.frm Read the chkToggleDialogs value from a file and save the value for next time
 
@@ -273,7 +273,7 @@ Public origSettingsFile As String
 
 Public interimSettingsFile As String
 
-Public programStatus As String
+Public gblProgramStatus As String
 
 '------------------------------------------------------ ENDS
 
@@ -1447,7 +1447,7 @@ Public Sub setThemeShade(ByRef thisForm As Form, ByVal redC As Integer, ByVal gr
         'these buttons must be styled as they are graphical buttons with images that conform to a classic theme
         
         If redC = 212 Then
-            classicTheme = True
+            gblClassicTheme = True
             thisForm.mnuLight.Checked = False
             thisForm.mnuDark.Checked = True
             If fFExists(App.Path & "\resources\arrowDown.jpg") Then thisForm.btnArrowDown.Picture = LoadPicture(App.Path & "\resources\arrowDown.jpg") ' imageList candidates
@@ -1461,7 +1461,7 @@ Public Sub setThemeShade(ByRef thisForm As Form, ByVal redC As Integer, ByVal gr
             If fFExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.picMoreConfigUp.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
             If fFExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.picHideConfig.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
         Else
-            classicTheme = False
+            gblClassicTheme = False
             thisForm.mnuLight.Checked = True
             thisForm.mnuDark.Checked = False
             If fFExists(App.Path & "\resources\arrowDown10.jpg") Then thisForm.btnArrowDown.Picture = LoadPicture(App.Path & "\resources\arrowDown10.jpg")

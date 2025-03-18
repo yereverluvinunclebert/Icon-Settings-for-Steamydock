@@ -204,6 +204,6 @@ End Sub
 
 
 Private Sub btnKillIcon_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If rDEnableBalloonTooltips = "1" Then CreateToolTip btnKillIcon.hwnd, "This window displays the location of the current settings. This tells you where the configuration details are being stored and where they are being read from and saved to. The help has more information.", _
+    If gblRdEnableBalloonTooltips = "1" Then CreateToolTip btnKillIcon.hwnd, "This window displays the location of the current settings. This tells you where the configuration details are being stored and where they are being read from and saved to. The help has more information.", _
                   TTIconInfo, "Help on the Configuration Settings Location", , , , True
 End Sub
