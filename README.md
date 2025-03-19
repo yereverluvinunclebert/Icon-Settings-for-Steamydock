@@ -3,6 +3,11 @@
 ICON SETTINGS for Steamydock, written in VB6. A WoW64 dock settings
 utility for Reactos, XP, Win7, 8 and 10+.
 
+Changes underway now:
+
+	o Resizing all controls on the form
+ 	o Renaming global and private variables
+
 ![rocketdock-embeddedIcons](https://github.com/yereverluvinunclebert/rocketdock/assets/2788342/a525e0e1-50fc-42c9-8cb5-d578e3a9efaf)
 
 This utility is for use with SteamyDock, is Beta-grade software, under
