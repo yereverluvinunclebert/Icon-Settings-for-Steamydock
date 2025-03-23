@@ -32,6 +32,7 @@
 ' =============
 
 ' form sizing on Windows 10 - wip
+  ' setRdIconConfigFormHeight - modify the height of the form to take ito account the win10/11 larger title bar
 
 ' after a resize do not read from the cache
 
