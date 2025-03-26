@@ -12,63 +12,7 @@ End Type
 Public swFormControlPositions() As ControlPositionType
 Public rdFormControlPositions() As ControlPositionType
 
-'' .02 DAEB 12/04/2021 formSoftwareList.frm  added code to resize the form dynamically
-''---------------------------------------------------------------------------------------
-'' Procedure : ResizeControls
-'' Author    : beededea
-'' Date      : 16/04/2021
-'' Purpose   : Arrange the controls for the new size.
-''---------------------------------------------------------------------------------------
-''
-'Private Sub resizeControls()
-'    Dim I As Integer: I = 0
-'    Dim Ctrl As Control
-'    Dim x_scale As Single: x_scale = 0
-'    Dim y_scale As Single: y_scale = 0
-'
-'    ' Don't bother if we are minimized.
-'    On Error GoTo ResizeControls_Error
-'
-'    If WindowState = vbMinimized Then Exit Sub
-'
-'    ' Get the form's current scale factors.
-'    x_scale = ScaleWidth / m_FormWid
-'    y_scale = ScaleHeight / m_FormHgt
-'
-'    ' Position the controls.
-'    I = 1
-'    For Each Ctrl In Controls
-'        With swFormControlPositions(I)
-'            If TypeOf Ctrl Is Line Then
-'                Ctrl.x1 = x_scale * .Left
-'                Ctrl.y1 = y_scale * .Top
-'                Ctrl.X2 = Ctrl.x1 + x_scale * .Width
-'                Ctrl.Y2 = Ctrl.y1 + y_scale * .Height
-'            ' .TBD DAEB 26/05/2022 rdIconConfig.frm Add all the types of controls handled - after adding a timer to the form...
-'            ElseIf (TypeOf Ctrl Is CommandButton) Or (TypeOf Ctrl Is ListBox) Or (TypeOf Ctrl Is TextBox) Or (TypeOf Ctrl Is FileListBox) Or (TypeOf Ctrl Is Label) Or (TypeOf Ctrl Is ComboBox) Or (TypeOf Ctrl Is CheckBox) Or (TypeOf Ctrl Is OptionButton) Or (TypeOf Ctrl Is Frame) Then
-'            'Else
-'                Ctrl.Left = x_scale * .Left
-'                Ctrl.Top = y_scale * .Top
-'                Ctrl.Width = x_scale * .Width
-'                If Not (TypeOf Ctrl Is ComboBox) Then
-'                    ' Cannot change height of ComboBoxes.
-'                    Ctrl.Height = y_scale * .Height
-'                End If
-'                On Error Resume Next
-'                Ctrl.Font.Size = y_scale * .FontSize
-'                On Error GoTo 0
-'            End If
-'        End With
-'        I = I + 1
-'    Next Ctrl
-'
-'   On Error GoTo 0
-'   Exit Sub
-'
-'ResizeControls_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ResizeControls of Form formSoftwareList"
-'End Sub
+
 
 '---------------------------------------------------------------------------------------
 ' Procedure : ResizeControls
@@ -122,6 +66,10 @@ Public Sub resizeControls(ByRef thisForm As Form, ByRef m_ControlPositions() As 
                     Else
                         Ctrl.Font.Size = y_scale * formFontSize
                     End If
+                    
+                    If TypeOf Ctrl Is ComboBox Then
+                        Ctrl.SelLength = 0
+                    End If
                 
                     Ctrl.Refresh
                     On Error GoTo 0
@@ -131,9 +79,9 @@ Public Sub resizeControls(ByRef thisForm As Form, ByRef m_ControlPositions() As 
         I = I + 1
     Next Ctrl
     
-'    Dim W: W = thisForm.ScaleX(thisForm.ScaleWidth, thisForm.ScaleMode, vbPixels)
-'    Dim H: H = thisForm.ScaleY(thisForm.ScaleHeight, thisForm.ScaleMode, vbPixels)
-        
+'   Dim W: W = thisForm.ScaleX(thisForm.ScaleWidth, thisForm.ScaleMode, vbTwips)
+'   Dim H: H = thisForm.ScaleY(thisForm.ScaleHeight, thisForm.ScaleMode, vbTwips)
+''
    On Error GoTo 0
    Exit Sub
 
@@ -154,7 +102,7 @@ End Sub
 ' Credit    : Rod Stephens vb-helper.com
 '---------------------------------------------------------------------------------------
 '
-Public Sub SaveSizes(ByVal thisForm As Form, ByRef m_ControlPositions() As ControlPositionType, ByRef m_FormWid As Double, ByRef m_FormHgt As Double)
+Public Sub SaveSizes(ByVal thisForm As Form, ByRef m_ControlPositions() As ControlPositionType, ByRef m_FormWid As Long, ByRef m_FormHgt As Long)
     Dim I As Integer: I = 0
     Dim Ctrl As Control
 

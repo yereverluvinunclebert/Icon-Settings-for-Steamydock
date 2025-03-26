@@ -580,31 +580,31 @@ End Sub
 Public Sub centrePreviewImage(ByRef targetPicBox As PictureBox, ByVal IconSize As Integer)
 
     If targetPicBox.Name = "picPreview" Then
-        If IconSize = 16 Then
-            targetPicBox.Left = (1900)
-            targetPicBox.Top = (1900)
-            targetPicBox.Width = (200)
-            targetPicBox.Height = (200)
-        ElseIf IconSize = 32 Then
-            targetPicBox.Left = (1800)
-            targetPicBox.Top = (1800)
-            targetPicBox.Width = (2000)
-            targetPicBox.Height = (2000)
-        ElseIf IconSize = 64 Then
-            targetPicBox.Left = (1450)
-            targetPicBox.Top = (1450)
-            targetPicBox.Width = (2000)
-            targetPicBox.Height = (2000)
-        ElseIf IconSize = 128 Then
-            targetPicBox.Left = (1000)
-            targetPicBox.Top = (1000)
-            targetPicBox.Width = (2000)
-            targetPicBox.Height = (2000)
-        ElseIf IconSize = 256 Then
-            targetPicBox.Left = (100)
-            targetPicBox.Top = (100)
-            targetPicBox.Width = (4000)
-            targetPicBox.Height = (4000)
+        If gblIcoSizePreset = 16 Then
+            targetPicBox.Left = (1900 * gblResizeRatio)
+            targetPicBox.Top = (1900 * gblResizeRatio)
+            targetPicBox.Width = (200 * gblResizeRatio)
+            targetPicBox.Height = (200 * gblResizeRatio)
+        ElseIf gblIcoSizePreset = 32 Then
+            targetPicBox.Left = (1800 * gblResizeRatio)
+            targetPicBox.Top = (1800 * gblResizeRatio)
+            targetPicBox.Width = (2000 * gblResizeRatio)
+            targetPicBox.Height = (2000 * gblResizeRatio)
+        ElseIf gblIcoSizePreset = 64 Then
+            targetPicBox.Left = (1450 * gblResizeRatio)
+            targetPicBox.Top = (1450 * gblResizeRatio)
+            targetPicBox.Width = (2000 * gblResizeRatio)
+            targetPicBox.Height = (2000 * gblResizeRatio)
+        ElseIf gblIcoSizePreset = 128 Then
+            targetPicBox.Left = (1000 * gblResizeRatio)
+            targetPicBox.Top = (1000 * gblResizeRatio)
+            targetPicBox.Width = (2000 * gblResizeRatio)
+            targetPicBox.Height = (2000 * gblResizeRatio)
+        ElseIf gblIcoSizePreset = 256 Then
+            targetPicBox.Left = (100 * gblResizeRatio)
+            targetPicBox.Top = (100 * gblResizeRatio)
+            targetPicBox.Width = (4000 * gblResizeRatio)
+            targetPicBox.Height = (4000 * gblResizeRatio)
         End If
     End If
 End Sub
@@ -1032,7 +1032,7 @@ Private Sub rdIconConfigSpecificFonts(ByRef formName As Object, ByRef fntFont As
     formName.folderTreeView.Font.Name = fntFont
     If fntSize > 0 Then formName.folderTreeView.Font.Size = fntSize
     
-    ' The comboboxes all autoselect when the font is changed, we need to reset this afterwards
+    ' The comboboxes all autoselect when the font is changed, we need to reset this afterwards to remove highlighting
     
     formName.cmbIconTypesFilter.SelLength = 0
     formName.cmbDefaultDock.SelLength = 0

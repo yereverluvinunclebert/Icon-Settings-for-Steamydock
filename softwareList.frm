@@ -231,6 +231,13 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'---------------------------------------------------------------------------------------
+' Module    : formSoftwareList
+' Author    : beededea
+' Date      : 24/03/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+
 ' This utility is used to generate a dock from scratch. It can add icons to the dock in bulk. The source of the data are the
 ' registry uninstall area and the start menu. These are the only places where applications are 'registered' with the o/s.
 ' Note: many apps do not do any form of registering, they simply exist on a hard drive somewhere. This application will NOT find those.
