@@ -26,27 +26,25 @@
 ' test for the folderTreeView.DropHighlight.Key and checking that (folderTreeView.SelectedItem Is Nothing) to determine which item in the folder tree to open.
 ' no longer attempts to style above the number of icons we actually have
 
-
+' form sizing on Windows 10
+' modify the height of the form to take ito account the win10/11 larger title bar
 
 ' Current Task:
 ' =============
 
-' form sizing on Windows 10 - wip
-  ' setRdIconConfigFormHeight - modify the height of the form to take ito account the win10/11 larger title bar
+' credit Magic Ink
+
+' https://www.vbforums.com/showthread.php?824699-RESOLVED-Form-Placement-Considering-Aero-Borders
 
 ' after a resize do not read from the cache
 
-' button images to be resized on buttons left/right
-' dropdown button - not to trigger resize code
-
 ' remove persistentDebug.exe and replace with logging to a file as per FCW.
 ' test for the height of the window using the titlebar size to properly size the main form as per the Pz Earth VB6 widget prefs that size incorrectly on Win 10/11.
-' win 10 specifics
 
 ' Status:
 ' =======
 '
-'   Generally the tool is complete barring some bugs to resolve and new features I would like to implement.
+' Generally the tool is complete barring some bugs to resolve and new features I would like to implement.
 '
 ' Tasks:
 '

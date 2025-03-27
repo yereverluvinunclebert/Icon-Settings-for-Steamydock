@@ -509,44 +509,6 @@ Public Sub displayEmbeddedIconsOld(ByVal Filename As String, ByRef targetPicBox 
     Call ExtractIconEx(sExeName, lIndex, glLargeIcons(lIndex), glSmallIcons(lIndex), 1)
 
     Call centrePreviewImage(targetPicBox, IconSize)
-
-' Draw the icon to respective picturebox control.
-'    If IconSize = 16 Then
-'        If targetPicBox.Name = "picPreview" Then
-'            targetPicBox.Left = 1900
-'            targetPicBox.Top = 1900
-'            targetPicBox.Width = 200
-'            targetPicBox.Height = 200
-'        End If
-'    ElseIf IconSize = 32 Then
-'        If targetPicBox.Name = "picPreview" Then
-'            targetPicBox.Left = 1800
-'            targetPicBox.Top = 1800
-'            targetPicBox.Width = 2000
-'            targetPicBox.Height = 2000
-'        End If
-'    ElseIf IconSize = 64 Then
-'        If targetPicBox.Name = "picPreview" Then
-'            targetPicBox.Left = 1450
-'            targetPicBox.Top = 1450
-'            targetPicBox.Width = 2000
-'            targetPicBox.Height = 2000
-'        End If
-'    ElseIf IconSize = 128 Then
-'        If targetPicBox.Name = "picPreview" Then
-'            targetPicBox.Left = 1000
-'            targetPicBox.Top = 1000
-'            targetPicBox.Width = 2000
-'            targetPicBox.Height = 2000
-'        End If
-'    ElseIf IconSize = 256 Then
-'        If targetPicBox.Name = "picPreview" Then
-'            targetPicBox.Left = 100
-'            targetPicBox.Top = 100
-'            targetPicBox.Width = 4000
-'            targetPicBox.Height = 4000
-'        End If
-'    End If
     
     With targetPicBox
         Set .Picture = LoadPicture(vbNullString)
@@ -1001,10 +963,19 @@ End Sub
 
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : rdIconConfigSpecificFonts
+' Author    : beededea
+' Date      : 27/03/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub rdIconConfigSpecificFonts(ByRef formName As Object, ByRef fntFont As String, ByRef fntSize As Integer, ByRef fntWeight As Integer, ByRef fntStyle As Boolean, ByRef fntColour As Long, ByRef fntItalics As Boolean, ByRef fntUnderline As Boolean)
     Dim useloop As Integer: useloop = 0
     
     ' change the size of the two labels beneath the preview image
+   On Error GoTo rdIconConfigSpecificFonts_Error
+
     formName.lblFileInfo.Font.Size = 7
     formName.lblWidthHeight.Font.Size = 7
     
@@ -1041,6 +1012,13 @@ Private Sub rdIconConfigSpecificFonts(ByRef formName As Object, ByRef fntFont As
    
     ' after changing the font, sometimes the filelistbox changes height arbitrarily
     formName.filesIconList.Height = 3310
+
+   On Error GoTo 0
+   Exit Sub
+
+rdIconConfigSpecificFonts_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure rdIconConfigSpecificFonts of Module mdlMain"
 End Sub
 
 
@@ -1139,6 +1117,13 @@ backupDockSettings_Error:
    
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : btnSaveRestart_Click_event
+' Author    : beededea
+' Date      : 27/03/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Public Sub btnSaveRestart_Click_event(ByRef handle As Long)
 
     ' variables declared
@@ -1156,6 +1141,8 @@ Public Sub btnSaveRestart_Click_event(ByRef handle As Long)
 '    Else
 '        origSettingsFile = sdAppPath & "\settings.ini"
 ''    End If
+
+   On Error GoTo btnSaveRestart_Click_event_Error
 
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
@@ -1207,6 +1194,13 @@ Public Sub btnSaveRestart_Click_event(ByRef handle As Long)
         End If
     End If
     '.02 DAEB 26/10/2020   Added function isRunning and changed the logic to fix a bug where the config. would not be saved if the dock was not running. ENDS.
+
+   On Error GoTo 0
+   Exit Sub
+
+btnSaveRestart_Click_event_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure btnSaveRestart_Click_event of Module mdlMain"
 End Sub
 
 
@@ -1459,7 +1453,7 @@ Public Sub setThemeShade(ByRef thisForm As Form, ByVal redC As Integer, ByVal gr
             If fFExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.btnSettingsUp.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
             If fFExists(App.Path & "\resources\arrowDown.jpg") Then thisForm.picMoreConfigDown.Picture = LoadPicture(App.Path & "\resources\arrowDown.jpg")
             If fFExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.picMoreConfigUp.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
-            If fFExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.picHideConfig.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
+            'If fFExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.picHideConfig.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
         Else
             gblClassicTheme = False
             thisForm.mnuLight.Checked = True
@@ -1473,7 +1467,7 @@ Public Sub setThemeShade(ByRef thisForm As Form, ByVal redC As Integer, ByVal gr
             If fFExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.btnSettingsUp.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
             If fFExists(App.Path & "\resources\arrowDown10.jpg") Then thisForm.picMoreConfigDown.Picture = LoadPicture(App.Path & "\resources\arrowDown10.jpg")
             If fFExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.picMoreConfigUp.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
-            If fFExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.picHideConfig.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
+            'If fFExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.picHideConfig.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
         End If
         
         ' these elements are normal elements that should have their styling removed on a classic theme
