@@ -108,7 +108,7 @@ Private Sub declineLabel_Click()
     Dim slicence As String
     
     
-    msgBoxA "Please uninstall and remove the Rocketdock Enhanced" & vbCr & "settings tool from your computer.", vbExclamation + vbYesNo
+    msgBoxA "Please uninstall and remove the SteamyDock Enhanced" & vbCr & "settings tool from your computer.", vbExclamation + vbYesNo
 
     For Each ofrm In Forms
         Unload ofrm

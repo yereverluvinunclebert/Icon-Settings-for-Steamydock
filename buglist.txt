@@ -26,7 +26,10 @@
 ' test for the folderTreeView.DropHighlight.Key and checking that (folderTreeView.SelectedItem Is Nothing) to determine which item in the folder tree to open.
 ' no longer attempts to style above the number of icons we actually have
 
+' Add subclass (?) scrolling to the main scrollbar - done
+
 ' form sizing on Windows 10
+' after a resize do not read from the cache
 ' modify the height of the form to take ito account the win10/11 larger title bar
 
 ' Current Task:
@@ -36,10 +39,13 @@
 
 ' https://www.vbforums.com/showthread.php?824699-RESOLVED-Form-Placement-Considering-Aero-Borders
 
-' after a resize do not read from the cache
-
 ' remove persistentDebug.exe and replace with logging to a file as per FCW.
-' test for the height of the window using the titlebar size to properly size the main form as per the Pz Earth VB6 widget prefs that size incorrectly on Win 10/11.
+
+sometimes reszies when a 2nd windows is opened
+
+' sometimes bauls at a resize when reszied too quickly after a form_load
+
+' the form is not displayed until all controls are created
 
 ' Status:
 ' =======
@@ -51,9 +57,7 @@
 '   test running with a blank tool settings file
 '
 '   test running with a blank dock settings file
-'
-'   Add subclass (?) scrolling to the main scrollbar - done
-'
+
 '   reload the icon preview image and text details when the docksettings file changes, read the current icon from a new lastIconChanged field.
 '
 '   add the settings timer functionality to the dockSettings tool - could be instant with no msgbox?
@@ -114,6 +118,8 @@
 '
 '       Elroy's code to add balloon tips to comboBox
 '       https://www.vbforums.com/showthread.php?893844-VB6-QUESTION-How-to-capture-the-MouseOver-Event-on-a-comboBox
+
+'       remove all the rocketdock MIGRATION stuff
 '
 ' There are a few new functions that I'd like to add in the task list:
 ' ====================================================================
