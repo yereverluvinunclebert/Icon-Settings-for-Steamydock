@@ -108,21 +108,21 @@ Attribute VB_Exposed = False
 
 Option Explicit
 '///// GDI functions
-Private Declare Function GetDeviceCaps Lib "gdi32.dll" (ByVal hdc As Long, ByVal nIndex As Long) As Long
+Private Declare Function GetDeviceCaps Lib "gdi32.dll" (ByVal hDC As Long, ByVal nIndex As Long) As Long
 'Private Declare Function GetObjectA Lib "gdi32.dll" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hdc As Long) As Long
-Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hdc As Long, ByVal hObject As Long) As Long
-Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hdc As Long, ByRef pBitmapInfo As Any, ByVal un As Long, ByRef lplpVoid As Long, ByVal handle As Long, ByVal dw As Long) As Long
-Private Declare Function SetDIBits Lib "gdi32.dll" (ByVal hdc As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, ByRef lpBits As Any, ByRef lpBI As Any, ByVal wUsage As Long) As Long
-Private Declare Function GetDIBits Lib "gdi32.dll" (ByVal hdc As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, ByRef lpBits As Any, ByRef lpBI As Any, ByVal wUsage As Long) As Long
-Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hdc As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
+Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hDC As Long, ByVal hObject As Long) As Long
+Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hDC As Long, ByRef pBitmapInfo As Any, ByVal un As Long, ByRef lplpVoid As Long, ByVal handle As Long, ByVal dw As Long) As Long
+Private Declare Function SetDIBits Lib "gdi32.dll" (ByVal hDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, ByRef lpBits As Any, ByRef lpBI As Any, ByVal wUsage As Long) As Long
+Private Declare Function GetDIBits Lib "gdi32.dll" (ByVal hDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, ByRef lpBits As Any, ByRef lpBI As Any, ByVal wUsage As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
 Private Declare Function CreateSolidBrush Lib "gdi32.dll" (ByVal crColor As Long) As Long
 Private Declare Function DeleteEnhMetaFile Lib "gdi32.dll" (ByVal hEMF As Long) As Long
 '///// User32 functions
 Private Declare Function GetIconInfo Lib "user32.dll" (ByVal hIcon As Long, ByRef piconinfo As Any) As Long
 'Private Declare Function GetSysColor Lib "user32.dll" (ByVal nIndex As Long) As Long
-Private Declare Function FillRect Lib "user32.dll" (ByVal hdc As Long, ByRef lpRect As RECTI, ByVal hBrush As Long) As Long
+Private Declare Function FillRect Lib "user32.dll" (ByVal hDC As Long, ByRef lpRect As RECTI, ByVal hBrush As Long) As Long
 Private Declare Function FindWindow Lib "user32.dll" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
 Private Declare Function GetWindowThreadProcessId Lib "user32.dll" (ByVal hwnd As Long, ByRef lpdwProcessId As Long) As Long
 Private Declare Function GetWindow Lib "user32.dll" (ByVal hwnd As Long, ByVal wCmd As Long) As Long
@@ -2363,28 +2363,28 @@ Private Function zAddressOf(ByVal oCallback As Object, ByVal nOrdinal As Long) A
   Dim bSub  As Byte                                                         'Value we expect to find pointed at by a vTable method entry
   Dim bVal  As Byte
   Dim nAddr As Long                                                         'Address of the vTable
-  Dim i     As Long                                                         'Loop index
+  Dim I     As Long                                                         'Loop index
   Dim j     As Long                                                         'Loop limit
  
   CopyMemory nAddr, ByVal ObjPtr(oCallback), 4&                             'Get the address of the callback object's instance
-  If zProbe(nAddr + &H1C, i, bSub) = False Then Exit Function               'Probe for a Class method
+  If zProbe(nAddr + &H1C, I, bSub) = False Then Exit Function               'Probe for a Class method
  
-  i = pvSafePointerAdd(i, 4&)                                               'Bump to the next entry
+  I = pvSafePointerAdd(I, 4&)                                               'Bump to the next entry
   Do While j < 256                                                          'Set a reasonable limit, scan 256 vTable entries
-    CopyMemory nAddr, ByVal i, 4&                                           'Get the address stored in this vTable entry
+    CopyMemory nAddr, ByVal I, 4&                                           'Get the address stored in this vTable entry
    
     If IsBadCodePtr(nAddr) Then                                             'Is the entry an invalid code address?
-      CopyMemory zAddressOf, ByVal pvSafePointerAdd(i, -(nOrdinal * 4&)), 4& 'Return the specified vTable entry address
+      CopyMemory zAddressOf, ByVal pvSafePointerAdd(I, -(nOrdinal * 4&)), 4& 'Return the specified vTable entry address
       Exit Do                                                               'Bad method signature, quit loop
     End If
 
     CopyMemory bVal, ByVal nAddr, 1&                                        'Get the byte pointed to by the vTable entry
     If bVal <> bSub Then                                                    'If the byte doesn't match the expected value...
-      CopyMemory zAddressOf, ByVal pvSafePointerAdd(i, -(nOrdinal * 4&)), 4& 'Return the specified vTable entry address
+      CopyMemory zAddressOf, ByVal pvSafePointerAdd(I, -(nOrdinal * 4&)), 4& 'Return the specified vTable entry address
       Exit Do                                                               'Bad method signature, quit loop
     End If
     j = j + 1&
-    i = pvSafePointerAdd(i, 4&)                                             'Next vTable entry
+    I = pvSafePointerAdd(I, 4&)                                             'Next vTable entry
   Loop
 End Function
 

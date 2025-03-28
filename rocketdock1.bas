@@ -278,31 +278,31 @@ Public gblProgramStatus As String
 '------------------------------------------------------ ENDS
 
 
-'---------------------------------------------------------------------------------------
-' Procedure : Main
-' Author    : beededea
-' Date      : 13/09/2019
-' Purpose   :
-'---------------------------------------------------------------------------------------
+''---------------------------------------------------------------------------------------
+'' Procedure : Main
+'' Author    : beededea
+'' Date      : 13/09/2019
+'' Purpose   :
+''---------------------------------------------------------------------------------------
+''
+'Sub Main()
+'   On Error GoTo Main_Error
 '
-Sub Main()
-   On Error GoTo Main_Error
-   
-    If debugFlg = 1 Then debugLog "%Main"
-
-    debugFlg = 0
-    
-    rDIconConfigForm.Show
-
-
-   On Error GoTo 0
-   Exit Sub
-
-Main_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Main of Module Module1"
-    
-End Sub
+'    If debugFlg = 1 Then debugLog "%Main"
+'
+'    debugFlg = 0
+'
+'    rDIconConfigForm.Show
+'
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'Main_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Main of Module Module1"
+'
+'End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : displayEmbeddedAllIcons
@@ -1452,7 +1452,6 @@ Public Sub setThemeShade(ByRef thisForm As Form, ByVal redC As Integer, ByVal gr
             If fFExists(App.Path & "\resources\arrowDown.jpg") Then thisForm.btnSettingsDown.Picture = LoadPicture(App.Path & "\resources\arrowDown.jpg")
             If fFExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.btnSettingsUp.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
             If fFExists(App.Path & "\resources\arrowDown.jpg") Then thisForm.picMoreConfigDown.Picture = LoadPicture(App.Path & "\resources\arrowDown.jpg")
-            If fFExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.picMoreConfigUp.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
             'If fFExists(App.Path & "\resources\arrowUp.jpg") Then thisForm.picHideConfig.Picture = LoadPicture(App.Path & "\resources\arrowUp.jpg")
         Else
             gblClassicTheme = False
@@ -1466,7 +1465,6 @@ Public Sub setThemeShade(ByRef thisForm As Form, ByVal redC As Integer, ByVal gr
             If fFExists(App.Path & "\resources\arrowDown10.jpg") Then thisForm.btnSettingsDown.Picture = LoadPicture(App.Path & "\resources\arrowDown10.jpg")
             If fFExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.btnSettingsUp.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
             If fFExists(App.Path & "\resources\arrowDown10.jpg") Then thisForm.picMoreConfigDown.Picture = LoadPicture(App.Path & "\resources\arrowDown10.jpg")
-            If fFExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.picMoreConfigUp.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
             'If fFExists(App.Path & "\resources\arrowUp10.jpg") Then thisForm.picHideConfig.Picture = LoadPicture(App.Path & "\resources\arrowUp10.jpg")
         End If
         
@@ -1485,7 +1483,7 @@ Public Sub setThemeShade(ByRef thisForm As Form, ByVal redC As Integer, ByVal gr
         thisForm.sliPreviewSize.BackColor = RGB(redC, greenC, blueC)
         
         thisForm.picBusy.BackColor = RGB(redC, greenC, blueC)
-        thisForm.picMoreConfigUp.BackColor = RGB(redC, greenC, blueC)
+        thisForm.btnCloseMoreConfig.BackColor = RGB(redC, greenC, blueC)
         thisForm.picMoreConfigDown.BackColor = RGB(redC, greenC, blueC)
         thisForm.btnArrowUp.BackColor = RGB(redC, greenC, blueC)
         thisForm.btnArrowDown.BackColor = RGB(redC, greenC, blueC)

@@ -94,7 +94,7 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : SaveSizes
+' Procedure : saveControlSizes
 ' Author    : Rod Stephens vb-helper.com
 ' Date      : 16/04/2021
 ' Purpose   : Resize controls to fit when a form resizes
@@ -102,12 +102,12 @@ End Sub
 ' Credit    : Rod Stephens vb-helper.com
 '---------------------------------------------------------------------------------------
 '
-Public Sub SaveSizes(ByVal thisForm As Form, ByRef m_ControlPositions() As ControlPositionType, ByRef m_FormWid As Long, ByRef m_FormHgt As Long)
+Public Sub saveControlSizes(ByVal thisForm As Form, ByRef m_ControlPositions() As ControlPositionType, ByRef m_FormWid As Long, ByRef m_FormHgt As Long)
     Dim I As Integer: I = 0
     Dim Ctrl As Control
 
     ' Save the controls' positions and sizes.
-    On Error GoTo SaveSizes_Error
+    On Error GoTo saveControlSizes_Error
 
     ReDim m_ControlPositions(1 To thisForm.Controls.count)
     I = 1
@@ -134,7 +134,7 @@ Public Sub SaveSizes(ByVal thisForm As Form, ByRef m_ControlPositions() As Contr
    On Error GoTo 0
    Exit Sub
 
-SaveSizes_Error:
+saveControlSizes_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure SaveSizes of Form modResize"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure saveControlSizes of Form modResize"
 End Sub
