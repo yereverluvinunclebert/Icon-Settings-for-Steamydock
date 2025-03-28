@@ -33,18 +33,15 @@
 ' after a resize do not read from the cache
 ' modify the height of the form to take ito account the win10/11 larger title bar
 
+
+' sometimes reszies when a 2nd windows is opened
+' sometimes baulks at a resize when reszied too quickly after a form_load
+' the form is not displayed until all controls are created
+
 ' Current Task:
 ' =============
 
 ' credit Magic Ink
-
-' https://www.vbforums.com/showthread.php?824699-RESOLVED-Form-Placement-Considering-Aero-Borders
-
-' sometimes reszies when a 2nd windows is opened
-
-' sometimes baulks at a resize when reszied too quickly after a form_load
-
-' the form is not displayed until all controls are created
 
 ' Status:
 ' =======
@@ -52,6 +49,8 @@
 ' Generally the tool is complete barring some bugs to resolve and new features I would like to implement.
 '
 ' Tasks:
+
+' set DPI awareness
 '
 '   test running with a blank tool settings file
 '
