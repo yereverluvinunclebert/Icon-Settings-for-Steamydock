@@ -202,7 +202,7 @@ End Type
 
 Private Type FONTSTRUC
   lStructSize As Long
-  hwnd As Long
+  hWnd As Long
   hDC As Long
   lpLogFont As Long
   iPointSize As Long
@@ -237,11 +237,11 @@ Private Declare Function ChooseFont Lib "comdlg32.dll" Alias "ChooseFontA" _
 Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalAlloc Lib "kernel32" _
   (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
+Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
 (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
 Private Declare Function GetDeviceCaps Lib "gdi32" _
   (ByVal hDC As Long, ByVal nIndex As Long) As Long
-Private Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 ' .76 DAEB 28/05/2022 rdIconConfigForm.frm New font code synchronising method with FCW fixing tool not displaying previously chosen font ENDS
 
 ''------------------------------------------------------ STARTS
@@ -274,6 +274,23 @@ Public origSettingsFile As String
 Public interimSettingsFile As String
 
 Public gblProgramStatus As String
+
+'------------------------------------------------------ STARTS
+' Private Types for determining  sizing
+Public gblResizeRatio As Double
+Public gblFormResizedInCode As Boolean
+Public gblDoNotResize As Boolean
+
+Public gblAdjustedFormHeight As Long
+Public gblAdjustedFormWidth  As Long
+
+Public rDIconConfigFormOldHeight As Long
+Public rDIconConfigFormOldWidth As Long
+            
+'Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
+            (lpDest As Any, lpSource As Any, ByVal cbCopy As Long)
+            
+
 
 '------------------------------------------------------ ENDS
 
@@ -327,13 +344,13 @@ Public Sub displayEmbeddedIcons(ByVal Filename As String, ByRef targetPicBox As 
     Dim nIcons As Long: nIcons = 0
     Dim Result As Long: Result = 0
     Dim flags As Long: flags = 0
-    Dim I As Long: I = 0
+    Dim i As Long: i = 0
     Dim pic As IPicture
     
     On Error Resume Next
 
     lIconIndex = 0
-    I = 2 ' need some experimentation here
+    i = 2 ' need some experimentation here
     
     'the boundaries of the icons you wish to extract packed into a 32bit LONG for an API call
     xSize = make32BitLong(CInt("256"), CInt("16")) ' 1048832
@@ -382,7 +399,7 @@ Public Sub displayEmbeddedIcons(ByVal Filename As String, ByRef targetPicBox As 
     '126
         
     ' create an icon with a handle
-    Set pic = CreateIcon(hIcon(I + lIconIndex - 1)) ' 2054427849
+    Set pic = CreateIcon(hIcon(i + lIconIndex - 1)) ' 2054427849
     
     ' resize and place the target picbox according to the size of the icon
     ' (rather than placing the icon in the middle of the picbox as I should)
@@ -403,7 +420,7 @@ Public Sub displayEmbeddedIcons(ByVal Filename As String, ByRef targetPicBox As 
         End With
     End If
     ' get rid of the icons we created
-    Call DestroyIcon(hIcon(I + lIconIndex - 1))
+    Call DestroyIcon(hIcon(i + lIconIndex - 1))
     'Call DestroyIcon(hIcon(LBound(hIcon))
 
 End Sub
@@ -1092,7 +1109,7 @@ Public Sub backupDockSettings(Optional ByVal askQuestion As Boolean = False)
                     ' .94 DAEB 26/06/2022 rDIConConfig.frm Backup and restore - fix the problem with dock entries being zeroed after a restore.
                     FileCopy bkpSettingsFile, dockSettingsFile
                     
-                    Call btnSaveRestart_Click_event(rDIconConfigForm.hwnd)
+                    Call btnSaveRestart_Click_event(rDIconConfigForm.hWnd)
                 End If
             End If
     

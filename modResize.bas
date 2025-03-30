@@ -22,7 +22,7 @@ Public rdFormControlPositions() As ControlPositionType
 '---------------------------------------------------------------------------------------
 '
 Public Sub resizeControls(ByRef thisForm As Form, ByRef m_ControlPositions() As ControlPositionType, ByVal m_FormWid As Double, ByVal m_FormHgt As Double, ByVal formFontSize As Single)
-    Dim I As Integer: I = 0
+    Dim i As Integer: i = 0
     Dim Ctrl As Control
     Dim x_scale As Single: x_scale = 0
     Dim y_scale As Single: y_scale = 0
@@ -36,10 +36,10 @@ Public Sub resizeControls(ByRef thisForm As Form, ByRef m_ControlPositions() As 
     gblResizeRatio = x_scale
 
     ' Position the controls.
-    I = 1
+    i = 1
 
     For Each Ctrl In thisForm.Controls
-        With m_ControlPositions(I)
+        With m_ControlPositions(i)
             If (TypeOf Ctrl Is CommandButton) Or (TypeOf Ctrl Is ListBox) Or (TypeOf Ctrl Is TreeView) Or (TypeOf Ctrl Is VScrollBar) Or (TypeOf Ctrl Is HScrollBar) Or (TypeOf Ctrl Is TextBox) Or (TypeOf Ctrl Is FileListBox) Or (TypeOf Ctrl Is Label) Or (TypeOf Ctrl Is ComboBox) Or (TypeOf Ctrl Is CheckBox) Or (TypeOf Ctrl Is OptionButton) Or (TypeOf Ctrl Is Frame) Or (TypeOf Ctrl Is Image) Or (TypeOf Ctrl Is PictureBox) Or (TypeOf Ctrl Is Slider) Then
 
                 If (TypeOf Ctrl Is Image) Then
@@ -67,6 +67,7 @@ Public Sub resizeControls(ByRef thisForm As Form, ByRef m_ControlPositions() As 
                         Ctrl.Font.Size = y_scale * formFontSize
                     End If
                     
+                    ' when resized, a combobox automatically highlights in blue, this removes that
                     If TypeOf Ctrl Is ComboBox Then
                         Ctrl.SelLength = 0
                     End If
@@ -76,7 +77,7 @@ Public Sub resizeControls(ByRef thisForm As Form, ByRef m_ControlPositions() As 
                 End If
             End If
         End With
-        I = I + 1
+        i = i + 1
     Next Ctrl
     
 '   Dim W: W = thisForm.ScaleX(thisForm.ScaleWidth, thisForm.ScaleMode, vbTwips)
@@ -103,16 +104,16 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Public Sub saveControlSizes(ByVal thisForm As Form, ByRef m_ControlPositions() As ControlPositionType, ByRef m_FormWid As Long, ByRef m_FormHgt As Long)
-    Dim I As Integer: I = 0
+    Dim i As Integer: i = 0
     Dim Ctrl As Control
 
     ' Save the controls' positions and sizes.
     On Error GoTo saveControlSizes_Error
 
     ReDim m_ControlPositions(1 To thisForm.Controls.count)
-    I = 1
+    i = 1
     For Each Ctrl In thisForm.Controls
-        With m_ControlPositions(I)
+        With m_ControlPositions(i)
         
             If (TypeOf Ctrl Is CommandButton) Or (TypeOf Ctrl Is ListBox) Or (TypeOf Ctrl Is TreeView) Or (TypeOf Ctrl Is VScrollBar) Or (TypeOf Ctrl Is HScrollBar) Or (TypeOf Ctrl Is TextBox) Or (TypeOf Ctrl Is FileListBox) Or (TypeOf Ctrl Is Label) Or (TypeOf Ctrl Is ComboBox) Or (TypeOf Ctrl Is CheckBox) Or (TypeOf Ctrl Is OptionButton) Or (TypeOf Ctrl Is Frame) Or (TypeOf Ctrl Is Image) Or (TypeOf Ctrl Is PictureBox) Or (TypeOf Ctrl Is Slider) Then
                 .Left = Ctrl.Left
@@ -124,7 +125,7 @@ Public Sub saveControlSizes(ByVal thisForm As Form, ByRef m_ControlPositions() A
                 On Error GoTo 0
             End If
         End With
-        I = I + 1
+        i = i + 1
     Next Ctrl
 
     ' Save the form's size.
