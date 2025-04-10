@@ -33,10 +33,11 @@
 ' after a resize do not read from the cache
 ' modify the height of the form to take ito account the win10/11 larger title bar
 
-
 ' sometimes reszies when a 2nd windows is opened
 ' sometimes baulks at a resize when reszied too quickly after a form_load
 ' the form is not displayed until all controls are created
+
+' set DPI awareness
 
 ' Current Task:
 ' =============
@@ -50,8 +51,6 @@
 '
 ' Tasks:
 
-' set DPI awareness
-'
 '   test running with a blank tool settings file
 '
 '   test running with a blank dock settings file
@@ -85,10 +84,18 @@
 '       Create a new resource file with the three OCXs inserted as well as the custom manifest #24
 '           Test locally and on desktop with the new RES file.
 '           You might have to do this each time there is a new version of CCRimageList.ocx
+
+'       Elroy's code to add balloon tips to comboBox
 '
 ' Bugs:
 ' =====
 '
+'       separate common.bas and common2.bas to make it easier to compile just the one utility on its own.
+
+'       resizing - save the new size
+
+'       resizing - restore the new size on restart
+
 '       when editing an icon, dragging and dropping to the map, the set button is not enabled
 '       when editing an icon, dragging and dropping to the map, the close button does not change to cancel
 '       cancel does not revert the icon dragged to the dock
@@ -113,9 +120,6 @@
 '       add the build instructions
 '
 '       build the manifest - test the manifest for 64 bit & win 11 systems - no admin required, DPI needed.
-'
-'       Elroy's code to add balloon tips to comboBox
-'       https://www.vbforums.com/showthread.php?893844-VB6-QUESTION-How-to-capture-the-MouseOver-Event-on-a-comboBox
 
 '       remove all the rocketdock MIGRATION stuff
 '
@@ -129,6 +133,33 @@
 '       GdipCreateFromHdc
 '       GdipDrawImageRectRectI
 '       It is rendered into a picturebox.
+
+    ico_x = win32api.GetSystemMetrics(win32con.SM_CXICON)
+    ico_y = win32api.GetSystemMetrics(win32con.SM_CYICON)
+    
+    large, small = win32gui.ExtractIconEx("C:\Program Files (x86)\Malwarebytes' Anti-Malware\mbam.exe",0)
+    win32gui.DestroyIcon(small[0])
+    
+    hdc = win32ui.CreateDCFromHandle( win32gui.GetDC(0) )
+    hbmp = win32ui.CreateBitmap()
+    hbmp.CreateCompatibleBitmap( hdc, ico_x, ico_x )
+    hdc = hdc.CreateCompatibleDC()    ' py
+
+      hwin = user.GetDesktopWindow()
+      hwindc = user.GetWindowDC(monitor['hmon'])
+
+    hdc.SelectObject( hbmp )
+    hdc.DrawIcon( (0,0), large[0] )
+
+    hbmp.SaveBitmapFile( hdc, 'icon.bmp')
+
+
+Public Property Let ManageOwnDC      c32bppDIB.cls
+    Private m_hDC As Long           ' DC if self-managing one
+    Dim tDC As Long
+    tDC = GetDC(0&)
+    m_hDC = CreateCompatibleDC(tDC) ' vb6
+
 '
 '    2. Test with empty dock and first run with no prior install of anything.
 '

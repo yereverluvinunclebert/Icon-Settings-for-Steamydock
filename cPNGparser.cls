@@ -180,7 +180,7 @@ Public Function LoadStream(ByRef Stream() As Byte, ByRef dibClass As c32bppDIB, 
     
 End Function
 
-Public Function LoadFile(ByVal FileHandle As Long, ByVal Filename As String, ByRef dibClass As c32bppDIB, Optional ByRef GlobalToken As Long) As Boolean
+Public Function LoadFile(ByVal FileHandle As Long, ByVal filename As String, ByRef dibClass As c32bppDIB, Optional ByRef GlobalToken As Long) As Boolean
 
     ' PURPOSE: Determine if passed file is a PNG & if it is, then convert it to
     ' a 32bpp owned by dibClass
@@ -195,12 +195,12 @@ Public Function LoadFile(ByVal FileHandle As Long, ByVal Filename As String, ByR
     '   validation shown in c32bppDIB.LoadPicture_File
 
     Set cHost = dibClass
-    LoadFile = LoadPNG(FileHandle, Filename, 0&, GlobalToken)
+    LoadFile = LoadPNG(FileHandle, filename, 0&, GlobalToken)
     Set cHost = Nothing
 
 End Function
 
-Private Function LoadPNG(ByRef FileHandle As Long, ByRef Filename As String, ByRef streamLength As Long, Optional ByVal GlobalToken As Long) As Boolean
+Private Function LoadPNG(ByRef FileHandle As Long, ByRef filename As String, ByRef streamLength As Long, Optional ByVal GlobalToken As Long) As Boolean
 
     ' PURPOSE: Determine if passed file is a PNG & if it is, then convert it to
     ' a 32bpp owned by dibClass
@@ -234,7 +234,7 @@ Private Function LoadPNG(ByRef FileHandle As Long, ByRef Filename As String, ByR
     m_TransColor = -1&
     
     ' attempt to open the file with read access
-    If Filename = vbNullString Then
+    If filename = vbNullString Then
     
         ptrLoc = 7&              ' counter to prevent overflow of array
         ptrArray = 8&            ' current position in passed array
@@ -243,7 +243,7 @@ Private Function LoadPNG(ByRef FileHandle As Long, ByRef Filename As String, ByR
         Else
             LoadPNG = True ' & process it using GDI+ if available
             Set cGDIp = New cGDIPlus
-            If cGDIp.GDIplusLoadPNG(Filename, pngStream(), cHost, GlobalToken) = True Then
+            If cGDIp.GDIplusLoadPNG(filename, pngStream(), cHost, GlobalToken) = True Then
                 m_Width = cHost.Width
                 m_Height = cHost.Height
                 Exit Function
@@ -270,7 +270,7 @@ Private Function LoadPNG(ByRef FileHandle As Long, ByRef Filename As String, ByR
         On Error GoTo 0
         ' process using GDI+ if available
         Set cGDIp = New cGDIPlus
-        If cGDIp.GDIplusLoadPNG(Filename, pngStream(), cHost, GlobalToken) = True Then
+        If cGDIp.GDIplusLoadPNG(filename, pngStream(), cHost, GlobalToken) = True Then
             m_Width = cHost.Width
             m_Height = cHost.Height
             

@@ -256,7 +256,7 @@ Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 ' TBD DAEB 19/04/2021 mdlMain.bas  added a new type link for determining shortcuts
 Public Type Link
     Attributes As Long
-    Filename As String
+    FileName As String
     Description As String
     RelPath As String
     WorkingDir As String
@@ -279,7 +279,7 @@ Public gblProgramStatus As String
 ' Private Types for determining  sizing
 Public gblResizeRatio As Double
 Public gblFormResizedInCode As Boolean
-Public gblDoNotResize As Boolean
+'Public gblDoNotResize As Boolean
 
 Public gblAdjustedFormHeight As Long
 Public gblAdjustedFormWidth  As Long
@@ -290,36 +290,60 @@ Public rDIconConfigFormOldWidth As Long
 'Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
             (lpDest As Any, lpSource As Any, ByVal cbCopy As Long)
             
-
+'Public lngGDI As Long
+'Public gdipInit As GDIPLUS_STARTINPUT
+'Private Type GDIPLUS_STARTINPUT
+'    GdiplusVersion As Long
+'    DebugEventCallback As Long
+'    SuppressBackgroundThread As Long
+'    SuppressExternalCodecs As Long
+'End Type
+'
+'Public Declare Sub GdiplusShutdown Lib "GdiPlus.dll" (ByVal mtoken As Long)
+'Public Declare Function GdiplusStartup Lib "GdiPlus.dll" (Token As Long, gdipInput As GDIPLUS_STARTINPUT, GdiplusStartupOutput As Long) As Long
+'Public Type GdiplusStartupInput
+'    GdiplusVersion As Long
+'    DebugEventCallback As Long
+'    SuppressBackgroundThread As Long
+'    SuppressExternalCodecs As Long
+'End Type
+'Public Type GdiplusStartupOutput
+'    NotificationHook As Long
+'    NotificationUnhook As Long
+'End Type
+'
+'' NOTE: Enums evaluate to a Long
+'Public Enum GpStatus   ' aka Status
+'   Ok = 0
+'   GenericError = 1
+'   InvalidParameter = 2
+'   OutOfMemory = 3
+'   ObjectBusy = 4
+'   InsufficientBuffer = 5
+'   NotImplemented = 6
+'   Win32Error = 7
+'   WrongState = 8
+'   Aborted = 9
+'   FileNotFound = 10
+'   ValueOverflow = 11
+'   AccessDenied = 12
+'   UnknownImageFormat = 13
+'   FontFamilyNotFound = 14
+'   FontStyleNotFound = 15
+'   NotTrueTypeFont = 16
+'   UnsupportedGdiplusVersion = 17
+'   GdiplusNotInitialized = 18
+'   PropertyNotFound = 19
+'   PropertyNotSupported = 20
+'   ProfileNotFound = 21
+'End Enum
+    
+    
+    
 
 '------------------------------------------------------ ENDS
 
 
-''---------------------------------------------------------------------------------------
-'' Procedure : Main
-'' Author    : beededea
-'' Date      : 13/09/2019
-'' Purpose   :
-''---------------------------------------------------------------------------------------
-''
-'Sub Main()
-'   On Error GoTo Main_Error
-'
-'    If debugFlg = 1 Then debugLog "%Main"
-'
-'    debugFlg = 0
-'
-'    rDIconConfigForm.Show
-'
-'
-'   On Error GoTo 0
-'   Exit Sub
-'
-'Main_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Main of Module Module1"
-'
-'End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : displayEmbeddedAllIcons
@@ -332,20 +356,22 @@ Public rDIconConfigFormOldWidth As Long
 '             I may not have coded this particularly well - but it works.
 '---------------------------------------------------------------------------------------
 '
-Public Sub displayEmbeddedIcons(ByVal Filename As String, ByRef targetPicBox As PictureBox, ByVal IconSize As Integer)
+Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As PictureBox, ByVal IconSize As Integer)
     
     Dim lIconIndex As Long: lIconIndex = 0
     Dim xSize As Long: xSize = 0
     Dim ySize As Long: ySize = 0
     Dim hIcon() As Long
-    'Dim hLIcon() As Long: this long = 0
-    'Dim hSIcon() As Long: this long = 0
+
     Dim hIconID() As Long
     Dim nIcons As Long: nIcons = 0
     Dim Result As Long: Result = 0
     Dim flags As Long: flags = 0
     Dim i As Long: i = 0
     Dim pic As IPicture
+    
+    
+    Dim outputFilename As String: outputFilename = "arse1.png"
     
     On Error Resume Next
 
@@ -371,12 +397,12 @@ Public Sub displayEmbeddedIcons(ByVal Filename As String, ByRef targetPicBox As 
     flags = LR_LOADFROMFILE '16
 
     ' Call PrivateExtractIcons with the 5th param set to nothing solely to obtain the total number of Icons in the file.
-    Result = PrivateExtractIcons(Filename, lIconIndex, xSize, ySize, ByVal 0&, ByVal 0&, 0&, 0&) ' 63
+    Result = PrivateExtractIcons(FileName, lIconIndex, xSize, ySize, ByVal 0&, ByVal 0&, 0&, 0&) ' 63
     
     ' The Filename is the resource string/filepath.
     ' lIconIndex is the index.
     ' xSize and ySize are the desired sizes.
-    ' phicon is a pointer to the returned array of icon handles.
+    ' 5th parameter is a pointer to the returned array of icon handles.
     ' piconid is an ID of each icon that best fits the current display device. The returned identifier is 0 if not obtained.
     ' nicons is the number of icons you wish to extract.
     
@@ -392,36 +418,55 @@ Public Sub displayEmbeddedIcons(ByVal Filename As String, ByRef targetPicBox As 
     ReDim hIconID(lIconIndex To lIconIndex + nIcons * 2 - 1)
 
     ' use the undocumented PrivateExtractIcons to extract the icons we require
-    Result = PrivateExtractIcons(Filename, lIconIndex, xSize, _
+    ' PrivateExtractIcons where the 5th param is a pointer to the returned array of icon handles
+    
+    Result = PrivateExtractIcons(FileName, lIconIndex, xSize, _
                             ySize, hIcon(LBound(hIcon)), _
                             hIconID(LBound(hIconID)), _
                             nIcons * 2, flags)
-    '126
         
     ' create an icon with a handle
-    Set pic = CreateIcon(hIcon(i + lIconIndex - 1)) ' 2054427849
+    ' Set pic = CreateIcon(hIcon(i + lIconIndex - 1)) ' do we need this in order to display the icon on the picbox
     
+    ' because we have the pic as ipicture from the above CreateIcon, we should be able to save the icon to a PNG with a bit of luck using the handle to the ICO and GDI+
+
+'    Dim aStream() As Byte
+'    Call cGDIp.SaveToPNG(outputFilename, aStream, pic, 0)
+    'Call picsave.SavePicture(pic.Image, outputFilename, fmtPNG, 70)
+        
     ' resize and place the target picbox according to the size of the icon
     ' (rather than placing the icon in the middle of the picbox as I should)
     
     Call centrePreviewImage(targetPicBox, IconSize)
-        
-    ' Draw the icon to the respective picturebox control.
-    If Not (pic Is Nothing) Then
+            
+    ' Draw the icon directly onto the respective picturebox control.
+    'If Not (pic Is Nothing) Then
         With targetPicBox
         
             'ensure the picbox is empty first
             Set .Picture = LoadPicture(vbNullString)
             .AutoRedraw = True
                
+            ' DrawIconEx can draw a transparent image
             Call DrawIconEx(.hDC, 0, 0, hIcon(LBound(hIcon)), IconSize, IconSize, 0, 0, DI_NORMAL)
+            
+            ' centre image using a better method
+'            DrawIconEx hDC, _
+'                        ScaleX(X, ScaleMode, vbPixels) - WidthPx \ 2, _
+'                        ScaleY(Y, ScaleMode, vbPixels) - HeightPx \ 2, _
+'                        PngAsIcon.handle, _
+'                        WidthPx, _
+'                        HeightPx, _
+'                        0, _
+'                        WIN32_NULL, _
+               DI_NORMAL
+            
             .Refresh
 
         End With
-    End If
+    'End If
     ' get rid of the icons we created
     Call DestroyIcon(hIcon(i + lIconIndex - 1))
-    'Call DestroyIcon(hIcon(LBound(hIcon))
 
 End Sub
 
@@ -458,7 +503,7 @@ Private Function CreateIcon(ByVal hImage As Long) As IPicture
     ' This method creates an icon based on a handle
     Dim pic As IPicture
     Dim dsc As PictDesc
-    Dim iid(0 To 15) As Byte
+    Dim IID(0 To 15) As Byte
     Dim Result As Long: Result = 0
     
    On Error GoTo CreateIcon_Error
@@ -468,14 +513,14 @@ Private Function CreateIcon(ByVal hImage As Long) As IPicture
         With dsc
            .cbSizeofStruct = Len(dsc)
            .hImage = hImage
-           .PicType = VBRUN.PictureTypeConstants.vbPicTypeIcon
+           .PicType = VBRUN.PictureTypeConstants.vbPicTypeBitmap
         End With
         
         Result = OLE_CLSIDFromString(StrPtr(IID_IPicture), _
-                                                        VarPtr(iid(0)))
+                                                        VarPtr(IID(0)))
                                                     
         If (Result = OLE_ERROR_CODES.S_OK) Then
-            Result = Ole_CreatePic(dsc, VarPtr(iid(0)), True, pic)
+            Result = Ole_CreatePic(dsc, VarPtr(IID(0)), True, pic)
             
             If (Result = OLE_ERROR_CODES.S_OK) Then
                 Set CreateIcon = pic
@@ -499,7 +544,7 @@ End Function
 '             Retained for informational purposes
 '---------------------------------------------------------------------------------------
 '
-Public Sub displayEmbeddedIconsOld(ByVal Filename As String, ByRef targetPicBox As PictureBox, ByRef IconSize As Integer)
+Public Sub displayEmbeddedIconsOld(ByVal FileName As String, ByRef targetPicBox As PictureBox, ByRef IconSize As Integer)
     ' The program extracts icons embedded within a DLL or an executable
     ' you pass the name of the picbox you require and the image is displayed there
     ' unfortunately the ExtractIconEx API only returns 16 and 32 bit icons
@@ -510,7 +555,7 @@ Public Sub displayEmbeddedIconsOld(ByVal Filename As String, ByRef targetPicBox 
 ' eg. FileName = "C:\Program Files (x86)\Microsoft Visual Studio 8\Common7\IDE\vbexpress.exe"
    On Error GoTo displayEmbeddedIcons_Error
 
-    sExeName = Filename
+    sExeName = FileName
 
 ' Get the total number of Icons in the file.
     lIcons = ExtractIconEx(sExeName, -1, 0, 0, 0)
