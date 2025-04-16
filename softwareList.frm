@@ -328,13 +328,13 @@ Private Const LB_SETHORIZONTALEXTENT As Long = &H194
 Private Const SB_VERT As Long = 1
 
 ' APIs for hiding/adding horizontal scrollbars to the listboxes
-Private Declare Function SendMessageByNum Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function ShowScrollBar Lib "user32" (ByVal hwnd As Long, ByVal wBar As Long, ByVal bShow As Long) As Long
+Private Declare Function SendMessageByNum Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function ShowScrollBar Lib "user32" (ByVal hWnd As Long, ByVal wBar As Long, ByVal bShow As Long) As Long
 '------------------------------------------------------ ENDS
 
 '------------------------------------------------------ STARTS
 ' Private Types for determining prefs sizing
-Private gblSwRatio As Long
+Private gblSwRatio As Double
 Private Const cSwFormHeight As Long = 9030
 Private Const cSwFormWidth  As Long = 16845
 '------------------------------------------------------ ENDS
@@ -722,7 +722,7 @@ Private Sub btnHelp_Click()
     answer = msgBoxA("This option opens a browser window and displays this tool's help. Proceed?", vbQuestion + vbYesNo)
     If answer = vbYes Then
         If fFExists(App.Path & "\help\Rocketdock Enhanced Settings.html") Then
-            Call ShellExecute(Me.hwnd, "Open", App.Path & "\help\generate documentation.html", vbNullString, App.Path, 1)
+            Call ShellExecute(Me.hWnd, "Open", App.Path & "\help\generate documentation.html", vbNullString, App.Path, 1)
         Else
             msgBoxA ("The help file -Rocketdock Enhanced Settings.html- is missing from the help folder."), vbExclamation + vbOKOnly, ""
         End If
@@ -944,11 +944,11 @@ End Function
 '
 Function FindFilesAPI(Path As String, SearchStr As String, FileCount As Integer, DirCount As Integer)
  
-    Dim Filename As String: Filename = vbNullString ' Walking filename variable...
+    Dim FileName As String: FileName = vbNullString ' Walking filename variable...
     Dim DirName As String: DirName = vbNullString ' SubDirectory Name
     Dim dirNames() As String ' Buffer for directory name entries
     Dim nDir As Integer: nDir = 0 ' Number of directories in this path
-    Dim I As Integer: I = 0 ' For-loop counter...
+    Dim i As Integer: i = 0 ' For-loop counter...
     Dim hSearch As Long: hSearch = 0 ' Search Handle
     Dim WFD As WIN32_FIND_DATA
     Dim Cont As Integer: Cont = 0
@@ -983,11 +983,11 @@ Function FindFilesAPI(Path As String, SearchStr As String, FileCount As Integer,
     Cont = True
     If hSearch <> INVALID_HANDLE_VALUE Then
         While Cont
-            Filename = StripNulls(WFD.cFileName)
-            If (Filename <> ".") And (Filename <> "..") Then
+            FileName = StripNulls(WFD.cFileName)
+            If (FileName <> ".") And (FileName <> "..") Then
                 FindFilesAPI = FindFilesAPI + (WFD.nFileSizeHigh * MAXDWORD) + WFD.nFileSizeLow
                 FileCount = FileCount + 1
-                lbxSoftwareList.AddItem Path & Filename
+                lbxSoftwareList.AddItem Path & FileName
             End If
             Cont = FindNextFile(hSearch, WFD) ' Get next file
         Wend
@@ -996,9 +996,9 @@ Function FindFilesAPI(Path As String, SearchStr As String, FileCount As Integer,
     ' If there are sub-directories...
     If nDir > 0 Then
         ' Recursively walk into them...
-        For I = 0 To nDir - 1
-            FindFilesAPI = FindFilesAPI + FindFilesAPI(Path & dirNames(I) & "\", SearchStr, FileCount, DirCount)
-        Next I
+        For i = 0 To nDir - 1
+            FindFilesAPI = FindFilesAPI + FindFilesAPI(Path & dirNames(i) & "\", SearchStr, FileCount, DirCount)
+        Next i
     End If
 
    On Error GoTo 0
@@ -1011,7 +1011,7 @@ End Function
 
 
 Private Sub fraLinkSource_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-    If gblRdEnableBalloonTooltips = "1" Then CreateToolTip fraLinkSource.hwnd, "Select the location to search from, choose either the registry or the start menu links.", _
+    If gblRdEnableBalloonTooltips = "1" Then CreateToolTip fraLinkSource.hWnd, "Select the location to search from, choose either the registry or the start menu links.", _
                   TTIconInfo, "Help on the Link Source radio buttons", , , , True
 End Sub
 
@@ -1073,7 +1073,7 @@ Private Sub lbxApprovedList_MouseDown(ByRef Button As Integer, ByRef Shift As In
 End Sub
 
 Private Sub lbxApprovedList_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-   If gblRdEnableBalloonTooltips = "1" Then CreateToolTip lbxApprovedList.hwnd, "To generate a dock full of entries, this listbox must be populated with a list of your chosen software links. Drag and drop from the lists on the left which populate from the registry or the start menu..", _
+   If gblRdEnableBalloonTooltips = "1" Then CreateToolTip lbxApprovedList.hWnd, "To generate a dock full of entries, this listbox must be populated with a list of your chosen software links. Drag and drop from the lists on the left which populate from the registry or the start menu..", _
                   TTIconInfo, "Help on the Chosen Links List", , , , True
 End Sub
 
@@ -1169,7 +1169,7 @@ rdbProgramData_Click_Error:
 End Sub
 
 Private Sub rdbProgramData_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-   If gblRdEnableBalloonTooltips = "1" Then CreateToolTip rdbProgramData.hwnd, "Click here to select the program items found within the Start Menu .", _
+   If gblRdEnableBalloonTooltips = "1" Then CreateToolTip rdbProgramData.hWnd, "Click here to select the program items found within the Start Menu .", _
                   TTIconInfo, "Help on the Start Menu", , , , True
 End Sub
 
@@ -1256,17 +1256,17 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub SaveSizes()
-    Dim I As Integer: I = 0
+    Dim i As Integer: i = 0
     Dim a As Integer: a = 0
     Dim Ctrl As Control
 
     ' Save the controls' positions and sizes.
     On Error GoTo SaveSizes_Error
 
-    ReDim swFormControlPositions(1 To Controls.count)
-    I = 1
+    ReDim swFormControlPositions(1 To Controls.Count)
+    i = 1
     For Each Ctrl In Controls
-        With swFormControlPositions(I)
+        With swFormControlPositions(i)
             
             
             If TypeOf Ctrl Is Line Then
@@ -1287,7 +1287,7 @@ Private Sub SaveSizes()
                 On Error GoTo 0
             End If
         End With
-        I = I + 1
+        i = i + 1
     Next Ctrl
 
     ' Save the form's size.
@@ -1307,51 +1307,51 @@ End Sub
 ' .05 DAEB 29/05/2022 formSoftwareList.frm Add balloon tooltips to the generate dock utility STARTS
 
 Private Sub rdbRegistry_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-   If gblRdEnableBalloonTooltips = "1" Then CreateToolTip rdbRegistry.hwnd, "Click here to select the program items found within the Registry.", _
+   If gblRdEnableBalloonTooltips = "1" Then CreateToolTip rdbRegistry.hWnd, "Click here to select the program items found within the Registry.", _
                   TTIconInfo, "Help on the Registry", , , , True
 End Sub
 
 Private Sub txtFileFilter_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-   If gblRdEnableBalloonTooltips = "1" Then CreateToolTip txtFileFilter.hwnd, "This text box contains the types of items found in either the registry or in the start menu.", _
+   If gblRdEnableBalloonTooltips = "1" Then CreateToolTip txtFileFilter.hWnd, "This text box contains the types of items found in either the registry or in the start menu.", _
                   TTIconInfo, "Help on the type of items found", , , , True
 End Sub
 
 Private Sub txtNumOfFiles_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-   If gblRdEnableBalloonTooltips = "1" Then CreateToolTip txtNumOfFiles.hwnd, "This text box contains the total number of items found in either the registry or in the start menu.", _
+   If gblRdEnableBalloonTooltips = "1" Then CreateToolTip txtNumOfFiles.hWnd, "This text box contains the total number of items found in either the registry or in the start menu.", _
                   TTIconInfo, "Help on the Total Number of items found", , , , True
 End Sub
 
 Private Sub txtPathToTest_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-   If gblRdEnableBalloonTooltips = "1" Then CreateToolTip txtPathToTest.hwnd, "This text box contains the path that the utility will use to find and identify any programs installed on this system, located either in the registry or in the start menu.", _
+   If gblRdEnableBalloonTooltips = "1" Then CreateToolTip txtPathToTest.hWnd, "This text box contains the path that the utility will use to find and identify any programs installed on this system, located either in the registry or in the start menu.", _
                   TTIconInfo, "Help on the Software Path", , , , True
 End Sub
 Private Sub btnCloseSoft_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-    If gblRdEnableBalloonTooltips = "1" Then CreateToolTip btnCloseSoft.hwnd, "This button cancels the current operation and closes the window.", _
+    If gblRdEnableBalloonTooltips = "1" Then CreateToolTip btnCloseSoft.hWnd, "This button cancels the current operation and closes the window.", _
                   TTIconInfo, "Help on the Cancel and Close Button", , , , True
 End Sub
 
 Private Sub btnGenerateDock_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-    If gblRdEnableBalloonTooltips = "1" Then CreateToolTip btnGenerateDock.hwnd, "This button will proceed to generate the new dock using the chosen application links above.", _
+    If gblRdEnableBalloonTooltips = "1" Then CreateToolTip btnGenerateDock.hWnd, "This button will proceed to generate the new dock using the chosen application links above.", _
                   TTIconInfo, "Help on the Generate Dock Button", , , , True
 End Sub
 Private Sub btnCopyItems_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-    If gblRdEnableBalloonTooltips = "1" Then CreateToolTip btnCopyItems.hwnd, "This button will copy any selected items from the above list to the chosen list on the right. You can also use drag and drop for individual links.", _
+    If gblRdEnableBalloonTooltips = "1" Then CreateToolTip btnCopyItems.hWnd, "This button will copy any selected items from the above list to the chosen list on the right. You can also use drag and drop for individual links.", _
                   TTIconInfo, "Help on the Copy Items Button", , , , True
 End Sub
 Private Sub btnClear_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-    If gblRdEnableBalloonTooltips = "1" Then CreateToolTip btnClear.hwnd, "This button will clear the above list of your chosen links.", _
+    If gblRdEnableBalloonTooltips = "1" Then CreateToolTip btnClear.hWnd, "This button will clear the above list of your chosen links.", _
                   TTIconInfo, "Help on the Clear Chosen Links Button", , , , True
 End Sub
 Private Sub btnHelp_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-    If gblRdEnableBalloonTooltips = "1" Then CreateToolTip btnHelp.hwnd, "This button opens the help page in your default browser.", _
+    If gblRdEnableBalloonTooltips = "1" Then CreateToolTip btnHelp.hWnd, "This button opens the help page in your default browser.", _
                   TTIconInfo, "Help on the Help Button", , , , True
 End Sub
 Private Sub lbxSoftwareList_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-   If gblRdEnableBalloonTooltips = "1" Then CreateToolTip lbxSoftwareList.hwnd, "This listbox contains a complete list of the software that is recognised by your Windows installation. Ths consists of entries extracted from the registry or the start menu. Any items that you want to appear in your dock, click on them. When you have selected those you want, press the Copy Items button. Each of your choices will be placed upon the list on the right hand side. You can also drag and drop individual items.", _
+   If gblRdEnableBalloonTooltips = "1" Then CreateToolTip lbxSoftwareList.hWnd, "This listbox contains a complete list of the software that is recognised by your Windows installation. Ths consists of entries extracted from the registry or the start menu. Any items that you want to appear in your dock, click on them. When you have selected those you want, press the Copy Items button. Each of your choices will be placed upon the list on the right hand side. You can also drag and drop individual items.", _
                   TTIconInfo, "Help on the Available Software List", , , , True
 End Sub
 Private Sub btnDeselectItems_MouseMove(ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
-   If gblRdEnableBalloonTooltips = "1" Then CreateToolTip btnDeselectItems.hwnd, "This button removes all the selections in the box above, this avoids the chance of replication of items in the approved list.", _
+   If gblRdEnableBalloonTooltips = "1" Then CreateToolTip btnDeselectItems.hWnd, "This button removes all the selections in the box above, this avoids the chance of replication of items in the approved list.", _
                   TTIconInfo, "Help on the De-Selecting items in the software list", , , , True
 End Sub
 
@@ -1597,17 +1597,17 @@ Private Sub checkTheLink(ByVal listNo As Integer _
 
             Call GetShortcutInfo(iconCommand, thisShortcut) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
 
-            iconTitle = getFileNameFromPath(thisShortcut.Filename)
+            iconTitle = getFileNameFromPath(thisShortcut.FileName)
 
-            If Not thisShortcut.Filename = "" Then
-                iconCommand = LCase$(thisShortcut.Filename)
+            If Not thisShortcut.FileName = "" Then
+                iconCommand = LCase$(thisShortcut.FileName)
             End If
             iconArguments = thisShortcut.Arguments
             iconWorkingDirectory = thisShortcut.RelPath
 
             ' Use a call to the older function to identify an icon using the shell object
             'if the icontitle and command are blank then this is user-created link that only provides the relative path
-            If iconTitle = "" And thisShortcut.Filename = "" And Not iconWorkingDirectory = "" Then
+            If iconTitle = "" And thisShortcut.FileName = "" And Not iconWorkingDirectory = "" Then
                 Call GetShellShortcutInfo(iconCommand, nname, npath, ndesc, nwork, nargs)
 
                 iconTitle = nname
