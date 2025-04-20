@@ -177,7 +177,7 @@ Private Const CF_SCREENFONTS As Long = &H1
 Public Type FormFontInfo
   Name As String
   Weight As Integer
-  Height As Integer
+  height As Integer
   UnderLine As Boolean
   Italic As Boolean
   Color As Long
@@ -344,7 +344,6 @@ Public rDIconConfigFormOldWidth As Long
 '------------------------------------------------------ ENDS
 
 
-
 '---------------------------------------------------------------------------------------
 ' Procedure : displayEmbeddedAllIcons
 ' Author    : beededea
@@ -355,6 +354,7 @@ Public rDIconConfigFormOldWidth As Long
 '
 '             I may not have coded this particularly well - but it works.
 '---------------------------------------------------------------------------------------
+'
 '
 Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As PictureBox, ByVal IconSize As Integer)
     
@@ -368,11 +368,18 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
     Dim Result As Long: Result = 0
     Dim flags As Long: flags = 0
     Dim i As Long: i = 0
-    Dim pic As IPicture
     
+    'Dim pic As IPicture ' interface for a Picture object
+    Dim pic As StdPicture ' interface for a Picture object
     
+    Dim cICO As New cICOparser  ' cICOParser.cls
+    Dim cImage As c32bppDIB  ' c32bppDIB.cls
+        
     Dim outputFilename As String: outputFilename = "arse1.png"
-    
+    Dim outputFilenameICO As String: outputFilenameICO = "arse1.ico"
+
+   On Error GoTo displayEmbeddedIcons_Error
+
     On Error Resume Next
 
     lIconIndex = 0
@@ -417,57 +424,101 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
     ReDim hIcon(lIconIndex To lIconIndex + nIcons * 2 - 1)
     ReDim hIconID(lIconIndex To lIconIndex + nIcons * 2 - 1)
 
-    ' use the undocumented PrivateExtractIcons to extract the icons we require
-    ' PrivateExtractIcons where the 5th param is a pointer to the returned array of icon handles
-    
+    ' use the undocumented PrivateExtractIcons to extract the icons we require where the 5th param is a pointer to the returned array of handles to extracted icons
     Result = PrivateExtractIcons(FileName, lIconIndex, xSize, _
                             ySize, hIcon(LBound(hIcon)), _
                             hIconID(LBound(hIconID)), _
                             nIcons * 2, flags)
         
-    ' create an icon with a handle
-    ' Set pic = CreateIcon(hIcon(i + lIconIndex - 1)) ' do we need this in order to display the icon on the picbox
+    ' create an Ipicture icon with a handle, no specific size
+    Set pic = CreateIcon(hIcon(i + lIconIndex - 1))
+    ' do we need the above in order to display the icon on the targe picbox? No.
+    ' we do this as a check as to a valid pic before we write directly to the targetPicBox
+    ' also, we now create a DIB from the pic with the hope that I can use that to extract the image and save an .ICO file
+    
+    ' BEGIN next bit might be useful, unsure
+    
+        ' initialise a 32bpp alpha-compatible image bitmap.
+        Set cImage = New c32bppDIB ' c32bppDIB.cls
+        Dim res As Boolean
+        ' pass to icon/cursor parser, convert a single icon from a stdPicture/iPicture or handle to a 32bpp bitmap
+        res = cICO.ConvertstdPicTo32bpp(pic.handle, cImage)
+        'Call cICO.ConvertstdPicTo32bpp(hIcon(i + lIconIndex - 1), cImage) ' this also seems to work. compiles
+        
+        Set cICO = Nothing
+    
+    ' END
+'
+    ' cImage.handle
     
     ' because we have the pic as ipicture from the above CreateIcon, we should be able to save the icon to a PNG with a bit of luck using the handle to the ICO and GDI+
 
-'    Dim aStream() As Byte
-'    Call cGDIp.SaveToPNG(outputFilename, aStream, pic, 0)
-    'Call picsave.SavePicture(pic.Image, outputFilename, fmtPNG, 70)
+    
+    
+' See BUGLIST.TXT FOR A FULL DESCRIPTION OF THE PROGRESS TO THIS POINT.
+    
+'    next task is to try ICOwriter class, creating an icon and saving
+
+
+'    Call NewICO(), then AddImage() one or more times, then BuildICO().
+'
+'    After that you can use the ICO property to get a Byte Array or the
+'    SaveICO() method to save it to disk, or both.
+
+'    Dim icoWriter As New icoWriter
+'    Call icoWriter.SaveICO(outputFilenameICO, True)
+
+
+
         
     ' resize and place the target picbox according to the size of the icon
-    ' (rather than placing the icon in the middle of the picbox as I should)
+    ' (rather than placing the icon in the middle of the picbox as I should, I can code that later)
     
     Call centrePreviewImage(targetPicBox, IconSize)
             
     ' Draw the icon directly onto the respective picturebox control.
-    'If Not (pic Is Nothing) Then
+    If Not (pic Is Nothing) Then
         With targetPicBox
         
             'ensure the picbox is empty first
             Set .Picture = LoadPicture(vbNullString)
             .AutoRedraw = True
                
-            ' DrawIconEx can draw a transparent image
+            ' DrawIconEx can draw a transparent image from a good image handle directly onto the target picture box
             Call DrawIconEx(.hDC, 0, 0, hIcon(LBound(hIcon)), IconSize, IconSize, 0, 0, DI_NORMAL)
             
             ' centre image using a better method
-'            DrawIconEx hDC, _
-'                        ScaleX(X, ScaleMode, vbPixels) - WidthPx \ 2, _
-'                        ScaleY(Y, ScaleMode, vbPixels) - HeightPx \ 2, _
-'                        PngAsIcon.handle, _
-'                        WidthPx, _
-'                        HeightPx, _
+'            Call DrawIconEx(.hDC, _
+'                        ScaleX(x, ScaleMode, vbPixels) - WidthPx \ 2, _
+'                        ScaleY(y, ScaleMode, vbPixels) - HeightPx \ 2, _
+'                        hIcon(LBound(hIcon)), _
+'                        IconSize, _
+'                        IconSize, _
 '                        0, _
 '                        WIN32_NULL, _
-               DI_NORMAL
+'               DI_NORMAL)
             
             .Refresh
 
         End With
-    'End If
+        
+        'save the target box contents as an ico, no alpha channel
+        'SavePicture targetPicBox.Image, outputFilenameICO
+        
+        ' using Dil's picSave class, this will save a PNG into the target app folder but it is non-alpha blend as it is straight from the target picbox
+        Call PicSave.SavePicture(targetPicBox.Image, outputFilename, fmtPNG, 70) ' uses picSave.cls
+    End If
+    
     ' get rid of the icons we created
     Call DestroyIcon(hIcon(i + lIconIndex - 1))
 
+   On Error GoTo 0
+   Exit Sub
+
+displayEmbeddedIcons_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure displayEmbeddedIcons of Module mdlMain"
+    
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -607,28 +658,28 @@ Public Sub centrePreviewImage(ByRef targetPicBox As PictureBox, ByVal IconSize A
         If gblIcoSizePreset = 16 Then
             targetPicBox.Left = (1900 * gblResizeRatio)
             targetPicBox.Top = (1900 * gblResizeRatio)
-            targetPicBox.Width = (200 * gblResizeRatio)
-            targetPicBox.Height = (200 * gblResizeRatio)
+            targetPicBox.width = (200 * gblResizeRatio)
+            targetPicBox.height = (200 * gblResizeRatio)
         ElseIf gblIcoSizePreset = 32 Then
             targetPicBox.Left = (1800 * gblResizeRatio)
             targetPicBox.Top = (1800 * gblResizeRatio)
-            targetPicBox.Width = (2000 * gblResizeRatio)
-            targetPicBox.Height = (2000 * gblResizeRatio)
+            targetPicBox.width = (2000 * gblResizeRatio)
+            targetPicBox.height = (2000 * gblResizeRatio)
         ElseIf gblIcoSizePreset = 64 Then
             targetPicBox.Left = (1450 * gblResizeRatio)
             targetPicBox.Top = (1450 * gblResizeRatio)
-            targetPicBox.Width = (2000 * gblResizeRatio)
-            targetPicBox.Height = (2000 * gblResizeRatio)
+            targetPicBox.width = (2000 * gblResizeRatio)
+            targetPicBox.height = (2000 * gblResizeRatio)
         ElseIf gblIcoSizePreset = 128 Then
             targetPicBox.Left = (1000 * gblResizeRatio)
             targetPicBox.Top = (1000 * gblResizeRatio)
-            targetPicBox.Width = (2000 * gblResizeRatio)
-            targetPicBox.Height = (2000 * gblResizeRatio)
+            targetPicBox.width = (2000 * gblResizeRatio)
+            targetPicBox.height = (2000 * gblResizeRatio)
         ElseIf gblIcoSizePreset = 256 Then
             targetPicBox.Left = (100 * gblResizeRatio)
             targetPicBox.Top = (100 * gblResizeRatio)
-            targetPicBox.Width = (4000 * gblResizeRatio)
-            targetPicBox.Height = (4000 * gblResizeRatio)
+            targetPicBox.width = (4000 * gblResizeRatio)
+            targetPicBox.height = (4000 * gblResizeRatio)
         End If
     End If
 End Sub
@@ -744,7 +795,7 @@ Private Sub displayFontSelector(ByRef currFont As String, ByRef currSize As Inte
 
     With thisFont
       .Color = currColour
-      .Height = currSize
+      .height = currSize
       .Weight = currWeight
       '400     Font is normal.
       '700     Font is bold.
@@ -762,7 +813,7 @@ Private Sub displayFontSelector(ByRef currFont As String, ByRef currSize As Inte
     
     With thisFont
         currFont = .Name
-        currSize = .Height
+        currSize = .height
         currWeight = .Weight
         currItalics = .Italic
         currUnderline = .UnderLine
@@ -801,7 +852,7 @@ Public Function fDialogFont(ByRef F As FormFontInfo) As Boolean
     logFnt.lfWeight = F.Weight
     logFnt.lfItalic = F.Italic * -1
     logFnt.lfUnderline = F.UnderLine * -1
-    logFnt.lfHeight = -fMulDiv(CLng(F.Height), GetDeviceCaps(GetDC(hWndAccessApp), LOGPIXELSY), 72)
+    logFnt.lfHeight = -fMulDiv(CLng(F.height), GetDeviceCaps(GetDC(hWndAccessApp), LOGPIXELSY), 72)
     Call StringToByte(F.Name, logFnt.lfFaceName())
     ftStruc.rgbColors = F.Color
     ftStruc.lStructSize = Len(ftStruc)
@@ -828,7 +879,7 @@ Public Function fDialogFont(ByRef F As FormFontInfo) As Boolean
       F.Italic = CBool(logFnt.lfItalic)
       F.UnderLine = CBool(logFnt.lfUnderline)
       F.Name = fByteToString(logFnt.lfFaceName())
-      F.Height = CLng(ftStruc.iPointSize / 10)
+      F.height = CLng(ftStruc.iPointSize / 10)
       F.Color = ftStruc.rgbColors
       fDialogFont = True
     Else
@@ -1073,7 +1124,7 @@ Private Sub rdIconConfigSpecificFonts(ByRef formName As Object, ByRef fntFont As
     formName.cmbOpenRunning.SelLength = 0
    
     ' after changing the font, sometimes the filelistbox changes height arbitrarily
-    formName.filesIconList.Height = 3310
+    formName.filesIconList.height = 3310
 
    On Error GoTo 0
    Exit Sub

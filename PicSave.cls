@@ -11,6 +11,13 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'---------------------------------------------------------------------------------------
+' Module    : PicSave
+' Author    : Dilletante
+' Date      : 19/04/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+
 Option Explicit
 '
 '=======
@@ -161,7 +168,7 @@ Dim fmtGIF, fmtJPEG, fmtPNG
 
 '---------------------------------------------------------------------------------------
 ' Procedure : SavePicture
-' Author    : beededea
+' Author    : Dilletante
 ' Date      : 04/04/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------

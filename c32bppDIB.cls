@@ -11,6 +11,13 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'---------------------------------------------------------------------------------------
+' Module    : c32bppDIB
+' Author    :
+' Date      : 19/04/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+
 Option Explicit
 ' COMPILE THE APPLICATION FOR BEST PERFORMANCE
 
@@ -190,20 +197,20 @@ End Type
 Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" (ByRef Ptr() As Any) As Long
 Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 Private Declare Sub FillMemory Lib "kernel32.dll" Alias "RtlFillMemory" (ByRef Destination As Any, ByVal Length As Long, ByVal Fill As Byte)
-Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hdc As Long) As Long
-Private Declare Function GetDC Lib "user32.dll" (ByVal hwnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32.dll" (ByVal hwnd As Long, ByVal hdc As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hdc As Long) As Long
-Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hdc As Long, ByVal hObject As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
+Private Declare Function GetDC Lib "user32.dll" (ByVal hWnd As Long) As Long
+Private Declare Function ReleaseDC Lib "user32.dll" (ByVal hWnd As Long, ByVal hDC As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
+Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long
-Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hdc As Long, ByRef pBitmapInfo As Any, ByVal un As Long, ByRef Pointer As Long, ByVal Handle As Long, ByVal dw As Long) As Long
+Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hDC As Long, ByRef pBitmapInfo As Any, ByVal un As Long, ByRef Pointer As Long, ByVal handle As Long, ByVal dw As Long) As Long
 Private Declare Function AlphaBlend Lib "msimg32.dll" (ByVal hdcDest As Long, ByVal nXOriginDest As Long, ByVal nYOriginDest As Long, ByVal nWidthDest As Long, ByVal nHeightDest As Long, ByVal hdcSrc As Long, ByVal nXOriginSrc As Long, ByVal nYOriginSrc As Long, ByVal nWidthSrc As Long, ByVal nHeightSrc As Long, ByVal lBlendFunction As Long) As Long
-Private Declare Function SetStretchBltMode Lib "gdi32.dll" (ByVal hdc As Long, ByVal nStretchMode As Long) As Long
+Private Declare Function SetStretchBltMode Lib "gdi32.dll" (ByVal hDC As Long, ByVal nStretchMode As Long) As Long
 
 
 
 Private Declare Function BitBlt Lib "gdi32.dll" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
-Private Declare Function SetDIBitsToDevice Lib "gdi32.dll" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal dX As Long, ByVal dY As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal Scan As Long, ByVal NumScans As Long, ByRef BITS As Any, ByRef BitsInfo As BITMAPINFO, ByVal wUsage As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32.dll" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dX As Long, ByVal dY As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal Scan As Long, ByVal NumScans As Long, ByRef Bits As Any, ByRef BitsInfo As BITMAPINFO, ByVal wUsage As Long) As Long
 '@Ignore ProcedureNotUsed
 Private Declare Function GetDIBits Lib "gdi32.dll" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, ByRef lpBits As Any, ByRef lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
 
@@ -221,8 +228,8 @@ Private Const STRETCH_HALFTONE As Long = &H4&
 '@Ignore ProcedureNotUsed
 Private Declare Function GetGDIObject Lib "gdi32.dll" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 Private Type Size
-    Cx As Long
-    Cy As Long
+    CX As Long
+    cy As Long
 End Type
 Private Type LOGFONT
     lfHeight As Long
@@ -296,7 +303,7 @@ Private Declare Function GlobalFree Lib "kernel32.dll" (ByVal hMem As Long) As L
 ' Unicode-capable Pasting of file names with wide characters
 ' ////////////////////////////////////////////////////////////////
 Private Declare Function DragQueryFile Lib "shell32.dll" Alias "DragQueryFileA" (ByVal hDrop As Long, ByVal UINT As Long, ByVal lpStr As String, ByVal ch As Long) As Long
-Private Declare Function OpenClipboard Lib "user32.dll" (ByVal hwnd As Long) As Long
+Private Declare Function OpenClipboard Lib "user32.dll" (ByVal hWnd As Long) As Long
 Private Declare Function GetClipboardData Lib "user32.dll" (ByVal wFormat As Long) As Long
 Private Declare Function CloseClipboard Lib "user32.dll" () As Long
 Private Type FORMATETC
@@ -315,7 +322,7 @@ Private Type DROPFILES
 End Type
 Private Type STGMEDIUM
     TYMED As Long
-    data As Long
+    Data As Long
     pUnkForRelease As IUnknown
 End Type
 ' ////////////////////////////////////////////////////////////////
@@ -323,7 +330,7 @@ End Type
 
 ' used to create the checkerboard pattern on demand
 '@Ignore ProcedureNotUsed
-Private Declare Function FillRect Lib "user32.dll" (ByVal hdc As Long, ByRef lpRect As RECT, ByVal hBrush As Long) As Long
+Private Declare Function FillRect Lib "user32.dll" (ByVal hDC As Long, ByRef lpRect As RECT, ByVal hBrush As Long) As Long
 'Private Declare Function CreateSolidBrush Lib "gdi32.dll" (ByVal crColor As Long) As Long
 
 Private Type RECT
@@ -727,8 +734,8 @@ End Property
 Public Property Get scanWidth() As Long
     scanWidth = m_Width * 4&    ' number of bytes per scan line
 End Property
-Public Property Get Handle() As Long
-    Handle = m_Handle   ' the picture handle of the image
+Public Property Get handle() As Long
+    handle = m_Handle   ' the picture handle of the image
 End Property
 Public Property Get isZlibEnabled() As Boolean
     ' To create PNG files, GDI+ or zLib is required. This property informs
@@ -746,7 +753,7 @@ End Property
 '                                       PUBLIC METHODS
 ' *******************************************************************************************
 
-Public Function LoadPictureFile(ByVal Filename As String, _
+Public Function LoadPictureFile(ByVal FileName As String, _
                                 Optional ByVal IconCx As Long = 32, _
                                 Optional ByVal IconCy As Long = 32, _
                                 Optional ByVal SaveFormat As Boolean = False, _
@@ -776,12 +783,12 @@ Public Function LoadPictureFile(ByVal Filename As String, _
     On Error Resume Next
     Dim hFile As Long
     
-    hFile = iparseGetFileHandle(Filename, True, ((m_osCAP And osIsNT) = osIsNT))
+    hFile = iparseGetFileHandle(FileName, True, ((m_osCAP And osIsNT) = osIsNT))
     If hFile = INVALID_HANDLE_VALUE Then Exit Function
     
     If GetFileSize(hFile, 0&) > 56 Then
         Dim aDIB() As Byte  ' dummy array
-        LoadPictureFile = spt_LoadPictureEx(hFile, Filename, aDIB(), IconCx, IconCy, 0&, 0&, SaveFormat, iconBitDepth)
+        LoadPictureFile = spt_LoadPictureEx(hFile, FileName, aDIB(), IconCx, IconCy, 0&, 0&, SaveFormat, iconBitDepth)
 
     End If
     CloseHandle hFile
@@ -803,7 +810,7 @@ Public Function LoadPictureStdPicture(ByRef Picture As StdPicture) As Boolean
         If Picture.Type = vbPicTypeIcon Then
             ' pass to icon/cursor parser
             Dim cICO As New cICOparser
-            Call cICO.ConvertstdPicTo32bpp(Picture.Handle, Me)
+            Call cICO.ConvertstdPicTo32bpp(Picture.handle, Me)
             Set cICO = Nothing
         ElseIf Not Picture.Type = vbPicTypeNone Then
             ' pass to bmp,jpg,wmf parser
@@ -812,7 +819,7 @@ Public Function LoadPictureStdPicture(ByRef Picture As StdPicture) As Boolean
             Dim cBmp As New cBMPparser
             If Picture.Type = vbPicTypeBitmap Then
                 ' pass by handle to ensure 32bpp stdPicture objects are processed correctly
-                Call cBmp.ConvertstdPicTo32bpp(Nothing, Picture.Handle, Me, 0&)
+                Call cBmp.ConvertstdPicTo32bpp(Nothing, Picture.handle, Me, 0&)
             Else ' probably wmf/emf
                 Call cBmp.ConvertstdPicTo32bpp(Picture, 0&, Me, 0&)
             End If
@@ -1514,8 +1521,8 @@ End Function
 
 
 
-Private Function spt_LoadPictureEx(ByVal FileHandle As Long, ByRef Filename As String, ByRef aStream() As Byte, _
-                            ByRef Cx As Long, ByRef Cy As Long, _
+Private Function spt_LoadPictureEx(ByVal FileHandle As Long, ByRef FileName As String, ByRef aStream() As Byte, _
+                            ByRef CX As Long, ByRef cy As Long, _
                             ByRef streamOffset As Long, ByRef streamLength As Long, _
                             ByVal SaveFormat As Boolean, ByRef bitDepth As Long) As Boolean
     
@@ -1537,8 +1544,8 @@ Private Function spt_LoadPictureEx(ByVal FileHandle As Long, ByRef Filename As S
     Dim rtnRead As Long
     
     ' validate passed desired icon sizes
-    If Cx < 0& Then Cx = 0&
-    If Cy < 0& Then Cy = 0&
+    If CX < 0& Then CX = 0&
+    If cy < 0& Then cy = 0&
     If bitDepth < 0& Then
         bitDepth = 32
     ElseIf bitDepth > 32 Then
@@ -1549,7 +1556,7 @@ Private Function spt_LoadPictureEx(ByVal FileHandle As Long, ByRef Filename As S
     If FileHandle = 0 Then
         bReturn = cPNG.LoadStream(aStream(), Me, streamOffset, streamLength, m_GDItoken)
     Else     ' note: processing from file is slightly faster than via array
-        bReturn = cPNG.LoadFile(FileHandle, Filename, Me, m_GDItoken)
+        bReturn = cPNG.LoadFile(FileHandle, FileName, Me, m_GDItoken)
     End If
     If Err Then MsgBox Err.Description
     Set cPNG = Nothing
@@ -1566,7 +1573,7 @@ Private Function spt_LoadPictureEx(ByVal FileHandle As Long, ByRef Filename As S
         Set cGIF = Nothing
         If Not bReturn Then
             Set cICO = New cICOparser   ' will process Vista PNG icon if needed
-            bReturn = cICO.LoadStream(aStream(), Cx, Cy, Me, streamOffset, streamLength, bitDepth, m_GDItoken)
+            bReturn = cICO.LoadStream(aStream(), CX, cy, Me, streamOffset, streamLength, bitDepth, m_GDItoken)
             Set cICO = Nothing
             If Not bReturn Then ' check for bmp, emf, wmf & jpg << last chance
                 Set cBmp = New cBMPparser
@@ -1583,7 +1590,7 @@ Private Function spt_LoadPictureEx(ByVal FileHandle As Long, ByRef Filename As S
             Else
                 Set cGDI = m_GDIplus
             End If
-            If cGDI.GDIplusLoadPNG(Filename, aStream(), Me, m_GDItoken) = True Then
+            If cGDI.GDIplusLoadPNG(FileName, aStream(), Me, m_GDItoken) = True Then
                 ' it worked, whatever file type it was. Convert it to PNG
                 If SaveFormat = True Then
                     Call cGDI.SaveToPNG(vbNullString, aStream, Me, m_GDItoken)
@@ -1877,7 +1884,7 @@ Private Sub spt_LightenDarken(ByRef cImage As c32bppDIB, ByVal Lightness As Sing
     If Lightness = 0! Then Exit Sub
     If Not cImage Is Nothing Then
         ' ensure an image exists if passing a dib class
-        If cImage.Handle = 0 Then Exit Sub
+        If cImage.handle = 0 Then Exit Sub
     End If
     
     Dim tSA As SafeArray
