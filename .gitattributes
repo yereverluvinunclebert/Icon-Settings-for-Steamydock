@@ -20,8 +20,6 @@
 *.exe.compat binary
 *.ocx.compat binary
 
-*.ctx    -diff
-
 *.ctl text eol=crlf
 *.txt text eol=crlf
 *.bas text eol=crlf
