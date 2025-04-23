@@ -17,6 +17,9 @@
 *.bin binary
 *.aps binary
 *.ncb binary
+*.wav binary
+*.mp3 binary
+*.oca binary
 *.exe.compat binary
 *.ocx.compat binary
 
