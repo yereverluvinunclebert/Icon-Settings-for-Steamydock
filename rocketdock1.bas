@@ -177,7 +177,7 @@ Private Const CF_SCREENFONTS As Long = &H1
 Public Type FormFontInfo
   Name As String
   Weight As Integer
-  height As Integer
+  Height As Integer
   UnderLine As Boolean
   Italic As Boolean
   Color As Long
@@ -658,28 +658,28 @@ Public Sub centrePreviewImage(ByRef targetPicBox As PictureBox, ByVal IconSize A
         If gblIcoSizePreset = 16 Then
             targetPicBox.Left = (1900 * gblResizeRatio)
             targetPicBox.Top = (1900 * gblResizeRatio)
-            targetPicBox.width = (200 * gblResizeRatio)
-            targetPicBox.height = (200 * gblResizeRatio)
+            targetPicBox.Width = (200 * gblResizeRatio)
+            targetPicBox.Height = (200 * gblResizeRatio)
         ElseIf gblIcoSizePreset = 32 Then
             targetPicBox.Left = (1800 * gblResizeRatio)
             targetPicBox.Top = (1800 * gblResizeRatio)
-            targetPicBox.width = (2000 * gblResizeRatio)
-            targetPicBox.height = (2000 * gblResizeRatio)
+            targetPicBox.Width = (2000 * gblResizeRatio)
+            targetPicBox.Height = (2000 * gblResizeRatio)
         ElseIf gblIcoSizePreset = 64 Then
             targetPicBox.Left = (1450 * gblResizeRatio)
             targetPicBox.Top = (1450 * gblResizeRatio)
-            targetPicBox.width = (2000 * gblResizeRatio)
-            targetPicBox.height = (2000 * gblResizeRatio)
+            targetPicBox.Width = (2000 * gblResizeRatio)
+            targetPicBox.Height = (2000 * gblResizeRatio)
         ElseIf gblIcoSizePreset = 128 Then
             targetPicBox.Left = (1000 * gblResizeRatio)
             targetPicBox.Top = (1000 * gblResizeRatio)
-            targetPicBox.width = (2000 * gblResizeRatio)
-            targetPicBox.height = (2000 * gblResizeRatio)
+            targetPicBox.Width = (2000 * gblResizeRatio)
+            targetPicBox.Height = (2000 * gblResizeRatio)
         ElseIf gblIcoSizePreset = 256 Then
             targetPicBox.Left = (100 * gblResizeRatio)
             targetPicBox.Top = (100 * gblResizeRatio)
-            targetPicBox.width = (4000 * gblResizeRatio)
-            targetPicBox.height = (4000 * gblResizeRatio)
+            targetPicBox.Width = (4000 * gblResizeRatio)
+            targetPicBox.Height = (4000 * gblResizeRatio)
         End If
     End If
 End Sub
@@ -795,7 +795,7 @@ Private Sub displayFontSelector(ByRef currFont As String, ByRef currSize As Inte
 
     With thisFont
       .Color = currColour
-      .height = currSize
+      .Height = currSize
       .Weight = currWeight
       '400     Font is normal.
       '700     Font is bold.
@@ -813,7 +813,7 @@ Private Sub displayFontSelector(ByRef currFont As String, ByRef currSize As Inte
     
     With thisFont
         currFont = .Name
-        currSize = .height
+        currSize = .Height
         currWeight = .Weight
         currItalics = .Italic
         currUnderline = .UnderLine
@@ -852,7 +852,7 @@ Public Function fDialogFont(ByRef F As FormFontInfo) As Boolean
     logFnt.lfWeight = F.Weight
     logFnt.lfItalic = F.Italic * -1
     logFnt.lfUnderline = F.UnderLine * -1
-    logFnt.lfHeight = -fMulDiv(CLng(F.height), GetDeviceCaps(GetDC(hWndAccessApp), LOGPIXELSY), 72)
+    logFnt.lfHeight = -fMulDiv(CLng(F.Height), GetDeviceCaps(GetDC(hWndAccessApp), LOGPIXELSY), 72)
     Call StringToByte(F.Name, logFnt.lfFaceName())
     ftStruc.rgbColors = F.Color
     ftStruc.lStructSize = Len(ftStruc)
@@ -879,7 +879,7 @@ Public Function fDialogFont(ByRef F As FormFontInfo) As Boolean
       F.Italic = CBool(logFnt.lfItalic)
       F.UnderLine = CBool(logFnt.lfUnderline)
       F.Name = fByteToString(logFnt.lfFaceName())
-      F.height = CLng(ftStruc.iPointSize / 10)
+      F.Height = CLng(ftStruc.iPointSize / 10)
       F.Color = ftStruc.rgbColors
       fDialogFont = True
     Else
@@ -1124,7 +1124,7 @@ Private Sub rdIconConfigSpecificFonts(ByRef formName As Object, ByRef fntFont As
     formName.cmbOpenRunning.SelLength = 0
    
     ' after changing the font, sometimes the filelistbox changes height arbitrarily
-    formName.filesIconList.height = 3310
+    formName.filesIconList.Height = 3450
 
    On Error GoTo 0
    Exit Sub
