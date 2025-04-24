@@ -7507,6 +7507,9 @@ Private Sub cmbIconTypesFilter_Click()
         filesIconList.ListIndex = (0) ' click the item in the underlying file list box
     End If
                 
+    ' clear the cache before the refresh
+    imlThumbnailCache.ListImages.Clear
+                        
     ' now refresh the thumbnail display
     Call btnRefresh_Click_Event
     
