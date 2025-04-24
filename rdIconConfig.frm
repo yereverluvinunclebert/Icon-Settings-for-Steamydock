@@ -2731,7 +2731,8 @@ Private Sub Form_Load()
     ' refrest the thumbnail view panel (top right)
     Call refreshThumbnailViewPanel
              
-    ' show the main form now that most items have been populated
+    ' show the main form as soon as possible, once most items have been populated leading to perceived faster load times
+    gblDoNotResize = True ' essential
     rDIconConfigForm.Show
     
     ' now display the dock icon map after the main form has been displayed
@@ -2996,6 +2997,7 @@ Private Sub restoreSizableFormBorderStyle()
     ' the change using WS_THICKFRAME removes a lot of the reszing border, I do not know why, we re-add the border width and height that it took away.
     gblDoNotResize = True
     rDIconConfigForm.Height = rDIconConfigFormOldHeight + 150
+    gblDoNotResize = True ' essential for each form size change as it is reset back to false each time
     rDIconConfigForm.Width = rDIconConfigFormOldWidth + 150
     
     ' Note: the above resizing does add too much border space on a VB6-style form as created when running the binary from the VB6 IDE (compatibility mode)
@@ -11057,12 +11059,15 @@ Public Sub themeTimer_Timer()
    On Error GoTo themeTimer_Timer_Error
     If debugFlg = 1 Then debugLog "%themeTimer_Timer"
 
-    SysClr = GetSysColor(COLOR_BTNFACE)
-    If debugFlg = 1 Then debugLog "COLOR_BTNFACE = " & SysClr  ' generates too many debug statements in the log
-    If SysClr <> gblStoreThemeColour Then
+    ' In the IDE the background sys colour is derived from the IDE and not from the program form so we disregard the discrepancy
+    ' and avoid changing the background colour when running from within the IDE
     
-        Call setThemeColour(Me)
-
+    SysClr = GetSysColor(COLOR_BTNFACE)
+    If InIDE = False Then
+        If debugFlg = 1 Then debugLog "COLOR_BTNFACE = " & SysClr  ' generates too many debug statements in the log
+        If SysClr <> gblStoreThemeColour Then
+            Call setThemeColour(Me)
+        End If
     End If
 
    On Error GoTo 0
