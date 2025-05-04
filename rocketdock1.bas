@@ -131,6 +131,26 @@ Private Declare Function PrivateExtractIcons Lib "user32" _
 ) As Long
 
 Private Declare Function DestroyIcon Lib "user32.dll" (ByVal hIcon As Long) As Long
+
+Private Declare Sub GdiplusShutdown Lib "gdiplus" (ByVal Token As Long)
+Private Declare Function GdiplusStartup Lib "gdiplus" (Token As Long, inputbuf As Any, Optional ByVal outputbuf As Long = 0) As Long
+Private Declare Function GdipCreateBitmapFromHICON Lib "GdiPlus.dll" (ByVal hbm As Long, ByRef pbitmap As Long) As Long
+Private Declare Function GdipCreateFromHDC Lib "GdiPlus.dll" (ByVal hDC As Long, hGraphics As Long) As Long
+Private Declare Function GdipDeleteGraphics Lib "GdiPlus.dll" (ByVal mGraphics As Long) As Long
+Private Declare Function GdipDisposeImage Lib "GdiPlus.dll" (ByVal Image As Long) As Long
+Private Declare Function GdipDrawImageRectRectI Lib "GdiPlus.dll" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As Long, ByVal imageAttributes As Long, ByVal Callback As Long, ByVal callbackData As Long) As Long
+Private Declare Function GdipSetInterpolationMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal Interpolation As Long) As Long
+Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long, ByVal sFilename As Long, ByRef clsidEncoder As Any, ByRef encoderParams As Any) As Long
+
+Private Const InterpolationModeHighQualityBicubic As Long = &H7&
+
+Private Type GdiplusStartupInput
+    GdiplusVersion           As Long
+    DebugEventCallback       As Long
+    SuppressBackgroundThread As Long
+    SuppressExternalCodecs   As Long
+End Type
+
 ' APIs for drawing icons END
 
 Public rDMonitor      As String
@@ -345,7 +365,7 @@ Public rDIconConfigFormOldWidth As Long
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : displayEmbeddedAllIcons
+' Procedure : displayEmbeddedIcons
 ' Author    : beededea
 ' Date      : 05/07/2019
 ' Purpose   : The program extracts icons embedded within a DLL or an executable
@@ -377,8 +397,17 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
         
     Dim outputFilename As String: outputFilename = "arse1.png"
     Dim outputFilenameICO As String: outputFilenameICO = "arse1.ico"
+    
+    Dim GSI As GdiplusStartupInput
+    Dim hToken As Long
+    Dim uEncCLSID(0 To 3) As Long
+    
+    Dim saveToPNG As Boolean
 
-   On Error GoTo displayEmbeddedIcons_Error
+    On Error GoTo displayEmbeddedIcons_Error
+    
+    GSI.GdiplusVersion = 1
+    GdiplusStartup hToken, GSI
 
     On Error Resume Next
 
@@ -475,17 +504,21 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
     ' (rather than placing the icon in the middle of the picbox as I should, I can code that later)
     
     Call centrePreviewImage(targetPicBox, IconSize)
+    
+    Dim hGraphics As Long
+    Dim hImage As Long
             
     ' Draw the icon directly onto the respective picturebox control.
     If Not (pic Is Nothing) Then
         With targetPicBox
         
             'ensure the picbox is empty first
-            Set .Picture = LoadPicture(vbNullString)
+            'Set .Picture = LoadPicture(vbNullString)
+            .Cls
             .AutoRedraw = True
                
             ' DrawIconEx can draw a transparent image from a good image handle directly onto the target picture box
-            Call DrawIconEx(.hDC, 0, 0, hIcon(LBound(hIcon)), IconSize, IconSize, 0, 0, DI_NORMAL)
+            ' Call DrawIconEx(.hDC, 0, 0, hIcon(LBound(hIcon)), IconSize, IconSize, 0, 0, DI_NORMAL)
             
             ' centre image using a better method
 '            Call DrawIconEx(.hDC, _
@@ -497,6 +530,91 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
 '                        0, _
 '                        WIN32_NULL, _
 '               DI_NORMAL)
+
+            'creates an image bitmap from the icon handle
+            GdipCreateBitmapFromHICON hIcon(LBound(hIcon)), hImage
+            If hImage <> 0& Then
+                ' Creates a Graphics object that is associated with a specified device context
+                GdipCreateFromHDC .hDC, hGraphics
+                
+                'Draws an image at a specified location
+                '                      hGraphics, hImage, destX, destY, destWidth, destHeight, srcX, srcY, srcWidth, srcHeight, UnitPixel, hImgAttr, 0&, 0&
+                GdipDrawImageRectRectI hGraphics, hImage, 0, 0, IconSize, IconSize, 0, 0, 256, 256, 2&, 0, 0, 0
+                    
+                    
+'                Dim tSI As GdiplusStartupInput
+'                Dim lRes As Long, lGDIP As Long, lBitmap As Long
+'                Dim X As Long, Y As Long, wide As Long, high As Long
+'                Dim myDIB As Long, myDC As Long, desktopDC As Long
+'                Dim bi24BitInfo As BITMAPINFO
+'                Dim bitmapData() As Byte
+'                Dim pcin As PCURSORINFO
+'                Dim piinfo As ICONINFO
+'                ' Starting position/Size of capture (full screen)
+'                X = 0: Y = 0
+'                wide = Screen.Width / Screen.TwipsPerPixelX
+'                high = Screen.Height / Screen.TwipsPerPixelY
+'                '
+'                With bi24BitInfo.bmiHeader
+'                  .biBitCount = 24
+'                  .biCompression = BI_RGB
+'                  .biPlanes = 1
+'                  .biSize = Len(bi24BitInfo.bmiHeader)
+'                  .biWidth = wide
+'                  .biHeight = high
+'                  .biDataSize = ((.biWidth * 3 + 3) And &HFFFFFFFC) * .biHeight
+'                  ReDim bitmapData(0 To .biDataSize - 1)
+'                End With
+'                frmscrcontrol.Caption = UBound(bitmapData)
+'                myDC = CreateCompatibleDC(0)
+'                myDIB = CreateDIBSection(myDC, bi24BitInfo, DIB_RGB_COLORS, ByVal 0&, ByVal 0&, ByVal 0&)
+'                SelectObject myDC, myDIB
+'                desktopDC = GetDC(0)
+'                BitBlt myDC, 0, 0, bi24BitInfo.bmiHeader.biWidth, bi24BitInfo.bmiHeader.biHeight, desktopDC, X, Y, vbSrcCopy Or CAPTUREBLT
+'                ' Include mouse cursor?
+'                If IncludeMouseCursor = True Then
+'                    pcin.cbSize = Len(pcin)
+'                    GetCursorInfo pcin
+'                    GetIconInfo pcin.hCursor, piinfo
+'                    DrawIcon myDC, pcin.ptScreenPos.X - piinfo.xHotspot, pcin.ptScreenPos.Y - piinfo.yHotspot, pcin.hCursor
+'                    If piinfo.hbmMask Then DeleteObject piinfo.hbmMask
+'                    If piinfo.hbmColor Then DeleteObject piinfo.hbmColor
+'                End If
+'                Call GetDIBits(myDC, myDIB, 0, bi24BitInfo.bmiHeader.biHeight, bitmapData(0), bi24BitInfo, DIB_RGB_COLORS)
+'
+'
+'
+'               ' save as JPG
+'               '------------
+'               'Initialize GDI+
+'               tSI.GdiplusVersion = 1
+'                lRes = GdiplusStartup(lGDIP, tSI)
+'                ' Create the GDI+ bitmap from the image handle
+'                lRes = GdipCreateBitmapFromHBITMAP(myDIB, 0, lBitmap)
+'                If lRes = 0 Then
+'                   Dim tJpgEncoder As GUID
+'                   Dim tParams As EncoderParameters
+'                   ' Initialize the encoder GUID
+'                   CLSIDFromString StrPtr("{557CF401-1A04-11D3-9A73-0000F81EF32E}"), tJpgEncoder
+'                   ' Initialize the encoder parameters
+'                   tParams.Count = 1
+'                   With tParams.Parameter ' Quality
+'                      ' Set the Quality GUID
+'                      CLSIDFromString StrPtr("{1D5BE4B5-FA4A-452D-9CDD-5DB35105E7EB}"), .GUID
+'                      .NumberOfValues = 1
+'                      .Type = 4
+'                      .Value = VarPtr(Quality)
+'                   End With
+'                   ' Save the image
+'                   lRes = GdipSaveImageToFile(lBitmap, StrPtr(FileName), tJpgEncoder, tParams)
+'                   ' Destroy the bitmap
+'                   GdipDisposeImage lBitmap
+'                End If
+                saveToPNG = (GdipSaveImageToFile(hImage, StrPtr(outputFilename), uEncCLSID(0&), ByVal 0&) = 0&)
+
+                GdipDeleteGraphics hGraphics
+                GdipDisposeImage hImage: hImage = 0&
+            End If
             
             .Refresh
 
@@ -506,11 +624,13 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
         'SavePicture targetPicBox.Image, outputFilenameICO
         
         ' using Dil's picSave class, this will save a PNG into the target app folder but it is non-alpha blend as it is straight from the target picbox
-        Call PicSave.SavePicture(targetPicBox.Image, outputFilename, fmtPNG, 70) ' uses picSave.cls
+        'Call PicSave.SavePicture(targetPicBox.Image, outputFilename, fmtPNG, 70) ' uses picSave.cls
     End If
     
     ' get rid of the icons we created
     Call DestroyIcon(hIcon(i + lIconIndex - 1))
+    
+    GdiplusShutdown hToken
 
    On Error GoTo 0
    Exit Sub

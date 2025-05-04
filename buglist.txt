@@ -180,6 +180,12 @@ GdipLoadImageFromStream  <--- png Resource (advanced)
 EnumResourceNames
 LoadResource
 
+look at this next, how to obtain icons from a handle...
+GDI+ Workaround: ICONs from Handle
+https://www.vbforums.com/showthread.php?813055-GDI-Workaround-ICONs
+
+https://www.vbforums.com/showthread.php?582216-RESOLVED-Maintain-Icon-s-Alpha-Channel-using-GDIPlus
+
 
 vb6 Extract PNG from resource DLL  in Cintanotes and at this URL
 http://leandroascierto.com/foro/index.php?topic=711.0
