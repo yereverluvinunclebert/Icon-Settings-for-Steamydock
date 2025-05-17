@@ -134,11 +134,11 @@ Private Declare Function DestroyIcon Lib "user32.dll" (ByVal hIcon As Long) As L
 
 Private Declare Sub GdiplusShutdown Lib "gdiplus" (ByVal Token As Long)
 Private Declare Function GdiplusStartup Lib "gdiplus" (Token As Long, inputbuf As Any, Optional ByVal outputbuf As Long = 0) As Long
-Private Declare Function GdipCreateBitmapFromHICON Lib "GdiPlus.dll" (ByVal hbm As Long, ByRef pbitmap As Long) As Long
+Private Declare Function GdipCreateBitmapFromHICON Lib "GdiPlus.dll" (ByVal hbm As Long, ByRef pBitMap As Long) As Long
 Private Declare Function GdipCreateFromHDC Lib "GdiPlus.dll" (ByVal hDC As Long, hGraphics As Long) As Long
 Private Declare Function GdipDeleteGraphics Lib "GdiPlus.dll" (ByVal mGraphics As Long) As Long
 Private Declare Function GdipDisposeImage Lib "GdiPlus.dll" (ByVal Image As Long) As Long
-Private Declare Function GdipDrawImageRectRectI Lib "GdiPlus.dll" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As Long, ByVal imageAttributes As Long, ByVal Callback As Long, ByVal callbackData As Long) As Long
+Private Declare Function GdipDrawImageRectRectI Lib "GdiPlus.dll" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As Long, ByVal imageAttributes As Long, ByVal Callback As Long, ByVal CallbackData As Long) As Long
 Private Declare Function GdipSetInterpolationMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal Interpolation As Long) As Long
 Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long, ByVal sFilename As Long, ByRef clsidEncoder As Any, ByRef encoderParams As Any) As Long
 
@@ -402,7 +402,7 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
     Dim hToken As Long
     Dim uEncCLSID(0 To 3) As Long
     
-    Dim saveToPNG As Boolean
+    Dim SaveToPNG As Boolean
 
     On Error GoTo displayEmbeddedIcons_Error
     
@@ -610,7 +610,7 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
 '                   ' Destroy the bitmap
 '                   GdipDisposeImage lBitmap
 '                End If
-                saveToPNG = (GdipSaveImageToFile(hImage, StrPtr(outputFilename), uEncCLSID(0&), ByVal 0&) = 0&)
+                SaveToPNG = (GdipSaveImageToFile(hImage, StrPtr(outputFilename), uEncCLSID(0&), ByVal 0&) = 0&)
 
                 GdipDeleteGraphics hGraphics
                 GdipDisposeImage hImage: hImage = 0&
@@ -1396,7 +1396,7 @@ Public Sub btnSaveRestart_Click_event(ByRef handle As Long)
     ' kill the rocketdock /steamydock process first
     If itis = True Then
         ' .09 DAEB 07/02/2021 rDIconConfigForm.frm use the fullprocess variable without adding path again - duh!
-        ans = checkAndKill(NameProcess, False, False) ' kill a running process
+        ans = checkAndKill(NameProcess, False, False, False) ' kill a running process
         ' if the process has died then
         If ans = True Then ' only proceed if the kill has succeeded
             PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile

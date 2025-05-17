@@ -1458,24 +1458,6 @@ Begin VB.Form rDIconConfigForm
          Top             =   240
          Width           =   285
       End
-      Begin VB.FileListBox filesIconList 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   3450
-         Left            =   105
-         Pattern         =   "*.jpg"
-         TabIndex        =   14
-         ToolTipText     =   "Select an icon, double-click to set"
-         Top             =   615
-         Width           =   5580
-      End
       Begin VB.PictureBox picFrameThumbs 
          BackColor       =   &H00FFFFFF&
          Height          =   3450
@@ -1565,6 +1547,15 @@ Begin VB.Form rDIconConfigForm
             Top             =   -30
             Width           =   255
          End
+      End
+      Begin VB.FileListBox filesIconList 
+         Height          =   3450
+         Left            =   105
+         Pattern         =   "*.jpg"
+         TabIndex        =   14
+         ToolTipText     =   "Select an icon, double-click to set"
+         Top             =   615
+         Width           =   5580
       End
       Begin VB.Label lblIconName 
          Caption         =   "Icon Name:"
@@ -3111,8 +3102,24 @@ btnCancel_MouseDown_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure btnCancel_MouseDown of Form rDIconConfigForm"
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : btnClose_Click
+' Author    : beededea
+' Date      : 02/05/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub btnClose_Click()
+   On Error GoTo btnClose_Click_Error
+
     Call thisForm_Unload
+
+   On Error GoTo 0
+   Exit Sub
+
+btnClose_Click_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure btnClose_Click of Form rDIconConfigForm"
 End Sub
 
 
@@ -15531,7 +15538,6 @@ End Sub
 '
 Public Sub unloadAllForms(ByVal endItAll As Boolean)
     
-    Dim ofrm As Form
     Dim NameProcess As String: NameProcess = ""
     Dim fcount As Integer: fcount = 0
     Dim useloop As Integer: useloop = 0
@@ -16527,7 +16533,7 @@ Private Sub killPreviousInstance() ' .13 DAEB 27/02/2021 rdIConConfigFrm moved t
         NameProcess = "iconsettings.exe" ' 17/11/2020    .04 DAEB Replaced all occurrences of rocket1.exe with iconsettings.exe
 
         'MsgBox "You now have two instances of this utility running, they will conflict..."
-        checkAndKill NameProcess, False, False
+        checkAndKill NameProcess, False, False, False
     End If
 
    On Error GoTo 0
@@ -17655,3 +17661,5 @@ startTheTimers_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure startTheTimers of Form rDIconConfigForm"
 End Sub
+
+

@@ -90,8 +90,6 @@ Dilettante picsave      https://www.vbforums.com/showthread.php?808301-VB6-PicSa
 '
 ' Bugs:
 ' =====
-'
-'       separate common.bas and common2.bas to make it easier to compile just the one utility on its own.
 
 '       resizing - save the new size
 
@@ -104,8 +102,6 @@ Dilettante picsave      https://www.vbforums.com/showthread.php?808301-VB6-PicSa
 '       read the docksettings and determine chkRetainIcons
 '
 '       the value of chkRetainIcons must be used to determine whether the icon is automatically pulled from the embedded icon or the collection
-'
-'       why is embeddedIcons called three times? - need to figure that out.
 '
 '       update the help file.
 '
