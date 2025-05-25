@@ -301,11 +301,15 @@ Public gblResizeRatio As Double
 Public gblFormResizedInCode As Boolean
 'Public gblDoNotResize As Boolean
 
-Public gblAdjustedFormHeight As Long
-Public gblAdjustedFormWidth  As Long
+Public gblStartFormHeight As Long
+Public gblStartFormWidth  As Long
 
 Public rDIconConfigFormOldHeight As Long
 Public rDIconConfigFormOldWidth As Long
+
+Public gblFormPrimaryHeightTwips As String
+
+Public startupFlg As Boolean
             
 'Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
             (lpDest As Any, lpSource As Any, ByVal cbCopy As Long)

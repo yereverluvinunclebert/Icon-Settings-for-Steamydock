@@ -2485,6 +2485,7 @@ Private pvtFormResizedByDrag As Boolean
 
 Private Const pvtCFormHeight As Long = 10375
 Private Const pvtCFormWidth  As Long = 10485
+Private gblConstraintRatio As Double
 '------------------------------------------------------ ENDS
 
 '------------------------------------------------------ STARTS
@@ -2609,10 +2610,14 @@ Private Sub Form_Load()
         
     Dim answer As VbMsgBoxResult: answer = vbNo
     ReDim thumbArray(12) As Integer
+    
+    startupFlg = True
         
     On Error GoTo Form_Load_Error
     
     If debugFlg = 1 Then debugLog "%" & "Form_Load"
+    
+    rDIconConfigForm.Hide
         
     ' set the application to be DPI aware using the 'forbidden' API.
     If IsProcessDPIAware() = False Then Call setDPIAware
@@ -2650,11 +2655,8 @@ Private Sub Form_Load()
     ' get the location of this tool's settings file
     Call getToolSettingsFile
         
-    ' read the dock settings from the new configuration file  - currently barely used
+    ' read the dock settings from the new configuration file  - currently barely used, mostly in readIconsAndConfiguration
     Call readSettingsFile
-    
-    ' validate the inputs of any data from the input settings file - currently barely used
-    Call validateInputs
     
     ' turn on the timer that tests every 10 secs whether the visual theme has changed
     Call checkClassicThemeCapable ' .13 DAEB 27/02/2021 rdIConConfigFrm moved to a subroutine for clarity
@@ -2676,6 +2678,9 @@ Private Sub Form_Load()
 
     'read the brief config data and all the icons
     Call readIconsAndConfiguration
+    
+    ' validate the inputs of any data from the input settings file - currently barely used
+    Call validateInputs
         
     ' if both docks are installed we need to determine which is the default
     Call checkDefaultDock
@@ -2733,7 +2738,7 @@ Private Sub Form_Load()
              
     ' show the main form as soon as possible, once most items have been populated leading to perceived faster load times
     gblDoNotResize = True ' essential
-    rDIconConfigForm.Show
+    'rDIconConfigForm.Show
     
     ' now display the dock icon map after the main form has been displayed
     Call displayDockMap
@@ -2763,14 +2768,22 @@ Private Sub Form_Load()
     Call setToolTips
     
     ' save the initial positions of ALL the controls on the form
-    Call saveControlSizes(rDIconConfigForm, rdFormControlPositions(), gblAdjustedFormWidth, gblAdjustedFormHeight)
+    Call saveControlSizes(rDIconConfigForm, gblFormControlPositions(), gblStartFormWidth, gblStartFormHeight)
     
     ' here we do some sizing things, including storing inital form sizes and re-enabling resizing borderStyle of the form
     Call restoreSizableFormBorderStyle
     
     ' start the timers
     Call startTheTimers
-        
+                
+    rDIconConfigForm.Show
+    
+    ' set the height of the whole form according to previously saved values but not higher than the screen size
+    Call setFormHeight
+    
+    ' note: the final act in startup is the form_resize_event that is triggered by the subclassed WM_EXITSIZEMOVE when the form is finally revealed
+    startupFlg = False ' now negate the startup flag
+    
    On Error GoTo 0
    Exit Sub
 
@@ -2779,7 +2792,6 @@ Form_Load_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_Load of Form rDIconConfigForm"
                 
 End Sub
-
 
 
 
@@ -2830,36 +2842,33 @@ End Sub
 '
 Private Sub Form_Resize_Event()
 
-    Dim constraintRatio As Double: constraintRatio = 0
     Dim currentFontSize As Single: currentFontSize = 0
     
     On Error GoTo Form_Resize_Event_Error
     
     If Me.WindowState = vbMinimized Then Exit Sub
+             
+    ' move the drag corner label along with the form's bottom right corner
+    lblDragCorner.Move Me.ScaleLeft + Me.ScaleWidth - (lblDragCorner.Width + 40), _
+           Me.ScaleTop + Me.ScaleHeight - (lblDragCorner.Height + 40)
     
     If pvtFormResizedByDrag = True Then
-    
-        ' constrain the height/width ratio
-        constraintRatio = gblAdjustedFormHeight / gblAdjustedFormWidth
             
         ' maintain the aspect ratio, note: this change calls this routine again...
-        'gblDoNotResize = True
-        rDIconConfigForm.Width = rDIconConfigForm.Height / constraintRatio
+
+        rDIconConfigForm.Width = rDIconConfigForm.Height / gblConstraintRatio
         
         If SDSuppliedFontSize = "" Then SDSuppliedFontSize = Val(GetINISetting("Software\IconSettings", "defaultSize", toolSettingsFile))
         currentFontSize = CSng(Val(SDSuppliedFontSize))
         
         ' resize all controls on the form
-        Call resizeControls(Me, rdFormControlPositions(), gblAdjustedFormWidth, gblAdjustedFormHeight, currentFontSize)
+        Call resizeControls(Me, gblFormControlPositions(), gblStartFormWidth, gblStartFormHeight, currentFontSize)
                       
 '        ' remove the blue highlight from comboboxes
 '        cmbIconTypesFilter.SelLength = 0
 '        cmbRunState.SelLength = 0
 '        cmbOpenRunning.SelLength = 0
-             
-        ' move the drag corner label along with the form's bottom right corner
-        lblDragCorner.Move Me.ScaleLeft + Me.ScaleWidth - (lblDragCorner.Width + 40), _
-               Me.ScaleTop + Me.ScaleHeight - (lblDragCorner.Height + 40)
+
         
         ' repopulate the thumbnails top right, resized, clearing the cache first
         imlThumbnailCache.ListImages.Clear
@@ -2883,12 +2892,11 @@ Private Sub Form_Resize_Event()
             End If
         End If
     End If
-            
     
     gblFormResizedInCode = False
     pvtFormResizedByDrag = False
     
-    'Call writePrefsPosition
+    Call writeFormHeight
                 
     On Error GoTo 0
     Exit Sub
@@ -4530,18 +4538,18 @@ Private Sub adjustWindows10FormSize()
         windowBorderHeight = (Me.Height - Me.ScaleHeight) / 4
         
         gblDoNotResize = True
-        gblAdjustedFormHeight = windowBorderHeight + desiredClientHeight
-        'gblAdjustedFormHeight = desiredClientHeight
-        Me.Height = gblAdjustedFormHeight
+        gblStartFormHeight = windowBorderHeight + desiredClientHeight
+        'gblStartFormHeight = desiredClientHeight
+        Me.Height = gblStartFormHeight
         
         gblDoNotResize = True
-        gblAdjustedFormWidth = windowBorderWidth + desiredClientWidth
-        'gblAdjustedFormWidth = desiredClientWidth
-        Me.Width = gblAdjustedFormWidth
+        gblStartFormWidth = windowBorderWidth + desiredClientWidth
+        'gblStartFormWidth = desiredClientWidth
+        Me.Width = gblStartFormWidth
         
     Else
-         gblAdjustedFormHeight = desiredClientHeight
-         gblAdjustedFormWidth = desiredClientWidth
+         gblStartFormHeight = desiredClientHeight
+         gblStartFormWidth = desiredClientWidth
          
     End If
     
@@ -5855,6 +5863,7 @@ Private Sub readIconsAndConfiguration()
 
     If sdThumbnailCacheCount = "" Then sdThumbnailCacheCount = "250" ' default value
 
+    gblFormPrimaryHeightTwips = GetINISetting("Software\SteamyDock\IconSettings\", "formPrimaryHeightTwips", dockSettingsFile)
 
    On Error GoTo 0
    Exit Sub
@@ -17394,15 +17403,15 @@ End Sub
 ' Procedure : initialiseGlobalVars
 ' Author    : beededea
 ' Date      : 12/05/2023
-' Purpose   : initialise global vars
+' Purpose   : initialise global vars, not really used but it ought to be!
 '---------------------------------------------------------------------------------------
 '
 Private Sub initialiseGlobalVars()
       
     On Error GoTo initialiseGlobalVars_Error
 
-
-
+    gblFormPrimaryHeightTwips = vbNullString
+    
    On Error GoTo 0
    Exit Sub
 
@@ -17452,10 +17461,8 @@ End Sub
 Private Sub validateInputs()
     
    On Error GoTo validateInputs_Error
-            
-        ' general
-        'If PzGGaugeFunctions = vbNullString Then PzGGaugeFunctions = "1" ' always turn
-
+                    
+    If gblFormPrimaryHeightTwips = vbNullString Then gblFormPrimaryHeightTwips = CStr(gblStartFormHeight)
         
    On Error GoTo 0
    Exit Sub
@@ -17663,3 +17670,69 @@ startTheTimers_Error:
 End Sub
 
 
+
+'---------------------------------------------------------------------------------------
+' Procedure : setFormHeight
+' Author    : beededea
+' Date      : 20/02/2025
+' Purpose   : set the height of the whole form, only the form height is needed to proportion the form
+'             constrain to not higher than the screen size, a resize causes a form_resize event
+'---------------------------------------------------------------------------------------
+
+Private Sub setFormHeight()
+
+    On Error GoTo setFormHeight_Error
+    
+    ' constrain the height/width ratio
+    gblConstraintRatio = pvtCFormHeight / pvtCFormWidth
+     
+    ' flag to cause a form's elements to all resize according to the new size set below
+    gblFormResizedInCode = True
+    
+    ' set the form height using variables ready to test form height, not yet implemented
+'    If  gblCurrentFormHeight < gblPhysicalScreenHeightTwips Then
+       rDIconConfigForm.Height = CLng(gblFormPrimaryHeightTwips)
+'    Else
+'        rDIconConfigForm.Height = CLng(gblFormPrimaryHeightTwips) - 1000
+'    End If
+
+   On Error GoTo 0
+   Exit Sub
+
+setFormHeight_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setFormHeight of Form dockSettings"
+End Sub
+
+
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : writeFormHeight
+' Author    : beededea
+' Date      : 21/05/2025
+' Purpose   : write the form height to the settings file, only the form height is needed to proportion the form
+'---------------------------------------------------------------------------------------
+'
+Private Sub writeFormHeight()
+   On Error GoTo writeFormHeight_Error
+   
+    ' write the form height using variables ready to test dual monitors, that bit not yet implemented
+    'If prefsMonitorStruct.IsPrimary = True Then
+        gblFormPrimaryHeightTwips = Trim$(CStr(rDIconConfigForm.Height))
+        PutINISetting "Software\SteamyDock\IconSettings\", "formPrimaryHeightTwips", gblFormPrimaryHeightTwips, dockSettingsFile
+        
+'    Else
+'        gblPrefsSecondaryHeightTwips = Trim$(CStr(widgetPrefs.Height))
+'        sPutINISetting "Software\SteampunkClockCalendar", "prefsSecondaryHeightTwips", gblPrefsSecondaryHeightTwips, gblSettingsFile
+'    End If
+
+   On Error GoTo 0
+   Exit Sub
+
+writeFormHeight_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeFormHeight of Form dockSettings"
+
+End Sub

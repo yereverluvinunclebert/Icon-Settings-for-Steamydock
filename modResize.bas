@@ -10,7 +10,7 @@ Public Type ControlPositionType
     FontSize As Single
 End Type
 Public swFormControlPositions() As ControlPositionType
-Public rdFormControlPositions() As ControlPositionType
+Public gblFormControlPositions() As ControlPositionType
 
 
 
@@ -110,7 +110,7 @@ Public Sub saveControlSizes(ByVal thisForm As Form, ByRef m_ControlPositions() A
     ' Save the controls' positions and sizes.
     On Error GoTo saveControlSizes_Error
 
-    ReDim m_ControlPositions(1 To thisForm.Controls.count)
+    ReDim m_ControlPositions(1 To thisForm.Controls.Count)
     i = 1
     For Each Ctrl In thisForm.Controls
         With m_ControlPositions(i)
