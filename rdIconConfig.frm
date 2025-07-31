@@ -2878,9 +2878,9 @@ Private Sub Form_Resize_Event()
     If Me.WindowState = vbMinimized Then Exit Sub
              
     ' move the drag corner label along with the form's bottom right corner
-    lblDragCorner.Move Me.ScaleLeft + Me.ScaleWidth - (lblDragCorner.Width + 40), _
-           Me.ScaleTop + Me.ScaleHeight - (lblDragCorner.Height + 40)
-    
+'    lblDragCorner.Move Me.ScaleLeft + Me.ScaleWidth - (lblDragCorner.Width + 40), _
+'           Me.ScaleTop + Me.ScaleHeight - (lblDragCorner.Height + 40)
+'
     If pvtFormResizedByDrag = True Then
             
         ' maintain the aspect ratio, note: this change calls this routine again...
@@ -2892,13 +2892,7 @@ Private Sub Form_Resize_Event()
         
         ' resize all controls on the form
         Call resizeControls(Me, gblFormControlPositions(), gblStartFormWidth, gblStartFormHeight, currentFontSize)
-                      
-'        ' remove the blue highlight from comboboxes
-'        cmbIconTypesFilter.SelLength = 0
-'        cmbRunState.SelLength = 0
-'        cmbOpenRunning.SelLength = 0
-
-        
+                            
         ' repopulate the thumbnails top right, resized, clearing the cache first
         imlThumbnailCache.ListImages.Clear
         Call populateThumbnails(gblBaseThumbImageSize, gblThumbnailStartPosition)
@@ -2917,7 +2911,6 @@ Private Sub Form_Resize_Event()
                gblFormResizedInCode = True
                rDIconConfigForm.Height = pvtLastFormHeight
                
-               ' lblHeight.Caption = "Form_Resize_Event 2 " & rDIconConfigForm.Height
             End If
         End If
     End If
@@ -4675,6 +4668,9 @@ Private Sub setFormResizingVarsAndProperties()
     fraExtraOptions.Width = 5895
     
     'frameButtons.Top = 8620
+    
+    ' constrain the height/width ratio
+    gblConstraintRatio = pvtCFormHeight / pvtCFormWidth
 
 
    On Error GoTo 0
@@ -17761,9 +17757,6 @@ End Sub
 Private Sub setFormHeight()
 
     On Error GoTo setFormHeight_Error
-    
-    ' constrain the height/width ratio
-    gblConstraintRatio = pvtCFormHeight / pvtCFormWidth
      
     ' flag to cause a form's elements to all resize according to the new size set below
     gblFormResizedInCode = True
