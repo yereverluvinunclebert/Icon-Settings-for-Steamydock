@@ -26,6 +26,763 @@ Begin VB.Form rDIconConfigForm
    MinButton       =   0   'False
    ScaleHeight     =   10440
    ScaleWidth      =   10365
+   Begin VB.PictureBox picTemporaryStore 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   1000
+      Left            =   1185
+      ScaleHeight     =   67
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   67
+      TabIndex        =   97
+      Tag             =   "Do not delete"
+      ToolTipText     =   "This is the currently selected icon scaled to 64 x 64 for the dragIcon to reside prior to conversion"
+      Top             =   8835
+      Visible         =   0   'False
+      Width           =   1000
+   End
+   Begin VB.Timer themeTimer 
+      Enabled         =   0   'False
+      Interval        =   10000
+      Left            =   465
+      Top             =   5760
+   End
+   Begin VB.Frame Frame 
+      Caption         =   "Configuration"
+      Height          =   600
+      Index           =   0
+      Left            =   2100
+      TabIndex        =   43
+      Top             =   4515
+      Visible         =   0   'False
+      Width           =   1665
+      Begin VB.CheckBox chkBiLinear 
+         Caption         =   "Quality Sizing"
+         Height          =   240
+         Left            =   90
+         TabIndex        =   44
+         ToolTipText     =   "Stretch Quality Option"
+         Top             =   270
+         Width           =   1485
+      End
+      Begin VB.Label Label1 
+         Caption         =   "Drag && Drop, Copy && Paste too.  Unicode Compatible"
+         Enabled         =   0   'False
+         Height          =   255
+         Index           =   3
+         Left            =   45
+         TabIndex        =   45
+         ToolTipText     =   "To Paste: Click on display box and press Ctrl+V"
+         Top             =   5865
+         Width           =   3840
+      End
+   End
+   Begin VB.Timer registryTimer 
+      Enabled         =   0   'False
+      Interval        =   2500
+      Left            =   480
+      Top             =   6660
+   End
+   Begin VB.PictureBox picRdThumbFrame 
+      Appearance      =   0  'Flat
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   705
+      Left            =   180
+      ScaleHeight     =   705
+      ScaleWidth      =   9660
+      TabIndex        =   35
+      Top             =   4668
+      Width           =   9660
+      Begin VB.HScrollBar rdMapHScroll 
+         Height          =   165
+         Left            =   45
+         Max             =   100
+         Min             =   2
+         TabIndex        =   39
+         Top             =   540
+         Value           =   2
+         Width           =   9630
+      End
+      Begin VB.CommandButton btnMapNext 
+         Height          =   450
+         Left            =   9195
+         Picture         =   "rdIconConfig.frx":058A
+         Style           =   1  'Graphical
+         TabIndex        =   32
+         ToolTipText     =   "Scroll the RD map to the right"
+         Top             =   45
+         Width           =   450
+      End
+      Begin VB.CommandButton btnMapPrev 
+         Height          =   450
+         Left            =   45
+         Picture         =   "rdIconConfig.frx":0ACF
+         Style           =   1  'Graphical
+         TabIndex        =   36
+         ToolTipText     =   "Scroll the RD map to the left"
+         Top             =   45
+         Width           =   435
+      End
+      Begin VB.PictureBox picCover 
+         Appearance      =   0  'Flat
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   555
+         Left            =   -45
+         ScaleHeight     =   555
+         ScaleWidth      =   570
+         TabIndex        =   37
+         Top             =   0
+         Width           =   570
+      End
+      Begin VB.PictureBox back 
+         Appearance      =   0  'Flat
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   555
+         Left            =   9150
+         ScaleHeight     =   555
+         ScaleWidth      =   600
+         TabIndex        =   38
+         Top             =   0
+         Width           =   600
+      End
+      Begin VB.PictureBox picRdMap 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         DragIcon        =   "rdIconConfig.frx":101C
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   500
+         Index           =   2
+         Left            =   540
+         OLEDropMode     =   1  'Manual
+         ScaleHeight     =   33
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   33
+         TabIndex        =   50
+         Top             =   15
+         Width           =   500
+      End
+   End
+   Begin VB.PictureBox btnArrowUp 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   180
+      Left            =   9900
+      Picture         =   "rdIconConfig.frx":20E6
+      ScaleHeight     =   180
+      ScaleWidth      =   270
+      TabIndex        =   34
+      ToolTipText     =   "Hide the map"
+      Top             =   4530
+      Visible         =   0   'False
+      Width           =   270
+   End
+   Begin VB.CommandButton rdMapRefresh 
+      Height          =   270
+      Left            =   9945
+      Picture         =   "rdIconConfig.frx":2442
+      Style           =   1  'Graphical
+      TabIndex        =   40
+      ToolTipText     =   "Refresh the icon map"
+      Top             =   4680
+      Width           =   210
+   End
+   Begin VB.Frame FrameFolders 
+      Caption         =   "Folders"
+      Height          =   4610
+      Left            =   180
+      TabIndex        =   9
+      ToolTipText     =   "The current list of known icon folders"
+      Top             =   15
+      Width           =   4005
+      Begin VB.PictureBox btnSettingsUp 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   180
+         Left            =   990
+         Picture         =   "rdIconConfig.frx":284B
+         ScaleHeight     =   180
+         ScaleWidth      =   270
+         TabIndex        =   90
+         ToolTipText     =   "Hide the registry form showing where details are being read from and saved to."
+         Top             =   4140
+         Visible         =   0   'False
+         Width           =   270
+      End
+      Begin VB.Frame fraConfigSource 
+         BorderStyle     =   0  'None
+         Caption         =   "Frame1"
+         Height          =   495
+         Left            =   1800
+         TabIndex        =   63
+         Top             =   3960
+         Visible         =   0   'False
+         Width           =   2055
+         Begin VB.ComboBox cmbDefaultDock 
+            Height          =   330
+            ItemData        =   "rdIconConfig.frx":2BA7
+            Left            =   570
+            List            =   "rdIconConfig.frx":2BB1
+            Locked          =   -1  'True
+            TabIndex        =   64
+            Text            =   "RocketDock"
+            ToolTipText     =   "Indicates the default dock, Rocketdock or SteamyDock. Cannot be changed here but only in the dock settings utility."
+            Top             =   180
+            Width           =   1515
+         End
+         Begin VB.Label lblDefaultDock 
+            Caption         =   "Dock"
+            Height          =   225
+            Left            =   0
+            TabIndex        =   65
+            Top             =   225
+            Width           =   555
+         End
+      End
+      Begin VB.PictureBox btnSettingsDown 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   180
+         Left            =   930
+         Picture         =   "rdIconConfig.frx":2BCD
+         ScaleHeight     =   180
+         ScaleWidth      =   375
+         TabIndex        =   60
+         ToolTipText     =   "Show where the details are being read from and saved to."
+         Top             =   4140
+         Visible         =   0   'False
+         Width           =   375
+      End
+      Begin CCRTreeView.TreeView folderTreeView 
+         Height          =   3450
+         Left            =   135
+         TabIndex        =   54
+         ToolTipText     =   "These are the icon folders available to Rocketdock"
+         Top             =   630
+         Width           =   3735
+         _ExtentX        =   6588
+         _ExtentY        =   6085
+         VisualTheme     =   1
+         LineStyle       =   1
+         LabelEdit       =   1
+         ShowTips        =   -1  'True
+         Indentation     =   38
+      End
+      Begin VB.TextBox textCurrentFolder 
+         Height          =   330
+         Left            =   135
+         TabIndex        =   20
+         Text            =   "textCurrentFolder"
+         ToolTipText     =   "The selected folder path"
+         Top             =   225
+         Width           =   3735
+      End
+      Begin VB.CommandButton btnRemoveFolder 
+         Caption         =   "-"
+         Height          =   345
+         Left            =   120
+         Style           =   1  'Graphical
+         TabIndex        =   19
+         ToolTipText     =   "This button can remove a custom folder from the treeview above"
+         Top             =   4170
+         Width           =   360
+      End
+      Begin VB.CommandButton btnAddFolder 
+         Caption         =   "+"
+         Height          =   345
+         Left            =   525
+         Style           =   1  'Graphical
+         TabIndex        =   10
+         ToolTipText     =   "Select a target folder to add to the treeview list above"
+         Top             =   4170
+         Width           =   360
+      End
+   End
+   Begin VB.PictureBox btnArrowDown 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   180
+      Left            =   9780
+      Picture         =   "rdIconConfig.frx":2E77
+      ScaleHeight     =   180
+      ScaleWidth      =   375
+      TabIndex        =   33
+      ToolTipText     =   "Show the Rocketdock Map"
+      Top             =   4500
+      Visible         =   0   'False
+      Width           =   375
+   End
+   Begin VB.Frame framePreview 
+      Caption         =   "Preview"
+      Height          =   4635
+      Left            =   195
+      TabIndex        =   46
+      ToolTipText     =   "The Preview Pane"
+      Top             =   5350
+      Width           =   4000
+      Begin VB.Frame fraSizeSlider 
+         BorderStyle     =   0  'None
+         Height          =   600
+         Left            =   45
+         TabIndex        =   98
+         Top             =   3870
+         Width           =   3810
+         Begin CCRSlider.Slider sliPreviewSize 
+            Height          =   300
+            Left            =   0
+            TabIndex        =   99
+            ToolTipText     =   "Icon Size"
+            Top             =   180
+            Width           =   3945
+            _ExtentX        =   6959
+            _ExtentY        =   529
+            Min             =   1
+            Max             =   5
+            Value           =   4
+            LargeChange     =   1
+            TickStyle       =   1
+            SelStart        =   4
+         End
+         Begin VB.Label lblFileInfo 
+            Caption         =   "File Size:"
+            BeginProperty Font 
+               Name            =   "Arial"
+               Size            =   6
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   180
+            Left            =   90
+            TabIndex        =   101
+            Top             =   0
+            Width           =   1950
+         End
+         Begin VB.Label lblWidthHeight 
+            Caption         =   "width and height"
+            BeginProperty Font 
+               Name            =   "Arial"
+               Size            =   6
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   2100
+            TabIndex        =   100
+            Top             =   0
+            Width           =   1785
+         End
+      End
+      Begin VB.CommandButton btnPrev 
+         Caption         =   "<"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   3450
+         Left            =   60
+         Style           =   1  'Graphical
+         TabIndex        =   49
+         ToolTipText     =   "select the previous icon"
+         Top             =   240
+         Width           =   195
+      End
+      Begin VB.CommandButton btnNext 
+         Caption         =   ">"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   3450
+         Left            =   3750
+         Style           =   1  'Graphical
+         TabIndex        =   48
+         ToolTipText     =   "select the next icon"
+         Top             =   240
+         Width           =   195
+      End
+      Begin VB.PictureBox picPreview 
+         AutoRedraw      =   -1  'True
+         BorderStyle     =   0  'None
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   3060
+         Left            =   285
+         OLEDropMode     =   1  'Manual
+         ScaleHeight     =   204
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   230
+         TabIndex        =   47
+         ToolTipText     =   "This is the currently selected icon scaled to fit the preview box"
+         Top             =   675
+         Width           =   3450
+         Begin VB.Timer settingsTimer 
+            Enabled         =   0   'False
+            Interval        =   2500
+            Left            =   2115
+            Top             =   180
+         End
+         Begin VB.Timer positionTimer 
+            Enabled         =   0   'False
+            Interval        =   3000
+            Left            =   1695
+            Top             =   180
+         End
+         Begin VB.Timer idleTimer 
+            Enabled         =   0   'False
+            Interval        =   3000
+            Left            =   1260
+            Top             =   180
+         End
+         Begin CCRImageList.ImageList imlThumbnailCache 
+            Left            =   1860
+            Tag             =   "Krool's image list used to store images as a cache"
+            Top             =   1845
+            _ExtentX        =   1005
+            _ExtentY        =   1005
+            InitListImages  =   "rdIconConfig.frx":3121
+         End
+         Begin CCRImageList.ImageList imlDragIconConverter 
+            Left            =   630
+            Tag             =   "Krool's imageList (with HIcon bug)"
+            Top             =   1860
+            _ExtentX        =   1005
+            _ExtentY        =   1005
+            ImageWidth      =   16
+            ImageHeight     =   16
+            UseMaskColor    =   0   'False
+            MaskColor       =   16777215
+            InitListImages  =   "rdIconConfig.frx":3141
+         End
+         Begin VB.Timer rdMapDragTimer 
+            Enabled         =   0   'False
+            Interval        =   1
+            Left            =   840
+            Top             =   180
+         End
+         Begin VB.Timer thumbnailDragTimer 
+            Enabled         =   0   'False
+            Interval        =   1
+            Left            =   435
+            Top             =   180
+         End
+         Begin VB.Timer busyTimer 
+            Enabled         =   0   'False
+            Interval        =   50
+            Left            =   90
+            Top             =   180
+         End
+         Begin VB.Label lblBlankText 
+            Alignment       =   2  'Center
+            AutoSize        =   -1  'True
+            Caption         =   "Blank"
+            BeginProperty Font 
+               Name            =   "Trebuchet MS"
+               Size            =   45
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   1140
+            Left            =   600
+            TabIndex        =   62
+            ToolTipText     =   "This is Rocketdock icon number one."
+            Top             =   960
+            Visible         =   0   'False
+            Width           =   2220
+         End
+      End
+   End
+   Begin VB.Frame frameIcons 
+      Caption         =   "Icons"
+      Height          =   4610
+      Left            =   4290
+      TabIndex        =   12
+      ToolTipText     =   "Thumbnail or File Viewer Window"
+      Top             =   15
+      Width           =   5895
+      Begin VB.CommandButton btnGetMore 
+         Caption         =   "Get More"
+         Height          =   345
+         Left            =   3975
+         Style           =   1  'Graphical
+         TabIndex        =   129
+         ToolTipText     =   "Click to install more icons"
+         Top             =   4155
+         Width           =   1710
+      End
+      Begin VB.Frame fraIconType 
+         BorderStyle     =   0  'None
+         Height          =   345
+         Left            =   105
+         TabIndex        =   66
+         Top             =   4185
+         Width           =   3285
+         Begin VB.ComboBox cmbIconTypesFilter 
+            Height          =   330
+            ItemData        =   "rdIconConfig.frx":3161
+            Left            =   465
+            List            =   "rdIconConfig.frx":3177
+            TabIndex        =   106
+            Text            =   "All Normal Icons"
+            ToolTipText     =   "Filter icon types to display"
+            Top             =   -15
+            Width           =   2790
+         End
+         Begin VB.CommandButton btnKillIcon 
+            Height          =   255
+            Left            =   0
+            Picture         =   "rdIconConfig.frx":31E2
+            Style           =   1  'Graphical
+            TabIndex        =   67
+            ToolTipText     =   "Delete the currently selected icon file above. Use wisely!"
+            Top             =   -15
+            Width           =   240
+         End
+      End
+      Begin VB.Frame frmNoFilesFound 
+         BorderStyle     =   0  'None
+         Height          =   405
+         Left            =   1635
+         TabIndex        =   55
+         Top             =   1860
+         Visible         =   0   'False
+         Width           =   2220
+         Begin VB.Label lblNoFilesFound 
+            Caption         =   "No files found"
+            Height          =   285
+            Left            =   525
+            TabIndex        =   56
+            Top             =   90
+            Width           =   1170
+         End
+      End
+      Begin VB.CommandButton btnAdd 
+         Caption         =   "+"
+         Height          =   270
+         Left            =   4755
+         Style           =   1  'Graphical
+         TabIndex        =   51
+         ToolTipText     =   "Set the current selected icon into the dock (double-click on the icon)"
+         Top             =   240
+         Width           =   270
+      End
+      Begin VB.CommandButton btnRefresh 
+         Height          =   270
+         Left            =   5100
+         Picture         =   "rdIconConfig.frx":340F
+         Style           =   1  'Graphical
+         TabIndex        =   29
+         ToolTipText     =   "Refresh the Icon List"
+         Top             =   240
+         Width           =   210
+      End
+      Begin VB.TextBox textCurrIconPath 
+         Height          =   330
+         Left            =   1215
+         TabIndex        =   15
+         Text            =   "textCurrIconPath"
+         ToolTipText     =   "Shows the selected icon file name"
+         Top             =   210
+         Width           =   3510
+      End
+      Begin VB.CommandButton btnFileListView 
+         Height          =   270
+         Left            =   5355
+         Picture         =   "rdIconConfig.frx":3818
+         Style           =   1  'Graphical
+         TabIndex        =   23
+         ToolTipText     =   "View as a file listing"
+         Top             =   240
+         Visible         =   0   'False
+         Width           =   270
+      End
+      Begin VB.CommandButton btnThumbnailView 
+         Height          =   270
+         Left            =   5355
+         Picture         =   "rdIconConfig.frx":3BF4
+         Style           =   1  'Graphical
+         TabIndex        =   18
+         ToolTipText     =   "View as thumbnails"
+         Top             =   240
+         Width           =   285
+      End
+      Begin VB.PictureBox picFrameThumbs 
+         BackColor       =   &H00FFFFFF&
+         Height          =   3450
+         Left            =   120
+         ScaleHeight     =   3390
+         ScaleWidth      =   5520
+         TabIndex        =   21
+         ToolTipText     =   "Double-click an icon to set it into the dock"
+         Top             =   615
+         Width           =   5580
+         Begin VB.Frame fraThumbLabel 
+            BackColor       =   &H00FFFFFF&
+            BorderStyle     =   0  'None
+            Height          =   400
+            Index           =   0
+            Left            =   45
+            TabIndex        =   94
+            Top             =   840
+            Width           =   1185
+            Begin VB.Label lblThumbName 
+               BackColor       =   &H00FFFFFF&
+               BorderStyle     =   1  'Fixed Single
+               BeginProperty Font 
+                  Name            =   "Arial"
+                  Size            =   6.75
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   240
+               Index           =   0
+               Left            =   90
+               TabIndex        =   95
+               Top             =   -30
+               Width           =   1000
+            End
+         End
+         Begin VB.PictureBox picFraPicThumbIcon 
+            Appearance      =   0  'Flat
+            BackColor       =   &H80000005&
+            BorderStyle     =   0  'None
+            ForeColor       =   &H80000008&
+            Height          =   1080
+            Index           =   0
+            Left            =   105
+            ScaleHeight     =   1080
+            ScaleWidth      =   1095
+            TabIndex        =   92
+            Top             =   105
+            Width           =   1095
+            Begin VB.PictureBox picThumbIcon 
+               Appearance      =   0  'Flat
+               AutoRedraw      =   -1  'True
+               BackColor       =   &H80000005&
+               BorderStyle     =   0  'None
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               ForeColor       =   &H80000008&
+               Height          =   1000
+               Index           =   0
+               Left            =   -15
+               ScaleHeight     =   67
+               ScaleMode       =   3  'Pixel
+               ScaleWidth      =   67
+               TabIndex        =   93
+               ToolTipText     =   "This is the currently selected icon scaled to fit the preview box"
+               Top             =   -30
+               Width           =   1000
+            End
+         End
+         Begin VB.VScrollBar vScrollThumbs 
+            CausesValidation=   0   'False
+            Height          =   3450
+            LargeChange     =   12
+            Left            =   5265
+            SmallChange     =   4
+            TabIndex        =   22
+            Top             =   -30
+            Width           =   255
+         End
+      End
+      Begin VB.FileListBox filesIconList 
+         Height          =   3450
+         Left            =   105
+         Pattern         =   "*.jpg"
+         TabIndex        =   14
+         ToolTipText     =   "Select an icon, double-click to set"
+         Top             =   615
+         Width           =   5580
+      End
+      Begin VB.Label lblIconName 
+         Caption         =   "Icon Name:"
+         Height          =   225
+         Left            =   120
+         TabIndex        =   16
+         Top             =   270
+         Width           =   1335
+      End
+   End
+   Begin VB.CommandButton btnWorking 
+      Caption         =   "&Working"
+      Height          =   510
+      Left            =   8100
+      Style           =   1  'Graphical
+      TabIndex        =   42
+      Top             =   3900
+      Visible         =   0   'False
+      Width           =   1800
+   End
    Begin VB.Frame fraExtraOptions 
       Caption         =   "Extra Configuration "
       Height          =   1995
@@ -37,7 +794,7 @@ Begin VB.Form rDIconConfigForm
       Begin VB.CommandButton btnCloseMoreConfig 
          Height          =   255
          Left            =   5550
-         Picture         =   "rdIconConfig.frx":058A
+         Picture         =   "rdIconConfig.frx":3E02
          Style           =   1  'Graphical
          TabIndex        =   128
          ToolTipText     =   "Delete the currently selected icon file above. Use wisely!"
@@ -242,323 +999,6 @@ Begin VB.Form rDIconConfigForm
          Width           =   1215
       End
    End
-   Begin VB.PictureBox picTemporaryStore 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   1000
-      Left            =   1185
-      ScaleHeight     =   67
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   67
-      TabIndex        =   97
-      Tag             =   "Do not delete"
-      ToolTipText     =   "This is the currently selected icon scaled to 64 x 64 for the dragIcon to reside prior to conversion"
-      Top             =   8835
-      Visible         =   0   'False
-      Width           =   1000
-   End
-   Begin VB.Timer themeTimer 
-      Enabled         =   0   'False
-      Interval        =   10000
-      Left            =   465
-      Top             =   5760
-   End
-   Begin VB.Frame Frame 
-      Caption         =   "Configuration"
-      Height          =   600
-      Index           =   0
-      Left            =   2100
-      TabIndex        =   43
-      Top             =   4515
-      Visible         =   0   'False
-      Width           =   1665
-      Begin VB.CheckBox chkBiLinear 
-         Caption         =   "Quality Sizing"
-         Height          =   240
-         Left            =   90
-         TabIndex        =   44
-         ToolTipText     =   "Stretch Quality Option"
-         Top             =   270
-         Width           =   1485
-      End
-      Begin VB.Label Label1 
-         Caption         =   "Drag && Drop, Copy && Paste too.  Unicode Compatible"
-         Enabled         =   0   'False
-         Height          =   255
-         Index           =   3
-         Left            =   45
-         TabIndex        =   45
-         ToolTipText     =   "To Paste: Click on display box and press Ctrl+V"
-         Top             =   5865
-         Width           =   3840
-      End
-   End
-   Begin VB.Timer registryTimer 
-      Enabled         =   0   'False
-      Interval        =   2500
-      Left            =   480
-      Top             =   6660
-   End
-   Begin VB.PictureBox picRdThumbFrame 
-      Appearance      =   0  'Flat
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   705
-      Left            =   180
-      ScaleHeight     =   705
-      ScaleWidth      =   9660
-      TabIndex        =   35
-      Top             =   4668
-      Width           =   9660
-      Begin VB.HScrollBar rdMapHScroll 
-         Height          =   120
-         Left            =   45
-         Max             =   100
-         TabIndex        =   39
-         Top             =   540
-         Width           =   9630
-      End
-      Begin VB.CommandButton btnMapNext 
-         Height          =   450
-         Left            =   9195
-         Picture         =   "rdIconConfig.frx":07B7
-         Style           =   1  'Graphical
-         TabIndex        =   32
-         ToolTipText     =   "Scroll the RD map to the right"
-         Top             =   45
-         Width           =   450
-      End
-      Begin VB.CommandButton btnMapPrev 
-         Height          =   450
-         Left            =   45
-         Picture         =   "rdIconConfig.frx":0CFC
-         Style           =   1  'Graphical
-         TabIndex        =   36
-         ToolTipText     =   "Scroll the RD map to the left"
-         Top             =   45
-         Width           =   435
-      End
-      Begin VB.PictureBox picCover 
-         Appearance      =   0  'Flat
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   555
-         Left            =   -45
-         ScaleHeight     =   555
-         ScaleWidth      =   570
-         TabIndex        =   37
-         Top             =   0
-         Width           =   570
-      End
-      Begin VB.PictureBox back 
-         Appearance      =   0  'Flat
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   555
-         Left            =   9150
-         ScaleHeight     =   555
-         ScaleWidth      =   600
-         TabIndex        =   38
-         Top             =   0
-         Width           =   600
-      End
-      Begin VB.PictureBox picRdMap 
-         Appearance      =   0  'Flat
-         AutoRedraw      =   -1  'True
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         DragIcon        =   "rdIconConfig.frx":1249
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H80000008&
-         Height          =   500
-         Index           =   0
-         Left            =   540
-         OLEDropMode     =   1  'Manual
-         ScaleHeight     =   33
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   33
-         TabIndex        =   50
-         Top             =   15
-         Width           =   500
-      End
-   End
-   Begin VB.PictureBox btnArrowUp 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   180
-      Left            =   9900
-      Picture         =   "rdIconConfig.frx":2313
-      ScaleHeight     =   180
-      ScaleWidth      =   270
-      TabIndex        =   34
-      ToolTipText     =   "Hide the map"
-      Top             =   4530
-      Visible         =   0   'False
-      Width           =   270
-   End
-   Begin VB.CommandButton rdMapRefresh 
-      Height          =   270
-      Left            =   9945
-      Picture         =   "rdIconConfig.frx":266F
-      Style           =   1  'Graphical
-      TabIndex        =   40
-      ToolTipText     =   "Refresh the icon map"
-      Top             =   4680
-      Width           =   210
-   End
-   Begin VB.Frame FrameFolders 
-      Caption         =   "Folders"
-      Height          =   4610
-      Left            =   180
-      TabIndex        =   9
-      ToolTipText     =   "The current list of known icon folders"
-      Top             =   15
-      Width           =   4005
-      Begin VB.PictureBox btnSettingsUp 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   180
-         Left            =   990
-         Picture         =   "rdIconConfig.frx":2A78
-         ScaleHeight     =   180
-         ScaleWidth      =   270
-         TabIndex        =   90
-         ToolTipText     =   "Hide the registry form showing where details are being read from and saved to."
-         Top             =   4140
-         Visible         =   0   'False
-         Width           =   270
-      End
-      Begin VB.Frame fraConfigSource 
-         BorderStyle     =   0  'None
-         Caption         =   "Frame1"
-         Height          =   495
-         Left            =   1800
-         TabIndex        =   63
-         Top             =   3960
-         Visible         =   0   'False
-         Width           =   2055
-         Begin VB.ComboBox cmbDefaultDock 
-            Height          =   330
-            ItemData        =   "rdIconConfig.frx":2DD4
-            Left            =   570
-            List            =   "rdIconConfig.frx":2DDE
-            Locked          =   -1  'True
-            TabIndex        =   64
-            Text            =   "RocketDock"
-            ToolTipText     =   "Indicates the default dock, Rocketdock or SteamyDock. Cannot be changed here but only in the dock settings utility."
-            Top             =   180
-            Width           =   1515
-         End
-         Begin VB.Label lblDefaultDock 
-            Caption         =   "Dock"
-            Height          =   225
-            Left            =   0
-            TabIndex        =   65
-            Top             =   225
-            Width           =   555
-         End
-      End
-      Begin VB.PictureBox btnSettingsDown 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   180
-         Left            =   930
-         Picture         =   "rdIconConfig.frx":2DFA
-         ScaleHeight     =   180
-         ScaleWidth      =   375
-         TabIndex        =   60
-         ToolTipText     =   "Show where the details are being read from and saved to."
-         Top             =   4140
-         Visible         =   0   'False
-         Width           =   375
-      End
-      Begin CCRTreeView.TreeView folderTreeView 
-         Height          =   3450
-         Left            =   135
-         TabIndex        =   54
-         ToolTipText     =   "These are the icon folders available to Rocketdock"
-         Top             =   630
-         Width           =   3735
-         _ExtentX        =   6588
-         _ExtentY        =   6085
-         VisualTheme     =   1
-         LineStyle       =   1
-         LabelEdit       =   1
-         ShowTips        =   -1  'True
-         Indentation     =   38
-      End
-      Begin VB.TextBox textCurrentFolder 
-         Height          =   330
-         Left            =   135
-         TabIndex        =   20
-         Text            =   "textCurrentFolder"
-         ToolTipText     =   "The selected folder path"
-         Top             =   225
-         Width           =   3735
-      End
-      Begin VB.CommandButton btnRemoveFolder 
-         Caption         =   "-"
-         Height          =   345
-         Left            =   120
-         Style           =   1  'Graphical
-         TabIndex        =   19
-         ToolTipText     =   "This button can remove a custom folder from the treeview above"
-         Top             =   4170
-         Width           =   360
-      End
-      Begin VB.CommandButton btnAddFolder 
-         Caption         =   "+"
-         Height          =   345
-         Left            =   525
-         Style           =   1  'Graphical
-         TabIndex        =   10
-         ToolTipText     =   "Select a target folder to add to the treeview list above"
-         Top             =   4170
-         Width           =   360
-      End
-   End
-   Begin VB.PictureBox btnArrowDown 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   180
-      Left            =   9780
-      Picture         =   "rdIconConfig.frx":30A4
-      ScaleHeight     =   180
-      ScaleWidth      =   375
-      TabIndex        =   33
-      ToolTipText     =   "Show the Rocketdock Map"
-      Top             =   4500
-      Visible         =   0   'False
-      Width           =   375
-   End
    Begin VB.Frame fraProperties 
       Caption         =   "Properties"
       Height          =   3750
@@ -681,7 +1121,7 @@ Begin VB.Form rDIconConfigForm
          Begin VB.Label lblConfirmDialog 
             Caption         =   "Confirm Prior :"
             Height          =   225
-            Left            =   240
+            Left            =   165
             TabIndex        =   83
             ToolTipText     =   "Adds a Confirmation Dialog prior to the command running allowing you to say yes or no at runtime"
             Top             =   90
@@ -809,7 +1249,7 @@ Begin VB.Form rDIconConfigForm
          ForeColor       =   &H80000008&
          Height          =   180
          Left            =   3510
-         Picture         =   "rdIconConfig.frx":334E
+         Picture         =   "rdIconConfig.frx":402F
          ScaleHeight     =   180
          ScaleWidth      =   375
          TabIndex        =   61
@@ -861,7 +1301,7 @@ Begin VB.Form rDIconConfigForm
          ForeColor       =   &H80000008&
          Height          =   795
          Left            =   3660
-         Picture         =   "rdIconConfig.frx":35F8
+         Picture         =   "rdIconConfig.frx":42D9
          ScaleHeight     =   795
          ScaleWidth      =   825
          TabIndex        =   53
@@ -947,9 +1387,9 @@ Begin VB.Form rDIconConfigForm
       End
       Begin VB.ComboBox cmbOpenRunning 
          Height          =   330
-         ItemData        =   "rdIconConfig.frx":4073
+         ItemData        =   "rdIconConfig.frx":4D54
          Left            =   1395
-         List            =   "rdIconConfig.frx":4080
+         List            =   "rdIconConfig.frx":4D61
          TabIndex        =   6
          Text            =   "Always"
          ToolTipText     =   "Choose what to do if the chosen app is already running"
@@ -958,9 +1398,9 @@ Begin VB.Form rDIconConfigForm
       End
       Begin VB.ComboBox cmbRunState 
          Height          =   330
-         ItemData        =   "rdIconConfig.frx":40A7
+         ItemData        =   "rdIconConfig.frx":4D88
          Left            =   1395
-         List            =   "rdIconConfig.frx":40B4
+         List            =   "rdIconConfig.frx":4D95
          TabIndex        =   5
          Text            =   "Normal"
          ToolTipText     =   "Window mode for the program to operate within"
@@ -1032,212 +1472,6 @@ Begin VB.Form rDIconConfigForm
          Width           =   1215
       End
    End
-   Begin VB.Frame framePreview 
-      Caption         =   "Preview"
-      Height          =   4635
-      Left            =   195
-      TabIndex        =   46
-      ToolTipText     =   "The Preview Pane"
-      Top             =   5350
-      Width           =   4000
-      Begin VB.Frame fraSizeSlider 
-         BorderStyle     =   0  'None
-         Height          =   600
-         Left            =   45
-         TabIndex        =   98
-         Top             =   3870
-         Width           =   3810
-         Begin CCRSlider.Slider sliPreviewSize 
-            Height          =   300
-            Left            =   0
-            TabIndex        =   99
-            ToolTipText     =   "Icon Size"
-            Top             =   180
-            Width           =   3945
-            _ExtentX        =   6959
-            _ExtentY        =   529
-            Min             =   1
-            Max             =   5
-            Value           =   4
-            LargeChange     =   1
-            TickStyle       =   1
-            SelStart        =   4
-         End
-         Begin VB.Label lblFileInfo 
-            Caption         =   "File Size:"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   6
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   180
-            Left            =   90
-            TabIndex        =   101
-            Top             =   0
-            Width           =   1950
-         End
-         Begin VB.Label lblWidthHeight 
-            Caption         =   "width and height"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   6
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   2100
-            TabIndex        =   100
-            Top             =   0
-            Width           =   1785
-         End
-      End
-      Begin VB.CommandButton btnPrev 
-         Caption         =   "<"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   3450
-         Left            =   60
-         Style           =   1  'Graphical
-         TabIndex        =   49
-         ToolTipText     =   "select the previous icon"
-         Top             =   240
-         Width           =   195
-      End
-      Begin VB.CommandButton btnNext 
-         Caption         =   ">"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   3450
-         Left            =   3750
-         Style           =   1  'Graphical
-         TabIndex        =   48
-         ToolTipText     =   "select the next icon"
-         Top             =   240
-         Width           =   195
-      End
-      Begin VB.PictureBox picPreview 
-         AutoRedraw      =   -1  'True
-         BorderStyle     =   0  'None
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   3060
-         Left            =   285
-         OLEDropMode     =   1  'Manual
-         ScaleHeight     =   204
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   230
-         TabIndex        =   47
-         ToolTipText     =   "This is the currently selected icon scaled to fit the preview box"
-         Top             =   675
-         Width           =   3450
-         Begin VB.Timer settingsTimer 
-            Enabled         =   0   'False
-            Interval        =   2500
-            Left            =   2115
-            Top             =   180
-         End
-         Begin VB.Timer positionTimer 
-            Enabled         =   0   'False
-            Interval        =   3000
-            Left            =   1695
-            Top             =   180
-         End
-         Begin VB.Timer idleTimer 
-            Enabled         =   0   'False
-            Interval        =   3000
-            Left            =   1260
-            Top             =   180
-         End
-         Begin CCRImageList.ImageList imlThumbnailCache 
-            Left            =   1860
-            Tag             =   "Krool's image list used to store images as a cache"
-            Top             =   1845
-            _ExtentX        =   1005
-            _ExtentY        =   1005
-            InitListImages  =   "rdIconConfig.frx":40D6
-         End
-         Begin CCRImageList.ImageList imlDragIconConverter 
-            Left            =   630
-            Tag             =   "Krool's imageList (with HIcon bug)"
-            Top             =   1860
-            _ExtentX        =   1005
-            _ExtentY        =   1005
-            ImageWidth      =   16
-            ImageHeight     =   16
-            UseMaskColor    =   0   'False
-            MaskColor       =   16777215
-            InitListImages  =   "rdIconConfig.frx":40F6
-         End
-         Begin VB.Timer rdMapDragTimer 
-            Enabled         =   0   'False
-            Interval        =   1
-            Left            =   840
-            Top             =   180
-         End
-         Begin VB.Timer thumbnailDragTimer 
-            Enabled         =   0   'False
-            Interval        =   1
-            Left            =   435
-            Top             =   180
-         End
-         Begin VB.Timer busyTimer 
-            Enabled         =   0   'False
-            Interval        =   50
-            Left            =   90
-            Top             =   180
-         End
-         Begin VB.Label lblBlankText 
-            Alignment       =   2  'Center
-            AutoSize        =   -1  'True
-            Caption         =   "Blank"
-            BeginProperty Font 
-               Name            =   "Trebuchet MS"
-               Size            =   45
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   1140
-            Left            =   600
-            TabIndex        =   62
-            ToolTipText     =   "This is Rocketdock icon number one."
-            Top             =   960
-            Visible         =   0   'False
-            Width           =   2220
-         End
-      End
-   End
    Begin VB.Frame frameButtons 
       BorderStyle     =   0  'None
       Height          =   1170
@@ -1252,7 +1486,7 @@ Begin VB.Form rDIconConfigForm
          ForeColor       =   &H80000008&
          Height          =   180
          Left            =   0
-         Picture         =   "rdIconConfig.frx":4116
+         Picture         =   "rdIconConfig.frx":4DB7
          ScaleHeight     =   180
          ScaleWidth      =   270
          TabIndex        =   91
@@ -1343,238 +1577,6 @@ Begin VB.Form rDIconConfigForm
          Top             =   780
          Width           =   1470
       End
-   End
-   Begin VB.Frame frameIcons 
-      Caption         =   "Icons"
-      Height          =   4610
-      Left            =   4290
-      TabIndex        =   12
-      ToolTipText     =   "Thumbnail or File Viewer Window"
-      Top             =   15
-      Width           =   5895
-      Begin VB.CommandButton btnGetMore 
-         Caption         =   "Get More"
-         Height          =   345
-         Left            =   3975
-         Style           =   1  'Graphical
-         TabIndex        =   129
-         ToolTipText     =   "Click to install more icons"
-         Top             =   4155
-         Width           =   1710
-      End
-      Begin VB.Frame fraIconType 
-         BorderStyle     =   0  'None
-         Height          =   345
-         Left            =   105
-         TabIndex        =   66
-         Top             =   4185
-         Width           =   3285
-         Begin VB.ComboBox cmbIconTypesFilter 
-            Height          =   330
-            ItemData        =   "rdIconConfig.frx":4472
-            Left            =   465
-            List            =   "rdIconConfig.frx":4488
-            TabIndex        =   106
-            Text            =   "All Normal Icons"
-            ToolTipText     =   "Filter icon types to display"
-            Top             =   -15
-            Width           =   2790
-         End
-         Begin VB.CommandButton btnKillIcon 
-            Height          =   255
-            Left            =   0
-            Picture         =   "rdIconConfig.frx":44F3
-            Style           =   1  'Graphical
-            TabIndex        =   67
-            ToolTipText     =   "Delete the currently selected icon file above. Use wisely!"
-            Top             =   -15
-            Width           =   240
-         End
-      End
-      Begin VB.Frame frmNoFilesFound 
-         BorderStyle     =   0  'None
-         Height          =   405
-         Left            =   1635
-         TabIndex        =   55
-         Top             =   1860
-         Visible         =   0   'False
-         Width           =   2220
-         Begin VB.Label lblNoFilesFound 
-            Caption         =   "No files found"
-            Height          =   285
-            Left            =   525
-            TabIndex        =   56
-            Top             =   90
-            Width           =   1170
-         End
-      End
-      Begin VB.CommandButton btnAdd 
-         Caption         =   "+"
-         Height          =   270
-         Left            =   4755
-         Style           =   1  'Graphical
-         TabIndex        =   51
-         ToolTipText     =   "Set the current selected icon into the dock (double-click on the icon)"
-         Top             =   240
-         Width           =   270
-      End
-      Begin VB.CommandButton btnRefresh 
-         Height          =   270
-         Left            =   5100
-         Picture         =   "rdIconConfig.frx":4720
-         Style           =   1  'Graphical
-         TabIndex        =   29
-         ToolTipText     =   "Refresh the Icon List"
-         Top             =   240
-         Width           =   210
-      End
-      Begin VB.TextBox textCurrIconPath 
-         Height          =   330
-         Left            =   1215
-         TabIndex        =   15
-         Text            =   "textCurrIconPath"
-         ToolTipText     =   "Shows the selected icon file name"
-         Top             =   210
-         Width           =   3510
-      End
-      Begin VB.CommandButton btnFileListView 
-         Height          =   270
-         Left            =   5355
-         Picture         =   "rdIconConfig.frx":4B29
-         Style           =   1  'Graphical
-         TabIndex        =   23
-         ToolTipText     =   "View as a file listing"
-         Top             =   240
-         Visible         =   0   'False
-         Width           =   270
-      End
-      Begin VB.CommandButton btnThumbnailView 
-         Height          =   270
-         Left            =   5355
-         Picture         =   "rdIconConfig.frx":4F05
-         Style           =   1  'Graphical
-         TabIndex        =   18
-         ToolTipText     =   "View as thumbnails"
-         Top             =   240
-         Width           =   285
-      End
-      Begin VB.PictureBox picFrameThumbs 
-         BackColor       =   &H00FFFFFF&
-         Height          =   3450
-         Left            =   120
-         ScaleHeight     =   3390
-         ScaleWidth      =   5520
-         TabIndex        =   21
-         ToolTipText     =   "Double-click an icon to set it into the dock"
-         Top             =   615
-         Width           =   5580
-         Begin VB.Frame fraThumbLabel 
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   0  'None
-            Height          =   400
-            Index           =   0
-            Left            =   45
-            TabIndex        =   94
-            Top             =   840
-            Width           =   1185
-            Begin VB.Label lblThumbName 
-               BackColor       =   &H00FFFFFF&
-               BorderStyle     =   1  'Fixed Single
-               BeginProperty Font 
-                  Name            =   "Arial"
-                  Size            =   6.75
-                  Charset         =   0
-                  Weight          =   400
-                  Underline       =   0   'False
-                  Italic          =   0   'False
-                  Strikethrough   =   0   'False
-               EndProperty
-               Height          =   240
-               Index           =   0
-               Left            =   90
-               TabIndex        =   95
-               Top             =   -30
-               Width           =   1000
-            End
-         End
-         Begin VB.PictureBox picFraPicThumbIcon 
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            BorderStyle     =   0  'None
-            ForeColor       =   &H80000008&
-            Height          =   1080
-            Index           =   0
-            Left            =   105
-            ScaleHeight     =   1080
-            ScaleWidth      =   1095
-            TabIndex        =   92
-            Top             =   105
-            Width           =   1095
-            Begin VB.PictureBox picThumbIcon 
-               Appearance      =   0  'Flat
-               AutoRedraw      =   -1  'True
-               BackColor       =   &H80000005&
-               BorderStyle     =   0  'None
-               BeginProperty Font 
-                  Name            =   "MS Sans Serif"
-                  Size            =   8.25
-                  Charset         =   0
-                  Weight          =   400
-                  Underline       =   0   'False
-                  Italic          =   0   'False
-                  Strikethrough   =   0   'False
-               EndProperty
-               ForeColor       =   &H80000008&
-               Height          =   1000
-               Index           =   0
-               Left            =   -15
-               ScaleHeight     =   67
-               ScaleMode       =   3  'Pixel
-               ScaleWidth      =   67
-               TabIndex        =   93
-               ToolTipText     =   "This is the currently selected icon scaled to fit the preview box"
-               Top             =   -30
-               Width           =   1000
-            End
-         End
-         Begin VB.VScrollBar vScrollThumbs 
-            CausesValidation=   0   'False
-            Height          =   3450
-            LargeChange     =   12
-            Left            =   5265
-            SmallChange     =   4
-            TabIndex        =   22
-            Top             =   -30
-            Width           =   255
-         End
-      End
-      Begin VB.FileListBox filesIconList 
-         Height          =   3450
-         Left            =   105
-         Pattern         =   "*.jpg"
-         TabIndex        =   14
-         ToolTipText     =   "Select an icon, double-click to set"
-         Top             =   615
-         Width           =   5580
-      End
-      Begin VB.Label lblIconName 
-         Caption         =   "Icon Name:"
-         Height          =   225
-         Left            =   120
-         TabIndex        =   16
-         Top             =   270
-         Width           =   1335
-      End
-   End
-   Begin VB.CommandButton btnWorking 
-      Caption         =   "&Working"
-      Height          =   510
-      Left            =   8100
-      Style           =   1  'Graphical
-      TabIndex        =   42
-      Top             =   3900
-      Visible         =   0   'False
-      Width           =   1800
    End
    Begin VB.Label lblDragCorner 
       Caption         =   "o"
@@ -2554,7 +2556,8 @@ Private Sub Form_Initialize()
     iconChanged = False
     dotCount = 0 ' a variable used on the 'working...' button
     rdIconNumber = 0
-    rdIconMaximum = 0  ' the final icon in the registry/settings
+    rdIconUpperBound = 0  ' the final icon in the registry/settings
+    rdIconLowerBound = 0
     thumbnailDragTimerCounter = 0
     rdMapDragTimerCounter = 0
     oldDockSettingsModificationTime = 0 ' max 86 years as a LONG in secs
@@ -2611,9 +2614,9 @@ Private Sub Form_Load()
     Dim answer As VbMsgBoxResult: answer = vbNo
     ReDim thumbArray(12) As Integer
     
-    startupFlg = True
-        
     On Error GoTo Form_Load_Error
+    
+    startupFlg = True
     
     If debugFlg = 1 Then debugLog "%" & "Form_Load"
     
@@ -2655,7 +2658,7 @@ Private Sub Form_Load()
     ' get the location of this tool's settings file
     Call getToolSettingsFile
         
-    ' read the dock settings from the new configuration file  - currently barely used, mostly in readIconsAndConfiguration
+    ' read the dock settings from the new configuration file  - currently barely used, mostly in readDockConfiguration
     Call readSettingsFile
     
     ' turn on the timer that tests every 10 secs whether the visual theme has changed
@@ -2673,14 +2676,14 @@ Private Sub Form_Load()
     ' copy the dock settings file to the interim version
     Call copyDockSettingsFile
     
-    Close #3
-    Open newDockSettingsFile For Random Shared As #3 Len = Len(iconVar)
+    ' open the icon data file
+    Call openIconDataFile
     
     'do some things for the first and only time
     Call determineFirstRun
 
     'read the brief config data and all the icons
-    Call readIconsAndConfiguration
+    Call readDockConfiguration
     
     ' validate the inputs of any data from the input settings file - currently barely used
     Call validateInputs
@@ -2706,7 +2709,7 @@ Private Sub Form_Load()
     gblProgramStatus = "runtime" ' don't move it
     
     ' dynamically create Map thumbnail picboxes (empty)
-    Call createRdMapBoxes
+    Call createDockMapBoxes
                 
     'read this utilties own settings.ini file and set the font
     Call readAndSetUtilityFont ' .30 DAEB 10/04/2021 rDIConConfigForm.frm separate the initial reading of the tool's settings file from the changing of the tool's own font
@@ -2741,7 +2744,6 @@ Private Sub Form_Load()
              
     ' show the main form as soon as possible, once most items have been populated leading to perceived faster load times
     gblDoNotResize = True ' essential
-    'rDIconConfigForm.Show
     
     ' now display the dock icon map after the main form has been displayed
     Call displayDockMap
@@ -2757,7 +2759,7 @@ Private Sub Form_Load()
     
     If fFExists(interimSettingsFile) Then '
         'get the dockSettingsFile.ini for this icon alone
-        readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", startRecordNumber, interimSettingsFile
+        Call readIconSettingsIni(startRecordNumber, False)
     End If
     
     ' .46 DAEB 16/04/2022 rdIconConfig.frm Made the word Blank visible or not during startup
@@ -2796,6 +2798,30 @@ Form_Load_Error:
                 
 End Sub
 
+
+'---------------------------------------------------------------------------------------
+' Procedure : openIconDataFile
+' Author    : beededea
+' Date      : 31/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub openIconDataFile()
+
+   On Error GoTo openIconDataFile_Error
+
+    Close #3
+    Open iconDataFile For Random Shared As #3 Len = Len(iconVar)
+
+   On Error GoTo 0
+   Exit Sub
+
+openIconDataFile_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure openIconDataFile of Form rDIconConfigForm"
+
+End Sub
+    
 
 
 '---------------------------------------------------------------------------------------
@@ -2881,7 +2907,7 @@ Private Sub Form_Resize_Event()
         Call picRdMap_MouseDown_event(rdIconNumber)
 
         ' resize all the icons in the map
-        Call recreateTheMap(rdIconMaximum)
+        Call recreateTheMap(rdIconUpperBound)
             
         fraExtraOptions.Refresh
         
@@ -4356,18 +4382,18 @@ Private Sub settingsTimer_Timer()
             If ans = 6 Then
                 Call copyDockSettingsFile
                 
-                For useloop = 0 To rdIconMaximum
+                For useloop = rdIconLowerBound To rdIconUpperBound
                     ' we don't bother to read the current record source here as we have already done so above.
     
                     ' read the rdsettings.ini one item up in the list
-                    Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile)
+                    Call readIconSettingsIni(useloop, False)
     
                     ' .83 DAEB 03/06/2022 rDIConConfig.frm Display the icon we just moved by dragging, one by one rather than the whole map
                     'Call displayIconElement(useloop, picRdMap(useloop), True, 32, True, False)
     
                 Next useloop
     
-                Call populateRdMap(0) ' show the map from position zero
+                Call populateDockMap(rdIconLowerBound) ' show the map from position zero
     
                 Call displayIconElement(lastIconChanged, picPreview, True, gblIcoSizePreset, True, False)
     
@@ -4591,6 +4617,9 @@ Private Sub setGlobalVarsStartValues()
     gblProgramStatus = "startup"
     gblSdIconSettingsDefaultEditor = "" ' "E:\vb6\rocketdock\iconsettings.vbp"
     gblRdDebugFlg = ""
+
+
+    rdIconLowerBound = 2
     
     ' theme variables
     
@@ -5138,6 +5167,9 @@ Public Sub adjustMainControls()
         mnuEditWidget.Visible = False
     End If
     
+    rdMapHScroll.Min = 2
+    rdMapHScroll.Max = rdIconUpperBound
+    
    On Error GoTo 0
    Exit Sub
 
@@ -5160,7 +5192,7 @@ Private Sub determineStartRecord()
 
     On Error GoTo determineStartRecord_Error
    
-    rdIconNumber = 0 ' normally starts at zero
+    rdIconNumber = rdIconLowerBound ' normally starts at zero
     
     Randomize
     
@@ -5168,21 +5200,20 @@ Private Sub determineStartRecord()
     If Command <> "" Then
         If IsNumeric(Command) Then
             testingNo = Val(Command)
-            If testingNo > 0 And testingNo <= rdIconMaximum Then
+            If testingNo > 0 And testingNo <= rdIconUpperBound Then
                 'MsgBox testingNo
                 rdIconNumber = testingNo
             Else
-                rdIconNumber = rdIconMaximum * Rnd() + 1
+                rdIconNumber = rdIconUpperBound * Rnd() + 1
             End If
         End If
     Else
-        rdIconNumber = rdIconMaximum * Rnd() + 1
+        rdIconNumber = rdIconUpperBound * Rnd() + 1
     End If
     
     'MsgBox "rdIconNumber = " & rdIconNumber
     ' set the very large icon record number displayed on the main form
-    lblRdIconNumber.Caption = rdIconNumber + 1
-    lblRdIconNumber.ToolTipText = "This is the dock icon number " & Str$(rdIconNumber) + 1
+    Call showIconLargeNumber
     
     ' .47 DAEB 16/04/2022 rdIconConfig.frm Added StartRecordNumber
     startRecordNumber = rdIconNumber
@@ -5600,37 +5631,50 @@ createThumbnailLayout_Error:
 End Sub
 
 '---------------------------------------------------------------------------------------
-' Procedure : createRdMapBoxes
+' Procedure : createDockMapBoxes
 ' Author    : beededea
 ' Date      : 20/06/2019
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub createRdMapBoxes()
+Private Sub createDockMapBoxes()
     Dim useloop As Integer: useloop = 0
+    Dim lStartPosition As Long: lStartPosition = 0
+    Dim lBoxWidth As Long: lBoxWidth = 0
+    Dim firstMapBoxToCreate As Integer: firstMapBoxToCreate = 0
 
-   On Error GoTo createRdMapBoxes_Error
-   If debugFlg = 1 Then debugLog "%" & "createRdMapBoxes"
+    On Error GoTo createDockMapBoxes_Error
+    If debugFlg = 1 Then debugLog "%" & "createDockMapBoxes"
 
     storeLeft = gblBoxSpacing
-    ' dynamically create more picture boxes to the maximum number of icons
-    For useloop = 1 To rdIconMaximum
+    lStartPosition = 540
+    lBoxWidth = 500
+    
+    ' dynamically create more picture boxes to the maximum number of icons, we start at position 3 as we have a base picture control on the form at index 2
+    ' and the control array is created upward from that value. The first icon in the random access data file is a blank record at position 1, the first
+    ' real user icon is at position 2.
+    firstMapBoxToCreate = 3
+    
+    For useloop = firstMapBoxToCreate To rdIconUpperBound
         Load picRdMap(useloop)
-        picRdMap(useloop).Width = 500
-        picRdMap(useloop).Height = 500
-        storeLeft = storeLeft + gblBoxSpacing
+    Next useloop
+    
+    For useloop = 2 To rdIconUpperBound
+        picRdMap(useloop).Width = lBoxWidth
+        picRdMap(useloop).Height = lBoxWidth
         picRdMap(useloop).Left = storeLeft
         picRdMap(useloop).Top = 15
         picRdMap(useloop).Visible = True
         picRdMap(useloop).AutoRedraw = True
+        storeLeft = storeLeft + gblBoxSpacing
     Next useloop
-    
+   
    On Error GoTo 0
    Exit Sub
 
-createRdMapBoxes_Error:
+createDockMapBoxes_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure createRdMapBoxes of Form rDIconConfigForm"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure createDockMapBoxes of Form rDIconConfigForm"
 
 End Sub
 
@@ -5683,14 +5727,14 @@ Private Sub determineFirstRun()
 '        sAppToTerminate = ""
 '        sDisabled = "0"
 '
-'        rdIconMaximum = rdIconMaximum + 1
+'        rdIconUpperBound = rdIconUpperBound + 1
         
         'write the rdsettings file
-        'writeSettingsIni (rdIconMaximum)
-'        Call writeIconSettingsIni("Software\SteamyDock\IconSettings" & "\Icons", rdIconMaximum, interimSettingsFile)
+        'writeSettingsIni (rdIconUpperBound)
+'        Call writeIconSettingsIni("Software\SteamyDock\IconSettings" & "\Icons", rdIconUpperBound, interimSettingsFile)
 '
 '        'amend the count in both the rdSettings.ini
-'        PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconMaximum, interimSettingsFile
+'        PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, interimSettingsFile
 
         'write the updated test of first run to false
         PutINISetting "Software\IconSettings", "First", sfirst, toolSettingsFile
@@ -5750,20 +5794,20 @@ copyDockSettingsFile_Error:
 
 End Sub
 '---------------------------------------------------------------------------------------
-' Procedure : readIconsAndConfiguration
+' Procedure : readDockConfiguration
 ' Author    : beededea
 ' Date      : 25/05/2020
 ' Purpose   : read the configurations, settings.ini, registry and dockSettings.ini
 '---------------------------------------------------------------------------------------
 '
-Private Sub readIconsAndConfiguration()
+Private Sub readDockConfiguration()
     ' select the settings source STARTS
     Dim useloop As Integer: useloop = 0
     Dim location As String: location = 0
     
     'interimSettingsFile = App.Path & "\rdSettings.ini" ' a copy of the settings file that we work on
             
-    On Error GoTo readIconsAndConfiguration_Error
+    On Error GoTo readDockConfiguration_Error
       
     If fFExists(interimSettingsFile) Then
         rDGeneralReadConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralReadConfig", interimSettingsFile)
@@ -5792,18 +5836,19 @@ Private Sub readIconsAndConfiguration()
 '        chkReadConfig.Value = 1
         
         ' read the count from the settings file and find the last icon
-        theCount = Val(GetINISetting("Software\SteamyDock\IconSettings\Icons", "count", interimSettingsFile))
+        rdIconUpperBound = Val(GetINISetting("Software\SteamyDock\IconSettings\Icons", "count", interimSettingsFile))
         ' validate
         
-        rdIconMaximum = theCount - 1
+
         
         ' copy the original configs out of the registry and into a settings file that we will operate upon
 
-        For useloop = 0 To rdIconMaximum
-            ' get the relevant entries from the registry
-            location = "Software\SteamyDock\IconSettings\Icons"
-            
-            readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", rdIconNumber, interimSettingsFile
+'        For useloop = rdIconLowerBound To rdIconUpperBound
+'            ' get the relevant entries from the registry
+'            location = "Software\SteamyDock\IconSettings\Icons"
+'
+'            Call readIconSettingsIni(useloop, False)
+'
             
 '            sFilename = GetINISetting(location, useloop & "-FileName", interimSettingsFile)
 '            sFileName2 = GetINISetting(location, useloop & "-FileName2", interimSettingsFile)
@@ -5835,7 +5880,7 @@ Private Sub readIconsAndConfiguration()
             'writeSettingsIni (useloop)
             'Call writeIconSettingsIni("Software\SteamyDock\IconSettings" & "\Icons", useloop, interimSettingsFile)
 
-        Next useloop
+'        Next useloop
         
         ' make a backup of the rdSettings.ini after the intermediate file has been created
         'Call fbackupSettings("")
@@ -5873,9 +5918,9 @@ Private Sub readIconsAndConfiguration()
    On Error GoTo 0
    Exit Sub
 
-readIconsAndConfiguration_Error:
+readDockConfiguration_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readIconsAndConfiguration of Form dockSettings on " & Erl
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readDockConfiguration of Form dockSettings on " & Erl
 End Sub
 
 
@@ -5918,8 +5963,8 @@ Private Sub readRocketDockSettings()
         FileCopy origSettingsFile, interimSettingsFile
         
         ' read the rocketdock settings.ini and find the very last icon
-        theCount = Val(GetINISetting("Software\SteamyDock\IconSettings\Icons", "count", interimSettingsFile))
-        rdIconMaximum = theCount - 1
+        rdIconUpperBound = Val(GetINISetting("Software\SteamyDock\IconSettings\Icons", "count", interimSettingsFile))
+
     Else
         frmRegistry.chkReadRegistry.Value = 1
         frmRegistry.chkReadSettings.Value = 0
@@ -5930,11 +5975,11 @@ Private Sub readRocketDockSettings()
         frmRegistry.chkWriteConfig.Value = 0
         
         ' read the rocketdock registry and find the last icon
-        theCount = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", "count")
-        rdIconMaximum = theCount - 1
+        rdIconUpperBound = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", "count")
+
                 
         ' copy the original ICON configs out of the registry and into a settings file that we will operate upon
-        readIconRegistryWriteSettings interimSettingsFile
+        'readIconRegistryWriteSettings interimSettingsFile
         
         ' make a backup of the rdSettings.ini after the intermediate file has been created
         Call fbackupSettings
@@ -6473,7 +6518,7 @@ Private Sub btnSet_Click()
         ' write the rocketdock settings.ini
         'writeSettingsIni (rdIconNumber) ' the settings.ini only exists when RD is set to use it
         PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
-        Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", rdIconNumber, interimSettingsFile)
+        Call writeIconSettingsIni(rdIconNumber, False)
     End If
     
     ' tell the user that all has been saved
@@ -6486,7 +6531,7 @@ Private Sub btnSet_Click()
     'if the current icon has changed by a dblclick on the file list then refresh that part of the rdMap
     If iconChanged = True Then
         'only if the rdMAp has already been displayed already do we carry out the image refresh
-        If Not picRdMap(0).ToolTipText = vbNullString Then ' check that the array has been populated already
+        If Not picRdMap(2).ToolTipText = vbNullString Then ' check that the array has been populated already
             ' we just reload the sole picbox that has changed
             Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False)
         End If
@@ -6501,13 +6546,13 @@ Private Sub btnSet_Click()
     If triggerRdMapRefresh = True Then
         'Call rdMapRefresh_Click
         'Call busyStart
-        Call populateRdMap(0) ' show the map from position zero
+        Call populateDockMap(rdIconLowerBound) ' show the map from position zero
         'Call busyStop
 
         ' we signify that there have been no changes - this is just a refresh
         btnSet.Enabled = False ' this has to be done at the end
         btnClose.Visible = True
-    btnCancel.Visible = False
+        btnCancel.Visible = False
 
         triggerRdMapRefresh = False
     End If
@@ -7627,7 +7672,7 @@ Private Sub btnCancel_Click()
     
     If fFExists(interimSettingsFile) Then '
         'get the rocketdock settings.ini for this icon alone
-        readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", rdIconNumber, interimSettingsFile
+        Call readIconSettingsIni(rdIconNumber, False)
     'Else
         'readRegistryIconValues (rdIconNumber)
     End If
@@ -7875,10 +7920,10 @@ Private Sub rdMapPageDown_Press()
     'increment the icon number
     rdIconNumber = rdIconNumber + 15
     'check we haven't gone too far
-    If rdIconNumber > rdIconMaximum Then rdIconNumber = rdIconMaximum
+    If rdIconNumber > rdIconUpperBound Then rdIconNumber = rdIconUpperBound
     
     ' only move the map if the array has been populated,
-    If Not picRdMap(0).ToolTipText = vbNullString Then
+    If Not picRdMap(2).ToolTipText = vbNullString Then
         ' I want to test to see if the picture property is populated but
         ' as the picture property is not being set by Lavolpe's method then we can't test for it
         ' testing the tooltip is one method of seeing if the map has been created
@@ -7893,7 +7938,7 @@ Private Sub rdMapPageDown_Press()
                 If rdMapHScroll.Max - 15 >= 0 Then ' the scrollbar doesn't like to go less than zero
                     rdMapHScroll.Value = rdMapHScroll.Max - 15
                 Else
-                    rdMapHScroll.Value = 0
+                    rdMapHScroll.Value = rdMapHScroll.Min
                 End If
             End If
             ' we are now at the end
@@ -7967,9 +8012,8 @@ End Sub
 Private Sub postMapPageUpDown()
         
    On Error GoTo postMapPageUpDown_Error
-
-    lblRdIconNumber.Caption = Str$(rdIconNumber) + 1
-    lblRdIconNumber.ToolTipText = "This is SteamyDock icon number " & Str$(rdIconNumber) + 1
+   
+    Call showIconLargeNumber
     
     Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False)
     
@@ -7993,6 +8037,30 @@ postMapPageUpDown_Error:
 End Sub
 
 '---------------------------------------------------------------------------------------
+' Procedure : showIconLargeNumber
+' Author    : beededea
+' Date      : 30/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub showIconLargeNumber()
+
+   On Error GoTo showIconLargeNumber_Error
+
+    lblRdIconNumber.Caption = CStr(rdIconNumber - 1)
+    lblRdIconNumber.ToolTipText = "This is SteamyDock icon number " & CStr(rdIconNumber - 1) & " "
+
+   On Error GoTo 0
+   Exit Sub
+
+showIconLargeNumber_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure showIconLargeNumber of Form rDIconConfigForm"
+
+End Sub
+
+
+'---------------------------------------------------------------------------------------
 ' Procedure : rdMapPageUp_Press
 ' Author    : beededea
 ' Date      : 20/06/2019
@@ -8011,10 +8079,10 @@ Private Sub rdMapPageUp_Press()
     'increment the icon number
     rdIconNumber = rdIconNumber - 15
     'check we haven't gone too far
-    If rdIconNumber < 0 Then rdIconNumber = 0
+    If rdIconNumber < rdIconLowerBound Then rdIconNumber = rdIconLowerBound
     
     ' only move the map if the array has been populated,
-    If Not picRdMap(0).ToolTipText = vbNullString Then
+    If Not picRdMap(2).ToolTipText = vbNullString Then
         rdMapHScroll.Value = rdIconNumber
     End If
     
@@ -8344,6 +8412,7 @@ End Sub
 Private Sub btnPrev_Click()
 
     Dim exitSubFlg As Boolean: exitSubFlg = False
+    Dim oldiconNumber As Integer: oldiconNumber = 0
     
     On Error GoTo btnPrev_Click_Error
     If debugFlg = 1 Then debugLog "%" & "btnPrev_Click"
@@ -8351,12 +8420,17 @@ Private Sub btnPrev_Click()
     Call preButtonClick(exitSubFlg)
     
     If exitSubFlg = True Then Exit Sub
+    
+    oldiconNumber = rdIconNumber
         
     'decrement the icon number
     rdIconNumber = rdIconNumber - 1
-    If rdIconNumber < 0 Then rdIconNumber = 0     'check we haven't gone too far
+    If rdIconNumber < rdIconLowerBound Then
+        rdIconNumber = rdIconLowerBound    'check we haven't gone too far
+        Exit Sub
+    End If
     
-    Call postButtonClick
+    Call postButtonClick(oldiconNumber)
 
    On Error GoTo 0
    Exit Sub
@@ -8376,6 +8450,7 @@ End Sub
 Private Sub btnNext_Click()
     
     Dim exitSubFlg As Boolean: exitSubFlg = False
+    Dim oldiconNumber As Integer: oldiconNumber = 0
     
     On Error GoTo btnNext_Click_Error
     If debugFlg = 1 Then debugLog "%" & "btnNext_Click"
@@ -8384,12 +8459,14 @@ Private Sub btnNext_Click()
     
     If exitSubFlg = True Then Exit Sub
         
+    oldiconNumber = rdIconNumber
+    
     'increment the icon number
     rdIconNumber = rdIconNumber + 1
     'check we haven't gone too far
-    If rdIconNumber > rdIconMaximum Then rdIconNumber = rdIconMaximum
+    If rdIconNumber > rdIconUpperBound Then rdIconNumber = rdIconUpperBound
 
-    Call postButtonClick
+    Call postButtonClick(oldiconNumber)
     
    On Error GoTo 0
    Exit Sub
@@ -8457,12 +8534,12 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub postButtonClick()
+Private Sub postButtonClick(ByVal oldiconNumber As Integer)
     
     ' only move the map if the array has been populated,
     On Error GoTo postButtonClick_Error
-
-    If Not picRdMap(0).ToolTipText = vbNullString Then
+    
+    If Not picRdMap(2).ToolTipText = vbNullString Then
         ' I want to test to see if the picture property is populated but
         ' as the picture property is not being set by Lavolpe's method then we can't test for it
         ' testing the tooltip above is one method of seeing if the map has been created
@@ -8474,15 +8551,14 @@ Private Sub postButtonClick()
         End If
     End If
 
-    lblRdIconNumber.Caption = Str$(rdIconNumber) + 1
-    lblRdIconNumber.ToolTipText = "This is SteamyDock icon number " & Str$(rdIconNumber) + 1
+    Call showIconLargeNumber
     
     Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False)
     
     'remove and reset the highlighting on the Rocket dock map
-    picRdMap(rdIconNumber - 1).BorderStyle = 0
+    picRdMap(oldiconNumber).BorderStyle = 0
     ' should not attempt to style above the number of icons we actually have
-    If rdIconNumber < rdIconMaximum Then picRdMap(rdIconNumber + 1).BorderStyle = 0
+    'If rdIconNumber < rdIconUpperBound Then picRdMap(rdIconNumber-1).BorderStyle = 0
     picRdMap(rdIconNumber).BorderStyle = 1
     
     previewFrameGotFocus = True
@@ -8516,20 +8592,20 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 ' .79 DAEB 28/05/2022 rDIConConfig.frm new parameter to determine when to populate the dragicon
-Private Sub displayIconElement(ByVal iconCount As Integer, ByRef picBox As PictureBox, fillPicBox As Boolean, ByRef icoPreset As Integer, ByVal showProperties As Boolean, ByVal fillDragIcon As Boolean, Optional ByVal showBlank As Boolean)
+Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox As PictureBox, fillPicBox As Boolean, ByRef icoPreset As Integer, ByVal showProperties As Boolean, ByVal fillDragIcon As Boolean, Optional ByVal showBlank As Boolean)
     Dim FileName As String: FileName = vbNullString
     Dim qPos As Long: qPos = 0
     Dim filestring As String: filestring = vbNullString
     Dim suffix As String: suffix = vbNullString
     Dim picSize As Long: picSize = 0
+    Dim displayedIconCounter As Integer: displayedIconCounter = 0
     
     'if it is a good icon then read the data
     On Error GoTo displayIconElement_Error
     If debugFlg = 1 Then debugLog "%" & "displayIconElement"
 
     If fFExists(interimSettingsFile) Then '
-        'get the rocketdock alternative settings.ini for this icon alone
-        readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", iconCount, interimSettingsFile
+        Call readIconSettingsIni(thisRecordNumber, False)
     End If
 
     ' .46 DAEB 16/04/2022 rdIconConfig.frm Made the word Blank visible or not when clicking on the icon map
@@ -8632,11 +8708,13 @@ Private Sub displayIconElement(ByVal iconCount As Integer, ByRef picBox As Pictu
         
     End If
     
+    displayedIconCounter = thisRecordNumber - 1 ' the first visible is the record after the blank record 1
+    
     'If the docklet entry in the settings.ini is populated then set a helpful tooltiptext
     If sDockletFile <> "" Then
-        picBox.ToolTipText = "Icon number " & iconCount + 1 & "You can modify this docklet by selecting a new target, click on the ... button next to the target field."
+        picBox.ToolTipText = " Icon number " & displayedIconCounter & "You can modify this docklet by selecting a new target, click on the ... button next to the target field."
     Else
-        picBox.ToolTipText = "Icon number " & iconCount + 1 & " = " & sFilename
+        picBox.ToolTipText = "Picbox index no. " & thisRecordNumber & " Icon number " & displayedIconCounter & " = " & sFilename
     End If
     picPreview.Tag = sFilename
     
@@ -9126,20 +9204,21 @@ populateThumbnails_Error:
 End Sub
 
 '---------------------------------------------------------------------------------------
-' Procedure : populateRdMap
+' Procedure : populateDockMap
 ' Author    : beededea
 ' Date      : 20/06/2019
 ' Purpose   : redraws the whole rdMap
 '---------------------------------------------------------------------------------------
 '
-Private Sub populateRdMap(ByVal xDeviation As Integer)
+Private Sub populateDockMap(ByVal xDeviation As Integer)
 
     Dim useloop As Integer: useloop = 0
     Dim busyFilename As String: busyFilename = vbNullString
     Dim dotString As String: dotString = vbNullString
+'    Dim mapBoxIndex As Integer: mapBoxIndex = 0
    
-    On Error GoTo populateRdMap_Error
-    If debugFlg = 1 Then debugLog "%" & "populateRdMap"
+    On Error GoTo populateDockMap_Error
+    If debugFlg = 1 Then debugLog "%" & "populateDockMap"
 
     dotString = vbNullString
     dotCount = 0
@@ -9150,16 +9229,18 @@ Private Sub populateRdMap(ByVal xDeviation As Integer)
     rDIconConfigForm.Refresh
     
     ' populate each with an image
-    For useloop = 0 To rdIconMaximum
+    For useloop = xDeviation To rdIconUpperBound
         
-        picRdMap(useloop).BorderStyle = 1 ' put a border around the picboxes to show an update
-        
+        'mapBoxIndex = xDeviation
         ' using the deviation from the extracted start
         ' visit the filelist at that point and extract the filename
         '  and extract the file path
         
+        picRdMap(useloop).BorderStyle = 1 ' put a border around the picboxes to show an update
+        
         ' the target picture control and the icon size
-        Call displayIconElement(useloop + xDeviation, picRdMap(useloop), True, 32, False, False, False)
+        Call displayIconElement(useloop, picRdMap(useloop), True, 32, False, False, False)
+
         picRdMap(useloop).BorderStyle = 0
         
         'do the 'working...' text on the button
@@ -9185,7 +9266,7 @@ Private Sub populateRdMap(ByVal xDeviation As Integer)
         End If
         picBusy.Picture = LoadPicture(busyFilename)
         picBusy.Visible = False
- 
+         
     Next useloop
     
     rDIconConfigForm.Refresh
@@ -9193,9 +9274,9 @@ Private Sub populateRdMap(ByVal xDeviation As Integer)
    On Error GoTo 0
    Exit Sub
 
-populateRdMap_Error:
+populateDockMap_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure populateRdMap of Form rDIconConfigForm"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure populateDockMap of Form rDIconConfigForm"
 
 End Sub
 
@@ -9213,9 +9294,10 @@ Public Sub deleteRdMap(Optional ByVal backupFirst As Boolean = False, Optional B
     Dim busyFilename As String: busyFilename = vbNullString
     Dim dotString As String: dotString = vbNullString
     Dim answer As VbMsgBoxResult: answer = vbNo
+    Dim mapBoxIndex As Integer: mapBoxIndex = 0
     
-   On Error GoTo deleteRdMap_Error
-   If debugFlg = 1 Then debugLog "%deleteRdMap"
+    On Error GoTo deleteRdMap_Error
+    If debugFlg = 1 Then debugLog "%deleteRdMap"
 
     'If picRdMapGotFocus <> True Then Exit Sub
     answer = msgBoxA(" This will delete all the icons in your dock , are you sure?", vbQuestion + vbYesNo)
@@ -9228,13 +9310,15 @@ Public Sub deleteRdMap(Optional ByVal backupFirst As Boolean = False, Optional B
     'Note: we only write to the interim settings file
     'the write to the actual settings or registry happens when the user "saves & restarts"
     
-    For useloop = 1 To rdIconMaximum
+    For useloop = rdIconLowerBound To rdIconUpperBound
+    
+        mapBoxIndex = useloop - 1
             
-        removeSettingsIni (useloop)
+        'removeSettingsIni (useloop)
         'clear the icon
-        picRdMap(useloop).BackColor = &H8000000F
-        Set picRdMap(useloop).Picture = LoadPicture(vbNullString)
-        Unload picRdMap(useloop)
+        picRdMap(mapBoxIndex).BackColor = &H8000000F
+        Set picRdMap(mapBoxIndex).Picture = LoadPicture(vbNullString)
+        Unload picRdMap(mapBoxIndex)
         
                 'do the 'working...' text on the button
         dotCount = dotCount + 1
@@ -9262,22 +9346,21 @@ Public Sub deleteRdMap(Optional ByVal backupFirst As Boolean = False, Optional B
     Next useloop
         
     'decrement the icon count and the maximum icon
-    theCount = 1
-    rdIconMaximum = 0
+    rdIconUpperBound = rdIconUpperBound - 1
     
     'amend the count
-    PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", theCount, interimSettingsFile
+    PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, interimSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     'set the slider bar
     rdMapHScroll.Max = 1
 
-    rdIconNumber = 0
+    rdIconNumber = rdIconLowerBound
     
     If refreshDisplay = True Then
         ' load the new icon as an image in the picturebox
         Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False)
         
-        Call populateRdMap(0) ' regenerate the map from position zero
+        Call populateDockMap(rdIconLowerBound) ' regenerate the map from position zero
     End If
 
    On Error GoTo 0
@@ -9331,7 +9414,7 @@ Private Sub btnMapPrev_Click()
 
     Call picRdMapSetFocus
     
-    If rdMapHScroll.Value >= 1 Then
+    If rdMapHScroll.Value > rdIconLowerBound Then
         rdMapHScroll.Value = rdMapHScroll.Value - 1
     End If
 
@@ -9736,10 +9819,10 @@ Private Sub readRegistryWriteSettings()
    On Error GoTo readRegistryWriteSettings_Error
       If debugFlg = 1 Then debugLog "%" & "readRegistryWriteSettings"
    
-    For useloop = 0 To rdIconMaximum
+    For useloop = rdIconLowerBound To rdIconUpperBound
          ' get the relevant entries from the registry
          readRegistryIconValues (useloop)
-         Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, interimSettingsFile)
+         Call writeIconSettingsIni(useloop, False)
          
      Next useloop
 
@@ -10304,13 +10387,12 @@ Private Sub picRdMap_DragDrop(Index As Integer, Source As Control, X As Single, 
     ' but this time do NOT show the icon in preview form, bottom left as we just want the text.
     
     rdIconNumber = Index
-    lblRdIconNumber.Caption = Str$(rdIconNumber) + 1
-    lblRdIconNumber.ToolTipText = "This is SteamyDock icon number " & Str$(rdIconNumber) + 1
+    Call showIconLargeNumber
     
     ' show the target icon details only
     Call displayIconElement(rdIconNumber, picPreview, False, gblIcoSizePreset, True, False) ' < False to showing the image but show the target details
 
-    If Index <= rdIconMaximum Then
+    If Index <= rdIconUpperBound Then
         picRdMap(Index).BorderStyle = 1 ' highlight the new icon position
     End If
     
@@ -10442,12 +10524,13 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
     
     pvtMapImageChanged = True
 
-    notQuiteTheTop = rdIconMaximum - 1
+    notQuiteTheTop = rdIconUpperBound - 1
     
     
 
     ' take the source icon details and store those in the stored vars
-    readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", srcRdIconNumber, interimSettingsFile
+    Call readIconSettingsIni(srcRdIconNumber, False)
+
         
     srcFilename = sFilename
     srcFileName2 = sFileName2
@@ -10475,7 +10558,8 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
     End If
     
     ' read the target icon details and store those in the trgt vars
-    readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", trgtRdIconNumber, interimSettingsFile
+    Call readIconSettingsIni(trgtRdIconNumber, False)
+
 
     trgtFilename = sFilename
     trgtFileName2 = sFileName2
@@ -10515,18 +10599,14 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
     ' the source record location must be filled, overwritten with the next one up...
     If firstRecord = srcRdIconNumber Then
         
-'        For useloop = 0 To srcRdIconNumber
-'            ' do nothing for the records to the left
-'        Next useloop
-        
         For useloop = firstRecord To secondRecord
             ' we don't bother to read the current record source here as we have already done so above.
             
             ' read the rdsettings.ini one item up in the list
-            Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop + 1, interimSettingsFile)
+            Call readIconSettingsIni(useloop + 1, False)
             
             'write the the next item up at the current source location effectively overwriting the current record
-            Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, interimSettingsFile)
+            Call writeIconSettingsIni(useloop, False)
             
             ' .83 DAEB 03/06/2022 rDIConConfig.frm Display the icon we just moved by dragging, one by one rather than the whole map
             Call displayIconElement(useloop, picRdMap(useloop), True, 32, True, False)
@@ -10563,31 +10643,25 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
         End If
         
         PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
-        Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", trgtRdIconNumber, interimSettingsFile)
+        Call writeIconSettingsIni(trgtRdIconNumber, False)
             
         Call displayIconElement(trgtRdIconNumber, picRdMap(trgtRdIconNumber), True, 32, True, False)
 
-'        For useloop = secondRecord + 1 To rdIconMaximum
-'            ' do nothing for the records to the right
-'        Next useloop
+'       ' do nothing for the records to the right
+
     End If
     
     ' if the first record is the target then copying is occurring from right towards the left
     If firstRecord = trgtRdIconNumber Then
-    
-'        For useloop = 0 To trgtRdIconNumber - 1
-'            ' do nothing
-'        Next useloop
                         
         ' move all the records up one space, leaving space for the target record to be inserted
         For useloop = srcRdIconNumber To trgtRdIconNumber Step -1
-        
+                
             ' read the rdsettings.ini one item up in the list
-            Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop - 1, interimSettingsFile)
-            
+            Call readIconSettingsIni(useloop - 1, False)
             
             'write the the next item up at the current source location effectively overwriting it
-            Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, interimSettingsFile)
+            Call writeIconSettingsIni(useloop, False)
         
             Call displayIconElement(useloop, picRdMap(useloop), True, 32, True, False)
 
@@ -10623,7 +10697,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
             
         End If
         
-        Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", trgtRdIconNumber, interimSettingsFile)
+        Call writeIconSettingsIni(trgtRdIconNumber, False)
         PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
         
         ' .83 DAEB 03/06/2022 rDIConConfig.frm Display the icon we just moved by dragging, one by one rather than the whole map
@@ -10822,10 +10896,10 @@ End Sub
 '
 Private Sub rdMapHScroll_Change()
     Dim useloop As Long: useloop = 0
-    Dim startPos As Long: startPos = 0
+    Dim startpos As Long: startpos = 0
     Dim maxPos As Long: maxPos = 0
-    Dim rdIconMaxLong As Long: rdIconMaxLong = 0
-    Dim spacing As Integer: spacing = 0
+    Dim spacing As Long: spacing = 0
+    Dim offset As Long: offset = 0
     Dim mapBoxSize As Integer: mapBoxSize = 0
     
     On Error GoTo rdMapHScroll_Change_Error
@@ -10833,20 +10907,16 @@ Private Sub rdMapHScroll_Change()
    
     spacing = 540 * gblResizeRatio
     mapBoxSize = 500 * gblResizeRatio
-
-    rdIconMaxLong = rdIconMaximum
-    rdMapHScroll.Min = 0
-    rdMapHScroll.Max = theCount - 1
-    
-    startPos = rdMapHScroll.Value - 1
+    offset = 540 * gblResizeRatio
+    startpos = rdMapHScroll.Value
     
     'xlabel.Caption = startPos
     'nLabel.Caption = (startPos * spacing)
     
-    maxPos = rdIconMaxLong * spacing
+    'maxPos = rdIconUpperBound * spacing
     
-    For useloop = 0 To rdIconMaximum
-            picRdMap(useloop).Move ((useloop * spacing) - (startPos * spacing)), 30, mapBoxSize, mapBoxSize
+    For useloop = rdIconLowerBound To rdIconUpperBound
+        picRdMap(useloop).Move ((useloop * spacing) - (startpos * spacing) + offset), 30, mapBoxSize, mapBoxSize
     Next useloop
 
    On Error GoTo 0
@@ -12165,7 +12235,7 @@ Sub picRdMap_MouseDown_event(Index)
         If pvtMapImageChanged = True Then
             ' now change the icon image back again
             ' the target picture control and the icon size
-            'Call displayResizedImage(previousIcon, picRdMap(rdIconNumber), 32)
+            'Call displayResizedImage(previousIcon, picRdMap(rdIconNumber-1), 32)
             pvtMapImageChanged = False
         End If
     End If
@@ -12175,12 +12245,12 @@ Sub picRdMap_MouseDown_event(Index)
    
     rdIconNumber = Index
     
-    lblRdIconNumber.Caption = Str$(rdIconNumber) + 1
-    lblRdIconNumber.ToolTipText = "This is SteamyDock icon number " & Str$(rdIconNumber) + 1
+    Call showIconLargeNumber
+
     Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, True, False)
 
     'set the highlighting on the Rocket dock map
-    If Index <= rdIconMaximum Then
+    If Index <= rdIconUpperBound Then
         picRdMap(Index).BorderStyle = 1
     End If
     
@@ -12285,7 +12355,7 @@ Private Sub rdMapRefresh_Click()
     Call busyStart
     
     
-    Call recreateTheMap(rdIconMaximum)
+    Call recreateTheMap(rdIconUpperBound)
     
     Call busyStop
     
@@ -12315,18 +12385,16 @@ Public Sub recreateTheMap(ByVal oldRdIconMax As Integer)
     Dim useloop As Integer: useloop = 0
     
     On Error GoTo recreateTheMap_Error
-
-    useloop = 0
     
-    Call readIconsAndConfiguration
+    Call readDockConfiguration
     
-    If rdIconMaximum > oldRdIconMax Then
-        ' if you do a refresh and the old rdIconMaximum is less than the recently read
+    If rdIconUpperBound > oldRdIconMax Then
+        ' if you do a refresh and the old rdIconUpperBound is less than the recently read
         ' then items have been added to the Rocketdock via RD itself
         ' in which case you need to create the extra slots in the RD map
         
-        'loop from the old rdIconMaximum to the new rdIconMaximum and create a new slot in the map
-        For useloop = oldRdIconMax To rdIconMaximum
+        'loop from the old rdIconUpperBound to the new rdIconUpperBound and create a new slot in the map
+        For useloop = oldRdIconMax To rdIconUpperBound
         '       test to see if the picturebox has already been created
             If CheckControlExists(picRdMap(useloop)) Then
                 'do nothing
@@ -12334,14 +12402,14 @@ Public Sub recreateTheMap(ByVal oldRdIconMax As Integer)
                 Load picRdMap(useloop) ' dynamically extend the number of picture boxes by one
                 picRdMap(useloop).Width = 500
                 picRdMap(useloop).Height = 500
-                picRdMap(useloop).Left = picRdMap(useloop - 1).Left + gblBoxSpacing
+                picRdMap(useloop).Left = picRdMap(useloop).Left + gblBoxSpacing
                 picRdMap(useloop).Top = 30
                 picRdMap(useloop).Visible = True
             End If
         Next useloop
     End If
     
-    Call populateRdMap(0) ' show the map from position zero
+    Call populateDockMap(rdIconLowerBound) ' show the map from position zero
 
     On Error GoTo 0
     Exit Sub
@@ -13280,7 +13348,7 @@ Private Sub menuLeft_Click()
     ' .82 DAEB 02/06/2022 rDIConConfig.frm Added check for moving right or left beyond the end of the RDMap.
     If rdIconNumber - 1 < 0 Then Exit Sub
     
-    Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", rdIconNumber - 1, interimSettingsFile)
+    Call readIconSettingsIni(rdIconNumber - 1, False)
         
     storedFilename = sFilename
     storedFileName2 = sFileName2
@@ -13309,9 +13377,10 @@ Private Sub menuLeft_Click()
     End If
     
     ' take the current icon details and write it into the place of the one to the left (-1)
-    Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", rdIconNumber, interimSettingsFile)
+     Call readIconSettingsIni(rdIconNumber, False)
     
-    Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", rdIconNumber - 1, interimSettingsFile)
+    Call writeIconSettingsIni(rdIconNumber - 1, False)
+
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
     sFilename = storedFilename
@@ -13343,11 +13412,12 @@ Private Sub menuLeft_Click()
     End If
     
     ' take the stored icon details and write it into the current location
-    Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", rdIconNumber, interimSettingsFile)
+    Call writeIconSettingsIni(rdIconNumber, False)
+
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
     Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False)
-    Call displayIconElement(rdIconNumber - 1, picRdMap(rdIconNumber - 1), True, 32, True, False)
+    Call displayIconElement(rdIconNumber - 1, picRdMap(rdIconNumber), True, 32, True, False)
     
     btnSet.Enabled = False ' tell the program that nothing has changed
     btnClose.Visible = True
@@ -13395,10 +13465,10 @@ Private Sub menuright_Click()
     If debugFlg = 1 Then debugLog "%" & "menuright_Click"
 
     ' .82 DAEB 02/06/2022 rDIConConfig.frm Added check for moving right or left beyond the end of the RDMap.
-    If rdIconNumber + 1 > rdIconMaximum Then Exit Sub
+    If rdIconNumber > rdIconUpperBound Then Exit Sub
     
     ' take the current icon plus one and read its details and store it
-    readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", rdIconNumber + 1, interimSettingsFile
+     Call readIconSettingsIni(rdIconNumber + 1, False)
             
     storedFilename = sFilename
     storedFileName2 = sFileName2
@@ -13426,10 +13496,11 @@ Private Sub menuright_Click()
     End If
     ' take the current icon details and write it into the place of the one to the right
     'readSettingsIni (rdIconNumber)
-    readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", rdIconNumber, interimSettingsFile
+     Call readIconSettingsIni(rdIconNumber, False)
     
     'writeSettingsIni (rdIconNumber + 1)
-    Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", rdIconNumber + 1, interimSettingsFile)
+    Call writeIconSettingsIni(rdIconNumber + 1, False)
+
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
 
     sFilename = storedFilename
@@ -13457,7 +13528,7 @@ Private Sub menuright_Click()
     End If
     ' take the stored icon details and write it into the current location
     'writeSettingsIni (rdIconNumber)
-    Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", rdIconNumber, interimSettingsFile)
+    Call writeIconSettingsIni(rdIconNumber, False)
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
     Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False)
@@ -13508,42 +13579,40 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
     ' starting at the end of the rocketdock map, step backward and decrement the number
     ' until we reach the current position.
     
-    For useloop = rdIconMaximum To rdIconNumber Step -1
+    For useloop = rdIconUpperBound To rdIconNumber Step -1
          
          Call zeroAllIconCharacteristics
          
-         readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, interimSettingsFile
+          Call readIconSettingsIni(useloop, False)
         
         ' and increment the identifier by one
-         Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop + 1, interimSettingsFile)
+         Call writeIconSettingsIni(useloop + 1, False)
          
     Next useloop
     
     'increment the new icon count
-    theCount = theCount + 1
+    rdIconUpperBound = rdIconUpperBound + 1
     
     'amend the count in both the alternative rdSettings.ini
-    PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", theCount, interimSettingsFile
+    PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, interimSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
-    rdIconMaximum = theCount - 1 '
-
     'set the slider bar to the new maximum
-    rdMapHScroll.Max = theCount - 1
+    rdMapHScroll.Max = rdIconUpperBound - 1
 
     ' .24 Add a form refresh after the menu has gone away to prevent messy control image leftovers
     rDIconConfigForm.Refresh
 
     ' test to see if the picturebox has already been created
-    If CheckControlExists(picRdMap(rdIconMaximum)) Then
+    If CheckControlExists(picRdMap(rdIconUpperBound)) Then
         'do nothing
     Else
-        Load picRdMap(rdIconMaximum) ' dynamically extend the number of picture boxes by one
-        picRdMap(rdIconMaximum).Width = 500
-        picRdMap(rdIconMaximum).Height = 500
-        picRdMap(rdIconMaximum).Left = picRdMap(rdIconMaximum - 1).Left + gblBoxSpacing
-        picRdMap(rdIconMaximum).Top = 30
-        picRdMap(rdIconMaximum).Visible = True
+        Load picRdMap(rdIconUpperBound) ' dynamically extend the number of picture boxes by one
+        picRdMap(rdIconUpperBound).Width = 500
+        picRdMap(rdIconUpperBound).Height = 500
+        picRdMap(rdIconUpperBound).Left = picRdMap(rdIconUpperBound - 1).Left + gblBoxSpacing
+        picRdMap(rdIconUpperBound).Top = 30
+        picRdMap(rdIconUpperBound).Visible = True
     End If
     
     thisIcon = useloop + 1
@@ -13580,13 +13649,13 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
     chkRunElevated.Value = 0
     
     'writeSettingsIni (thisIcon)
-    Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", thisIcon, interimSettingsFile)
+    Call writeIconSettingsIni(thisIcon, False)
     
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
     Call displayIconElement(thisIcon, picRdMap(thisIcon), True, 32, True, False)
     
-    Call populateRdMap(0) ' regenerate the map from position zero
+    Call populateDockMap(rdIconLowerBound) ' regenerate the map from position zero
       
     btnSet.Enabled = False ' tell the program that nothing has changed
     btnClose.Visible = True
@@ -15270,10 +15339,12 @@ End Sub
 Private Sub deleteRdMapPosition(ByVal thisIconNumber As Integer, Optional confirmDialog As Boolean = True)
     Dim useloop As Integer: useloop = 0
     Dim thisIcon As Integer: thisIcon = 0
-    Dim notQuiteTheTop As Integer: notQuiteTheTop = 0
     Dim answer As VbMsgBoxResult: answer = vbNo
         
-   On Error GoTo deleteRdMapPosition_Error
+    On Error GoTo deleteRdMapPosition_Error
+    
+    If thisIconNumber = 0 Then Exit Sub
+    If thisIconNumber > rdIconUpperBound Then Exit Sub
 
     If confirmDialog = True Then
         If chkToggleDialogs.Value = 1 Then
@@ -15284,7 +15355,7 @@ Private Sub deleteRdMapPosition(ByVal thisIconNumber As Integer, Optional confir
             Refresh
         End If
         
-        If thisIconNumber = 0 And rdIconMaximum = 1 Then
+        If thisIconNumber = 0 And rdIconUpperBound = 1 Then
             MsgBox "Cannot currently delete the last icon, one icon must always be present for the dock to operate - apologies.", vbInformation + vbYesNo
             Exit Sub
         End If
@@ -15294,50 +15365,48 @@ Private Sub deleteRdMapPosition(ByVal thisIconNumber As Integer, Optional confir
     'Note: we only write to the interim settings file
     'the write to the actual settings or registry happens when the user "saves & restarts"
     
-    If thisIconNumber < rdIconMaximum Then 'if not the top icon loop through them all and reassign the values
-        notQuiteTheTop = rdIconMaximum - 1
-        For useloop = thisIconNumber To notQuiteTheTop
+    If thisIconNumber <= rdIconUpperBound Then 'if not the top icon loop through them all and reassign the values
+        For useloop = thisIconNumber To rdIconUpperBound
             
             ' read the rocketdock alternative rdsettings.ini one item up in the list
             'readSettingsIni (useloop + 1) ' the alternative rdsettings.ini only exists when RD is set to use it
             
-            readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop + 1, interimSettingsFile
+             Call readIconSettingsIni(useloop + 1, False)
             
             'write the the new item at the current location effectively overwriting it
             'writeSettingsIni (useloop)
-            Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, interimSettingsFile)
+            Call writeIconSettingsIni(useloop, False)
         Next useloop
     End If
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     ' to tidy up we need to overwrite the final data from the rdsettings.ini, we will write sweet nothings to it
-    removeSettingsIni (rdIconMaximum)
+    'removeSettingsIni (rdIconUpperBound)
     
     'clear the icon
-    picRdMap(rdIconMaximum).BackColor = &H8000000F
-'    Set picRdMap(rdIconMaximum).Picture = LoadPicture(vbNullString)
-    Set picRdMap(rdIconMaximum).Picture = Nothing
-    Unload picRdMap(rdIconMaximum)
+    picRdMap(rdIconUpperBound).BackColor = &H8000000F
+'    Set picRdMap(rdIconUpperBound).Picture = LoadPicture(vbNullString)
+    Set picRdMap(rdIconUpperBound).Picture = Nothing
+    Unload picRdMap(rdIconUpperBound)
     
     ' the picbox positioning
     storeLeft = storeLeft - gblBoxSpacing
         
     'decrement the icon count and the maximum icon
-    theCount = theCount - 1
-    rdIconMaximum = theCount - 1
+    rdIconUpperBound = rdIconUpperBound - 1
     
     'amend the count in both the alternative rdSettings.ini
-    PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", theCount, interimSettingsFile
+    PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, interimSettingsFile
     
     'set the slider bar to the new maximum
-    rdMapHScroll.Max = theCount - 1
+    rdMapHScroll.Max = rdIconUpperBound - 1
 
-    If thisIconNumber > rdIconMaximum Then rdIconNumber = rdIconMaximum
+    If thisIconNumber > rdIconUpperBound Then rdIconNumber = rdIconUpperBound
     thisIcon = rdIconNumber
     
     ' load the new icon as an image in the picturebox
     Call displayIconElement(thisIcon, picRdMap(thisIcon), True, 32, True, False)
     
-    Call populateRdMap(0) ' regenerate the map from position zero
+    Call populateDockMap(rdIconLowerBound) ' regenerate the map from position zero
     
     btnSet.Enabled = False ' tell the program that nothing has changed
     btnClose.Visible = True
@@ -15555,6 +15624,7 @@ Public Sub unloadAllForms(ByVal endItAll As Boolean)
     Dim NameProcess As String: NameProcess = ""
     Dim fcount As Integer: fcount = 0
     Dim useloop As Integer: useloop = 0
+    Dim mapBoxFirstToDelete As Integer: mapBoxFirstToDelete = 0
        
     On Error GoTo unloadAllForms_Error
     
@@ -15564,14 +15634,18 @@ Public Sub unloadAllForms(ByVal endItAll As Boolean)
     
     ' ANY controls created at runtime, MUST be Unloaded when we close the form.
     
-    ' unload the map
-    For useloop = 1 To rdIconMaximum ' 0 is the template
+    mapBoxFirstToDelete = rdIconLowerBound + 1
+    
+    ' unload the map runtime control array starting at one place above the design time default control array index position, 2 + 1
+    ' note: you cannot unload a design time control
+    
+    For useloop = mapBoxFirstToDelete To rdIconUpperBound ' 0 is the template
         If CheckControlExists(picRdMap(useloop)) Then
             Unload picRdMap(useloop)
         End If
     Next useloop
     
-    ' unload the thumbnails
+    ' unload the thumbnails runtime control array
     For useloop = 1 To 11 ' 0 is the template
         If CheckControlExists(picFraPicThumbIcon(useloop)) Then
             Unload picThumbIcon(useloop)
@@ -15975,8 +16049,8 @@ Private Sub menuRun_click()
     
     intShowCmd = Val(sShowCmd)
     
-    lblRdIconNumber.Caption = Str$(rdIconNumber) + 1
-    lblRdIconNumber.ToolTipText = "This is SteamyDock icon number " & Str$(rdIconNumber) + 1
+    Call showIconLargeNumber
+
     Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False)
     
     ' we signify that all changes have been lost so the "save this icon" will not appear when switching icons
@@ -16281,15 +16355,15 @@ Private Sub displayDockMap()
     'If picRdMap(0).Picture = 0 Then ' only recreate the map if the array is empty
     ' we used to check the .picture property but using lavolpe's 2nd method this proprty is not set.
     ' now we check for the tooltiptext which is only set when the image is populated.
-    If picRdMap(0).ToolTipText = vbNullString Then ' only recreate the map if the array is empty
-        Call populateRdMap(0) 'show the map from position zero
+    If picRdMap(2).ToolTipText = vbNullString Then ' only recreate the map if the array is empty
+        Call populateDockMap(rdIconLowerBound) 'show the map from position 2
         ' set the primary selection in the map
-        picRdMap(0).BorderStyle = 1
+        picRdMap(2).BorderStyle = 1
         
         'vb6 won't let the rdiconmap receive focus here using setfocus
     End If
     
-    rdMapHScroll.Max = theCount - 1
+    rdMapHScroll.Max = rdIconUpperBound - 1
     
     Call busyStop
 

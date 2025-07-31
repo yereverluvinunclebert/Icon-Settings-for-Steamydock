@@ -47,8 +47,7 @@ Public rdIconNumber As Integer
 
 Public gblIcoSizePreset As Integer
 Public thumbArray() As Integer
-Public rdIconMaximum As Integer
-Public theCount As Integer
+
 Public picFrameThumbsGotFocus As Boolean
 Public vScrollThumbsGotFocus As Boolean
 Public picRdMapGotFocus As Boolean
@@ -1538,27 +1537,26 @@ Public Sub readInterimAndWriteConfig()
 
         
     'use of the 3rd config file in the user data area first
-        If steamyDockInstalled = True And defaultDock = 1 And rDGeneralWriteConfig = "True" Then ' note it will always exist even if not used
-            If fFExists(interimSettingsFile) Then ' does the temporary settings.ini exist?
-                ' read the registry values for each of the icons and write them to the settings.ini
-                
-                For useloop = 0 To rdIconMaximum
-                    
-                    'readSettingsIni (useloop)
-                    readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, interimSettingsFile
-
-                    ' write the steamydock config file
-                    
-                    Call writeIconSettingsIni("Software\SteamyDock\IconSettings" & "\Icons", useloop, dockSettingsFile)
-    
-                    writeRegistryOnce (useloop)
-                Next useloop
-                
-                'amend the count in the steamydock config file
-                PutINISetting "Software\SteamyDock\IconSettings" & "\Icons", "count", theCount, dockSettingsFile
-
-            End If
-        End If
+'        If steamyDockInstalled = True And defaultDock = 1 And rDGeneralWriteConfig = "True" Then ' note it will always exist even if not used
+'            If fFExists(interimSettingsFile) Then ' does the temporary settings.ini exist?
+'                ' read the registry values for each of the icons and write them to the settings.ini
+'
+'                For useloop = 0 To rdIconUpperBound
+'
+'                    readIconSettingsIni useloop, False
+'
+'                    ' write the steamydock config file
+'
+'                    Call writeIconSettingsIni(useloop, False)
+'
+'                    writeRegistryOnce (useloop)
+'                Next useloop
+'
+'                'amend the count in the steamydock config file
+'                PutINISetting "Software\SteamyDock\IconSettings" & "\Icons", "count", theCount, dockSettingsFile
+'
+'            End If
+'        End If
 '        'Either of Rocketdock's two methods of saving data
 '        If rDGeneralReadConfig = "False" Then
 '            If fFExists(origSettingsFile) Then ' does the original settings.ini exist?
@@ -1578,7 +1576,7 @@ Public Sub readInterimAndWriteConfig()
 ''                chkReadConfig.Value = 0
 '
 '                ' if the rocketdock process has died then
-'                For useloop = 0 To rdIconMaximum
+'                For useloop = 0 To rdIconUpperBound
 '
 '                     'readSettingsIni (useloop)
 '                    readIconSettingsIni "Software\RocketDock\Icons", useloop, interimSettingsFile

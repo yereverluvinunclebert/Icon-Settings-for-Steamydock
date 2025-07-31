@@ -39,6 +39,8 @@
 
 ' set DPI awareness
 
+fast reading of icon settings using random access file
+
 ' Current Task:
 ' =============
 
@@ -47,6 +49,11 @@
 ' Status:
 ' =======
 '
+
+When SD adds an icon, then deletes it. RD will renew the dock automatically and the totla number of icons in the map should adjust. It seems to do it correctly
+but leaves the final icon duplicated. the Final control needs to be deleted from the array
+
+
 ' Generally the tool is complete barring some bugs to resolve and new features I would like to implement.
 '
 ' Tasks:

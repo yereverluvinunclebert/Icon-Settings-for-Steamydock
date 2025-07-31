@@ -753,7 +753,7 @@ Public Function readInstalledAppsRegistry(regLocation As Long, keyToSearch As St
     Dim sAppName As String: sAppName = vbNullString
     Dim sAppLocation As String: sAppLocation = vbNullString
     Dim sAppIcon As String: sAppIcon = vbNullString
-    Dim appName As String: appName = vbNullString
+    Dim AppName As String: AppName = vbNullString
     Dim AppLocation As String: AppLocation = vbNullString
     Dim appIcon As String: appIcon = vbNullString
     Dim lAppName As Long: lAppName = 0
@@ -777,7 +777,7 @@ Public Function readInstalledAppsRegistry(regLocation As Long, keyToSearch As St
             
             If RegOpenKeyEx(hParentKey, sAppID, 0, KEY_QUERY_VALUE, hSubKey) = 0 Then
                 lAppName = 0
-                appName = vbNullString
+                AppName = vbNullString
                 'DisplayName
                 If RegQueryValueEx(hSubKey, "DisplayName", 0, ValueType, ByVal 0, lAppName) = 0 Then
                     If ValueType = REG_SZ Then
@@ -785,7 +785,7 @@ Public Function readInstalledAppsRegistry(regLocation As Long, keyToSearch As St
                         RegQueryValueEx hSubKey, "DisplayName", 0, 0, ByVal sAppName, lAppName
                         sAppName = Left$(sAppName, lAppName - 1)
             
-                        If sAppName <> vbNullString Then appName = sAppName
+                        If sAppName <> vbNullString Then AppName = sAppName
                         sAppName = vbNullString
                     End If
                 End If
@@ -888,7 +888,7 @@ Public Function readInstalledAppsRegistry(regLocation As Long, keyToSearch As St
                 End If
                 
             End If
-            appName = vbNullString
+            AppName = vbNullString
         Loop
         RegCloseKey hParentKey
     End If
@@ -1368,7 +1368,7 @@ Public Sub generateDockInformation()
     Dim useloop2 As Integer: useloop2 = 0
     Dim iconImage As String: iconImage = vbNullString
     Dim iconTitle As String: iconTitle = vbNullString
-    Dim iconFileName As String: iconFileName = vbNullString
+    Dim iconFilename As String: iconFilename = vbNullString
     Dim iconCommand As String: iconCommand = vbNullString
     Dim iconArguments As String: iconArguments = vbNullString
     Dim iconWorkingDirectory As String: iconWorkingDirectory = vbNullString
@@ -1389,7 +1389,7 @@ Public Sub generateDockInformation()
     
     'testSettingsfile = App.Path & "\testDocksettings.ini"
     
-    oldIconMaximum = rdIconMaximum
+    oldIconMaximum = rdIconUpperBound
     
     msgBoxA "Backup Completed" & vbCr & "Dock Generation Starting - press OK and then please hold on for a few seconds whilst it completes.", vbExclamation + vbOKOnly, "Dock Generation Tool"
     
@@ -1403,7 +1403,7 @@ Public Sub generateDockInformation()
 
             Call zeroAllIconCharacteristics
             
-            Call checkTheLink(useloop2, iconImage, iconTitle, iconFileName, iconCommand, iconArguments, iconWorkingDirectory)
+            Call checkTheLink(useloop2, iconImage, iconTitle, iconFilename, iconCommand, iconArguments, iconWorkingDirectory)
 
             sFilename = iconImage
             sTitle = iconTitle
@@ -1412,24 +1412,24 @@ Public Sub generateDockInformation()
             sWorkingDirectory = iconWorkingDirectory
 
             ' write the settings.ini
-            Call writeIconSettingsIni("Software\SteamyDock\IconSettings" & "\Icons", useloop2, interimSettingsFile)
+            Call writeIconSettingsIni(useloop2, False)
     
         Next useloop2
         
-        rdIconMaximum = lbxApprovedList.ListCount - 1
+        rdIconUpperBound = lbxApprovedList.ListCount
         
         'amend the count to one more than the max as 0- is a valid icon
-        PutINISetting location & "\Icons", "count", rdIconMaximum + 1, interimSettingsFile
+        PutINISetting location & "\Icons", "count", rdIconUpperBound, interimSettingsFile
     
     ElseIf frmConfirmDock.rdbAppend = True Then ' is the option append? If so, write the new icons to the end.
         
         ' read the dock maximum count and increase that to include the newly selected items
-        newMaximum = rdIconMaximum + lbxApprovedList.ListCount
+        newMaximum = rdIconUpperBound + lbxApprovedList.ListCount
         
         listCounter = 0 ' the approved list starts at zero
-        For useloop2 = rdIconMaximum + 1 To newMaximum
+        For useloop2 = rdIconUpperBound To newMaximum
             Call zeroAllIconCharacteristics
-            Call checkTheLink(listCounter, iconImage, iconTitle, iconFileName, iconCommand, iconArguments, iconWorkingDirectory)
+            Call checkTheLink(listCounter, iconImage, iconTitle, iconFilename, iconCommand, iconArguments, iconWorkingDirectory)
 
             sFilename = iconImage
             sTitle = iconTitle
@@ -1438,28 +1438,28 @@ Public Sub generateDockInformation()
             sWorkingDirectory = iconWorkingDirectory
 
             ' write the alternative settings.ini
-            Call writeIconSettingsIni(location & "\Icons", useloop2, interimSettingsFile)
+            Call writeIconSettingsIni(useloop2, False)
             listCounter = listCounter + 1
             
          Next useloop2
 
-        rdIconMaximum = newMaximum
+        rdIconUpperBound = newMaximum
 
         'amend the count to one more than the max as 0- is a valid icon
-        PutINISetting location & "\Icons", "count", rdIconMaximum + 1, interimSettingsFile
+        PutINISetting location & "\Icons", "count", rdIconUpperBound, interimSettingsFile
     
     ElseIf frmConfirmDock.rdbPrepend = True Then ' is the option prepend?
 
-        newMaximum = rdIconMaximum + lbxApprovedList.ListCount
+        newMaximum = rdIconUpperBound + lbxApprovedList.ListCount
         
         ' read the old icons one at a time from the end to the beginning and write them at their new location
-        For useloop2 = rdIconMaximum To 0 Step -1
+        For useloop2 = rdIconUpperBound To rdIconLowerBound Step -1
             
             ' write the alternative settings.ini
-            Call readIconSettingsIni(location & "\Icons", useloop2, interimSettingsFile)
+            readIconSettingsIni useloop2, False
 
             ' write the alternative settings.ini
-            Call writeIconSettingsIni(location & "\Icons", useloop2 + lbxApprovedList.ListCount, interimSettingsFile)
+            Call writeIconSettingsIni(useloop2, False)
 
         Next useloop2
 
@@ -1467,7 +1467,7 @@ Public Sub generateDockInformation()
         For useloop2 = 0 To lbxApprovedList.ListCount - 1
 
             Call zeroAllIconCharacteristics
-            Call checkTheLink(useloop2, iconImage, iconTitle, iconFileName, iconCommand, iconArguments, iconWorkingDirectory)
+            Call checkTheLink(useloop2, iconImage, iconTitle, iconFilename, iconCommand, iconArguments, iconWorkingDirectory)
 
             sFilename = iconImage
             sTitle = iconTitle
@@ -1477,14 +1477,14 @@ Public Sub generateDockInformation()
 
             
             ' write the settings.ini
-            Call writeIconSettingsIni(location & "\Icons", useloop2, interimSettingsFile)
+            Call writeIconSettingsIni(useloop2, False)
 
         Next useloop2
 
-        rdIconMaximum = newMaximum
+        rdIconUpperBound = newMaximum
 
         ' amend the count to one more than the max as 0- is a valid icon
-        PutINISetting location & "\Icons", "count", rdIconMaximum + 1, interimSettingsFile
+        PutINISetting location & "\Icons", "count", rdIconUpperBound, interimSettingsFile
     
     ElseIf frmConfirmDock.rdbCurrent = True Then     ' is the option at current icon?
 
@@ -1492,21 +1492,21 @@ Public Sub generateDockInformation()
         startIcon = currentIcon + 1 ' do not overwrite the current icon. Start one icon box to the right.
         endIcon = startIcon + lbxApprovedList.ListCount - 1
         
-        newMaximum = rdIconMaximum + lbxApprovedList.ListCount
-        For useloop2 = rdIconMaximum To startIcon Step -1
+        newMaximum = rdIconUpperBound + lbxApprovedList.ListCount
+        For useloop2 = rdIconUpperBound To startIcon Step -1
 
         '   read the old icons from the current dock position one at a time from the end to the current position.
-            Call readIconSettingsIni(location & "\Icons", useloop2, interimSettingsFile)
+            readIconSettingsIni useloop2, False
 
             ' write them at their new location
-            Call writeIconSettingsIni(location & "\Icons", useloop2 + lbxApprovedList.ListCount, interimSettingsFile)
+            Call writeIconSettingsIni(useloop2, False)
 
         Next useloop2
 
         listCounter = 0
         For useloop2 = startIcon To endIcon
             Call zeroAllIconCharacteristics
-            Call checkTheLink(listCounter, iconImage, iconTitle, iconFileName, iconCommand, iconArguments, iconWorkingDirectory)
+            Call checkTheLink(listCounter, iconImage, iconTitle, iconFilename, iconCommand, iconArguments, iconWorkingDirectory)
 
             sFilename = iconImage
             sTitle = iconTitle
@@ -1516,15 +1516,15 @@ Public Sub generateDockInformation()
 
 
             ' write the approved icon list to the settings.ini
-            Call writeIconSettingsIni(location & "\Icons", useloop2, interimSettingsFile)
+            Call writeIconSettingsIni(useloop2, False)
             listCounter = listCounter + 1
             
         Next useloop2
 
-        rdIconMaximum = newMaximum
+        rdIconUpperBound = newMaximum
 
         'amend the count
-        PutINISetting location & "\Icons", "count", rdIconMaximum + 1, interimSettingsFile
+        PutINISetting location & "\Icons", "count", rdIconUpperBound, interimSettingsFile
 
     End If
 
@@ -1568,7 +1568,7 @@ End Sub
 Private Sub checkTheLink(ByVal listNo As Integer _
     , ByRef iconImage As String _
     , ByRef iconTitle As String _
-    , ByRef iconFileName As String _
+    , ByRef iconFilename As String _
     , ByRef iconCommand As String _
     , ByRef iconArguments As String _
     , ByRef iconWorkingDirectory As String)
@@ -1627,10 +1627,10 @@ Private Sub checkTheLink(ByVal listNo As Integer _
             ' delimited file. The list has two identification factors that are used to find a match and then we find an
             ' associated icon to use with a relative path.
 
-             iconFileName = identifyAppIcons(iconCommand)
+             iconFilename = identifyAppIcons(iconCommand)
 
-             If fFExists(iconFileName) Then
-                 iconImage = iconFileName
+             If fFExists(iconFilename) Then
+                 iconImage = iconFilename
              Else
                  iconImage = App.Path & "\my collection\steampunk icons MKVI" & "\document-lnk.png"
              End If
@@ -1644,10 +1644,10 @@ Private Sub checkTheLink(ByVal listNo As Integer _
             ' extract the icon from the exe or dll
             ' we can already extract an PNG or similar icon and we can write it to a pictureBox
             ' it should be possible to capture the stream and feed it to GDI+ or write it to a file
-             iconFileName = identifyAppIcons(iconCommand)
+             iconFilename = identifyAppIcons(iconCommand)
 
-             If fFExists(iconFileName) Then
-                 iconImage = iconFileName
+             If fFExists(iconFilename) Then
+                 iconImage = iconFilename
              Else
                  iconImage = App.Path & "\my collection\steampunk icons MKVI" & "\document-lnk.png"
              End If
