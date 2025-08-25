@@ -1,7 +1,7 @@
 VERSION 5.00
-Object = "{FB95F7DD-5143-4C75-88F9-A53515A946D7}#2.0#0"; "ccrtreeview.ocx"
+Object = "{FB95F7DD-5143-4C75-88F9-A53515A946D7}#2.0#0"; "CCRTreeView.ocx"
 Object = "{13E244CC-5B1A-45EA-A5BC-D3906B9ABB79}#1.0#0"; "CCRSlider.ocx"
-Object = "{FA5FEA4A-5ED5-4004-A509-2DABC30D42A7}#1.0#0"; "ccrimagelist.ocx"
+Object = "{FA5FEA4A-5ED5-4004-A509-2DABC30D42A7}#1.0#0"; "CCRImageList.ocx"
 Begin VB.Form rDIconConfigForm 
    Appearance      =   0  'Flat
    BorderStyle     =   1  'Fixed Single
@@ -3740,7 +3740,7 @@ Private Sub selectApplication(ByVal inputFolderName As String, ByRef retFileName
         End If
     End If
     
-    If Not sDockletFile = vbNullString Then
+    If Not sDockletFile = vbNullString Or Not sDockletFile = "0" Then
         If fFExists(sDockletFile) Then
             ' extract the folder name from the string
             dllPath = getFolderNameFromPath(sDockletFile)
@@ -6526,7 +6526,7 @@ Private Sub btnSet_Click()
     sFilename = txtCurrentIcon.Text
     
     sTitle = txtLabelName.Text
-    If sDockletFile = "" Then
+    If sDockletFile = vbNullString Or sDockletFile = "0" Then
         sCommand = txtTarget.Text
     Else
         sDockletFile = txtTarget.Text
