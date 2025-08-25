@@ -1,7 +1,7 @@
 VERSION 5.00
-Object = "{FB95F7DD-5143-4C75-88F9-A53515A946D7}#2.0#0"; "ccrtreeview.ocx"
+Object = "{FB95F7DD-5143-4C75-88F9-A53515A946D7}#2.0#0"; "CCRTreeView.ocx"
 Object = "{13E244CC-5B1A-45EA-A5BC-D3906B9ABB79}#1.0#0"; "CCRSlider.ocx"
-Object = "{FA5FEA4A-5ED5-4004-A509-2DABC30D42A7}#1.0#0"; "ccrimagelist.ocx"
+Object = "{FA5FEA4A-5ED5-4004-A509-2DABC30D42A7}#1.0#0"; "CCRImageList.ocx"
 Begin VB.Form rDIconConfigForm 
    Appearance      =   0  'Flat
    BorderStyle     =   1  'Fixed Single
@@ -8674,7 +8674,7 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
         txtStartIn.Text = sWorkingDirectory
         
         'If the docklet entry in the settings.ini is populated then blank off all the target, folder and image fields
-        If (sDockletFile = vbNullString Or sDockletFile = "0") Then
+        If (sDockletFile <> vbNullString And sDockletFile <> "0") Then
               txtLabelName.Enabled = False
               txtCurrentIcon.Enabled = False
               
