@@ -1590,10 +1590,10 @@ Begin VB.Form rDIconConfigForm
          Strikethrough   =   0   'False
       EndProperty
       Height          =   165
-      Left            =   10155
+      Left            =   10185
       TabIndex        =   107
       ToolTipText     =   "drag me"
-      Top             =   10155
+      Top             =   10230
       Width           =   345
    End
    Begin VB.Menu mnuTrgtMenu 
@@ -2890,12 +2890,17 @@ Private Sub Form_Resize_Event()
         If SDSuppliedFontSize = "" Then SDSuppliedFontSize = Val(GetINISetting("Software\IconSettings", "defaultSize", toolSettingsFile))
         currentFontSize = CSng(Val(SDSuppliedFontSize))
         
+        'make tab frames invisible so that the control resizing is not apparent to the user
+        Call makeFramesInvisible
+        
         ' resize all controls on the form
         Call resizeControls(Me, gblFormControlPositions(), gblStartFormWidth, gblStartFormHeight, currentFontSize)
                             
         ' repopulate the thumbnails top right, resized, clearing the cache first
         imlThumbnailCache.ListImages.Clear
         Call populateThumbnails(gblBaseThumbImageSize, gblThumbnailStartPosition)
+        
+        Call makeFramesVisible
 
         ' refresh the preview bottom left with new size image
         Call picRdMap_MouseDown_event(rdIconNumber)
@@ -2963,7 +2968,6 @@ Public Sub Form_Moved(sForm As String)
                     Call Form_Resize_Event
                     pvtFormResizedByDrag = False
                 End If
-                
             End If
             
         Case Else
@@ -2977,8 +2981,49 @@ Form_Moved_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_Moved of Form rDIconConfigForm"
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : makeFramesInvisible
+' Author    : beededea
+' Date      : 23/06/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub makeFramesInvisible()
     
- '---------------------------------------------------------------------------------------
+   On Error GoTo makeFramesInvisible_Error
+
+    picFrameThumbs.Visible = False
+    picRdThumbFrame.Visible = False
+
+   On Error GoTo 0
+   Exit Sub
+
+makeFramesInvisible_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure makeFramesInvisible of Form widgetPrefs"
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : makeFramesVisible
+' Author    : beededea
+' Date      : 23/06/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub makeFramesVisible()
+    
+   On Error GoTo makeFramesVisible_Error
+
+    picFrameThumbs.Visible = True
+    picRdThumbFrame.Visible = True
+
+   On Error GoTo 0
+   Exit Sub
+
+makeFramesVisible_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure makeFramesVisible of Form widgetPrefs"
+End Sub '---------------------------------------------------------------------------------------
 ' Procedure : setDPIAware
 ' Author    : beededea
 ' Date      : 28/03/2025
@@ -4575,8 +4620,8 @@ Private Sub adjustWindows10FormSize()
          
     End If
     
-    lblDragCorner.Move Me.ScaleLeft + Me.ScaleWidth - (lblDragCorner.Width + 40), _
-               Me.ScaleTop + Me.ScaleHeight
+    lblDragCorner.Move Me.ScaleLeft + Me.ScaleWidth - lblDragCorner.Width, _
+               Me.ScaleTop + Me.ScaleHeight + 20
    
    On Error GoTo 0
    Exit Sub
@@ -4890,9 +4935,8 @@ Private Sub setToolTips()
 
     If chkToggleDialogs.Value = 0 Then
         Call DestroyToolTip ' destroys the current tooltip
-        gblRdEnableBalloonTooltips = "0" ' this is the flag used to determine wheter a new balloon toltip is generated
+        gblRdEnableBalloonTooltips = "0" ' this is the flag used to determine wheter a new balloon tooltip is generated
         
-    
         btnMapPrev.ToolTipText = "This will scroll the icon map to the left so that you can view additional icons"
         btnMapNext.ToolTipText = "This will scroll the icon map to the right so that you can view additional icons"
         btnArrowUp.ToolTipText = "Hide the map"
@@ -4928,7 +4972,6 @@ Private Sub setToolTips()
         txtTarget.ToolTipText = "The target you wish to run, a file or a folder"
         txtLabelName.ToolTipText = "The name of the icon as it appears on the dock"
         lblSecondApp.ToolTipText = "If you want to run a second program after the program initiation, select it here"
-        'lblchkAutoHideDock.ToolTipText = "Automatically hides the dock for the default hiding period when the program is initiated"
         lblQuickLaunch.ToolTipText = "Launch an application before the bounce has completed"
         lblConfirmDialogAfter.ToolTipText = "Shows Confirmation Dialog after the command has run."
         lblConfirmDialog.ToolTipText = "Adds a Confirmation Dialog prior to the command running allowing you to say yes or no at runtime"
@@ -4961,11 +5004,11 @@ Private Sub setToolTips()
         btnGetMore.ToolTipText = "Click to install more icons"
         btnGenerate.ToolTipText = "Makes a whole NEW dock - use with care!"
         btnCloseMoreConfig.ToolTipText = "Hides the extra configuration section"
-        'picHideConfig.ToolTipText = "Hides the extra configuration section"
         lblDisabled.ToolTipText = "Disables this icon in the dock making it non-functional"
         chkDisabled.ToolTipText = "Disables this icon in the dock making it non-functional"
         txtAppToTerminate.ToolTipText = "Any program that must be terminated prior to the main program initiation will be shown here"
         btnAppToTerminate.ToolTipText = "Any program that must be terminated prior to the main program initiation will be shown here"
+        lblDragCorner.ToolTipText = "Drag me to resize the whole form"
     Else
         gblRdEnableBalloonTooltips = "1"
         
@@ -4975,81 +5018,81 @@ Private Sub setToolTips()
         gCmbIconTypesFilterBalloonTooltip = "This dropdown allows you to filter icon types to display in the icon file window above."
         
         ' standard tooltips disabled (set to nothing)
-        btnMapPrev.ToolTipText = ""
-        btnMapNext.ToolTipText = ""
-        btnPrev.ToolTipText = ""
-        btnNext.ToolTipText = ""
-        btnArrowUp.ToolTipText = ""
-        rdMapRefresh.ToolTipText = ""
-        FrameFolders.ToolTipText = ""
-        cmbDefaultDock.ToolTipText = ""
-        btnSettingsDown.ToolTipText = ""
-        btnSettingsUp.ToolTipText = ""
-        folderTreeView.ToolTipText = ""
-        textCurrentFolder.ToolTipText = ""
-        btnRemoveFolder.ToolTipText = ""
-        btnAddFolder.ToolTipText = ""
-        btnArrowDown.ToolTipText = ""
-        fraProperties.ToolTipText = ""
-        txtSecondApp.ToolTipText = ""
-        btnSecondApp.ToolTipText = ""
-        chkAutoHideDock.ToolTipText = ""
-        chkQuickLaunch.ToolTipText = ""
-        picMoreConfigDown.ToolTipText = ""
-        chkConfirmDialogAfter.ToolTipText = ""
-        chkConfirmDialog.ToolTipText = ""
-        btnIconSelect.ToolTipText = ""
-        picBusy.ToolTipText = ""
-        btnSet.ToolTipText = ""
-        txtCurrentIcon.ToolTipText = ""
-        btnSelectStart.ToolTipText = ""
-        btnTarget.ToolTipText = ""
-        chkRunElevated.ToolTipText = ""
-        cmbOpenRunning.ToolTipText = ""
-        cmbRunState.ToolTipText = ""
-        txtArguments.ToolTipText = ""
-        txtStartIn.ToolTipText = ""
-        txtTarget.ToolTipText = ""
-        txtLabelName.ToolTipText = ""
-        lblSecondApp.ToolTipText = ""
-        'lblchkAutoHideDock.ToolTipText = ""
-        lblQuickLaunch.ToolTipText = ""
-        lblConfirmDialogAfter.ToolTipText = ""
-        lblConfirmDialog.ToolTipText = ""
-        lblRdIconNumber.ToolTipText = ""
-        lblRunElevated.ToolTipText = ""
-        lblRunElevated.ToolTipText = ""
-        framePreview.ToolTipText = ""
-        btnNext.ToolTipText = ""
-        picPreview.ToolTipText = ""
-        lblBlankText.ToolTipText = ""
-        frameButtons.ToolTipText = ""
-        btnBackup.ToolTipText = ""
-        btnSaveRestart.ToolTipText = ""
-        btnCancel.ToolTipText = ""
-        btnClose.ToolTipText = ""
-        btnHelp.ToolTipText = ""
-        chkToggleDialogs.ToolTipText = ""
-        btnDefaultIcon.ToolTipText = ""
-        frameIcons.ToolTipText = ""
-        cmbIconTypesFilter.ToolTipText = ""
-        btnKillIcon.ToolTipText = ""
-        btnAdd.ToolTipText = ""
-        btnRefresh.ToolTipText = ""
-        textCurrIconPath.ToolTipText = ""
-        picFrameThumbs.ToolTipText = ""
-        filesIconList.ToolTipText = ""
-        btnThumbnailView.ToolTipText = ""
-        btnFileListView.ToolTipText = ""
-        btnGetMore.ToolTipText = ""
-        btnGenerate.ToolTipText = ""
-        btnCloseMoreConfig.ToolTipText = ""
-        'picHideConfig.ToolTipText = ""
-        lblDisabled.ToolTipText = ""
-        chkDisabled.ToolTipText = ""
-        txtAppToTerminate.ToolTipText = ""
-        btnAppToTerminate.ToolTipText = ""
-        lblAppToTerminate.ToolTipText = ""
+        btnMapPrev.ToolTipText = vbNullString
+        btnMapNext.ToolTipText = vbNullString
+        btnPrev.ToolTipText = vbNullString
+        btnNext.ToolTipText = vbNullString
+        btnArrowUp.ToolTipText = vbNullString
+        rdMapRefresh.ToolTipText = vbNullString
+        FrameFolders.ToolTipText = vbNullString
+        cmbDefaultDock.ToolTipText = vbNullString
+        btnSettingsDown.ToolTipText = vbNullString
+        btnSettingsUp.ToolTipText = vbNullString
+        folderTreeView.ToolTipText = vbNullString
+        textCurrentFolder.ToolTipText = vbNullString
+        btnRemoveFolder.ToolTipText = vbNullString
+        btnAddFolder.ToolTipText = vbNullString
+        btnArrowDown.ToolTipText = vbNullString
+        fraProperties.ToolTipText = vbNullString
+        txtSecondApp.ToolTipText = vbNullString
+        btnSecondApp.ToolTipText = vbNullString
+        chkAutoHideDock.ToolTipText = vbNullString
+        chkQuickLaunch.ToolTipText = vbNullString
+        picMoreConfigDown.ToolTipText = vbNullString
+        chkConfirmDialogAfter.ToolTipText = vbNullString
+        chkConfirmDialog.ToolTipText = vbNullString
+        btnIconSelect.ToolTipText = vbNullString
+        picBusy.ToolTipText = vbNullString
+        btnSet.ToolTipText = vbNullString
+        txtCurrentIcon.ToolTipText = vbNullString
+        btnSelectStart.ToolTipText = vbNullString
+        btnTarget.ToolTipText = vbNullString
+        chkRunElevated.ToolTipText = vbNullString
+        cmbOpenRunning.ToolTipText = vbNullString
+        cmbRunState.ToolTipText = vbNullString
+        txtArguments.ToolTipText = vbNullString
+        txtStartIn.ToolTipText = vbNullString
+        txtTarget.ToolTipText = vbNullString
+        txtLabelName.ToolTipText = vbNullString
+        lblSecondApp.ToolTipText = vbNullString
+        lblQuickLaunch.ToolTipText = vbNullString
+        lblConfirmDialogAfter.ToolTipText = vbNullString
+        lblConfirmDialog.ToolTipText = vbNullString
+        lblRdIconNumber.ToolTipText = vbNullString
+        lblRunElevated.ToolTipText = vbNullString
+        lblRunElevated.ToolTipText = vbNullString
+        framePreview.ToolTipText = vbNullString
+        btnNext.ToolTipText = vbNullString
+        picPreview.ToolTipText = vbNullString
+        lblBlankText.ToolTipText = vbNullString
+        frameButtons.ToolTipText = vbNullString
+        btnBackup.ToolTipText = vbNullString
+        btnSaveRestart.ToolTipText = vbNullString
+        btnCancel.ToolTipText = vbNullString
+        btnClose.ToolTipText = vbNullString
+        btnHelp.ToolTipText = vbNullString
+        chkToggleDialogs.ToolTipText = vbNullString
+        btnDefaultIcon.ToolTipText = vbNullString
+        frameIcons.ToolTipText = vbNullString
+        cmbIconTypesFilter.ToolTipText = vbNullString
+        btnKillIcon.ToolTipText = vbNullString
+        btnAdd.ToolTipText = vbNullString
+        btnRefresh.ToolTipText = vbNullString
+        textCurrIconPath.ToolTipText = vbNullString
+        picFrameThumbs.ToolTipText = vbNullString
+        filesIconList.ToolTipText = vbNullString
+        btnThumbnailView.ToolTipText = vbNullString
+        btnFileListView.ToolTipText = vbNullString
+        btnGetMore.ToolTipText = vbNullString
+        btnGenerate.ToolTipText = vbNullString
+        btnCloseMoreConfig.ToolTipText = vbNullString
+        lblDisabled.ToolTipText = vbNullString
+        chkDisabled.ToolTipText = vbNullString
+        txtAppToTerminate.ToolTipText = vbNullString
+        btnAppToTerminate.ToolTipText = vbNullString
+        lblAppToTerminate.ToolTipText = vbNullString
+        'lblDragCorner.ToolTipText = vbNullString
+    
     End If
 
     On Error GoTo 0
@@ -8426,7 +8469,7 @@ Private Sub btnPrev_Click()
         Exit Sub
     End If
     
-    Call postButtonClick(oldiconNumber)
+    Call postButtonClick(oldiconNumber, "btnPrev_Click")
 
    On Error GoTo 0
    Exit Sub
@@ -8449,7 +8492,7 @@ Private Sub btnNext_Click()
     Dim oldiconNumber As Integer: oldiconNumber = 0
     
     On Error GoTo btnNext_Click_Error
-    If debugFlg = 1 Then debugLog "%" & "btnNext_Click"
+    'If debugFlg = 1 Then debugLog "%" & "btnNext_Click"
 
     Call preButtonClick(exitSubFlg)
     
@@ -8460,9 +8503,11 @@ Private Sub btnNext_Click()
     'increment the icon number
     rdIconNumber = rdIconNumber + 1
     'check we haven't gone too far
-    If rdIconNumber > rdIconUpperBound Then rdIconNumber = rdIconUpperBound
+    If rdIconNumber > rdIconUpperBound Then
+        rdIconNumber = rdIconUpperBound
+    End If
 
-    Call postButtonClick(oldiconNumber)
+    Call postButtonClick(oldiconNumber, "btnNext_Click")
     
    On Error GoTo 0
    Exit Sub
@@ -8486,7 +8531,7 @@ Private Sub preButtonClick(ByVal exitSubFlg As Boolean)
     
     On Error GoTo preButtonClick_Error
 
-    If debugFlg = 1 Then debugLog "%" & "btnPrev_Click"
+    'If debugFlg = 1 Then debugLog "%" & "btnPrev_Click"
 
     If btnSet.Enabled = True Then
         ' 17/11/2020    .03 DAEB Replaced the confirmation dialog with an automatic save when moving from one icon to another using the right/left icon buttons
@@ -8530,7 +8575,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub postButtonClick(ByVal oldiconNumber As Integer)
+Private Sub postButtonClick(ByVal oldiconNumber As Integer, ByVal theButton As String)
     
     ' only move the map if the array has been populated,
     On Error GoTo postButtonClick_Error
@@ -8541,9 +8586,18 @@ Private Sub postButtonClick(ByVal oldiconNumber As Integer)
         ' testing the tooltip above is one method of seeing if the map has been created
         ' as the program sets the tooltip just when the transparent image is set
     
-        ' moves the RdMap on one position (one click) if it is already set at the rightmost screen position
-        If rdIconNumber < rdMapHScroll.Value Then
-            btnMapPrev_Click
+        ' moves the RdMap on one position (one click to the left) if the map box selected is already set at the leftmost map position
+        If theButton = "btnPrev_Click" Then
+            If rdIconNumber < rdMapHScroll.Value Then
+                btnMapPrev_Click
+            End If
+        End If
+        
+        ' moves the RdMap on one position (one click to the right) if the map box selected is already set at the rightmost map position
+        If theButton = "btnNext_Click" Then
+            If rdIconNumber > rdMapHScroll.Value + 15 Then
+                btnMapNext_Click
+            End If
         End If
     End If
 
@@ -8553,8 +8607,6 @@ Private Sub postButtonClick(ByVal oldiconNumber As Integer)
     
     'remove and reset the highlighting on the Rocket dock map
     picRdMap(oldiconNumber).BorderStyle = 0
-    ' should not attempt to style above the number of icons we actually have
-    'If rdIconNumber < rdIconUpperBound Then picRdMap(rdIconNumber-1).BorderStyle = 0
     picRdMap(rdIconNumber).BorderStyle = 1
     
     previewFrameGotFocus = True
@@ -8710,7 +8762,7 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
     If sDockletFile <> "" Then
         picBox.ToolTipText = " Icon number " & displayedIconCounter & "You can modify this docklet by selecting a new target, click on the ... button next to the target field."
     Else
-        picBox.ToolTipText = "Picbox index no. " & thisRecordNumber & " Icon number " & displayedIconCounter & " = " & sFilename
+        picBox.ToolTipText = " Icon number " & displayedIconCounter & " = " & sFilename
     End If
     picPreview.Tag = sFilename
     
@@ -10895,7 +10947,7 @@ Private Sub rdMapHScroll_Change()
     Dim startpos As Long: startpos = 0
     Dim maxPos As Long: maxPos = 0
     Dim spacing As Long: spacing = 0
-    Dim offset As Long: offset = 0
+    Dim Offset As Long: Offset = 0
     Dim mapBoxSize As Integer: mapBoxSize = 0
     
     On Error GoTo rdMapHScroll_Change_Error
@@ -10903,7 +10955,7 @@ Private Sub rdMapHScroll_Change()
    
     spacing = 540 * gblResizeRatio
     mapBoxSize = 500 * gblResizeRatio
-    offset = 540 * gblResizeRatio
+    Offset = 540 * gblResizeRatio
     startpos = rdMapHScroll.Value
     
     'xlabel.Caption = startPos
@@ -10912,7 +10964,7 @@ Private Sub rdMapHScroll_Change()
     'maxPos = rdIconUpperBound * spacing
     
     For useloop = rdIconLowerBound To rdIconUpperBound
-        picRdMap(useloop).Move ((useloop * spacing) - (startpos * spacing) + offset), 30, mapBoxSize, mapBoxSize
+        picRdMap(useloop).Move ((useloop * spacing) - (startpos * spacing) + Offset), 30, mapBoxSize, mapBoxSize
     Next useloop
 
    On Error GoTo 0

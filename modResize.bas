@@ -28,13 +28,18 @@ Public Sub resizeControls(ByRef thisForm As Form, ByRef m_ControlPositions() As 
     Dim y_scale As Single: y_scale = 0
         
     On Error GoTo ResizeControls_Error
-
+    
+    ' some debug testing of variable values
+    If m_FormWid = 0 Then MsgBox "Error m_FormWid = " & m_FormWid
+    If m_FormHgt = 0 Then MsgBox "Error m_FormHgt = " & m_FormHgt
+    If formFontSize = 0 Then MsgBox "Error formFontSize = " & formFontSize
+    
     ' Get the form's current scale factors.
     x_scale = thisForm.ScaleWidth / m_FormWid
     y_scale = thisForm.ScaleHeight / m_FormHgt
     
     gblResizeRatio = x_scale
-
+    
     ' Position the controls.
     i = 1
 

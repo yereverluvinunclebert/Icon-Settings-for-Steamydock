@@ -26,6 +26,7 @@
 ' test for the folderTreeView.DropHighlight.Key and checking that (folderTreeView.SelectedItem Is Nothing) to determine which item in the folder tree to open.
 ' no longer attempts to style above the number of icons we actually have
 ' remove persistentDebug.exe
+' Elroy's code to add balloon tips to comboBox
 
 ' Add subclass (?) scrolling to the main scrollbar - done
 
@@ -41,6 +42,10 @@
 
 fast reading of icon settings using random access file
 
+resizing bug divide by zero
+first blank item hidden
+new images
+
 ' Current Task:
 ' =============
 
@@ -48,15 +53,19 @@ fast reading of icon settings using random access file
 
 ' Status:
 ' =======
-'
 
-When SD adds an icon, then deletes it. RD will renew the dock automatically and the totla number of icons in the map should adjust. It seems to do it correctly
+When SD adds an icon, then deletes it. RD will renew the dock automatically and the total number of icons in the map should adjust. It seems to do it correctly
 but leaves the final icon duplicated. the Final control needs to be deleted from the array
-
 
 ' Generally the tool is complete barring some bugs to resolve and new features I would like to implement.
 '
 ' Tasks:
+
+Currently using the main iconsettings.dat so any changes are instant. We need to create an intersettings.dat that is modified and only written to the main when we click SET
+
+menu option to add a 'file'
+
+test with someYguy's GDIPimageloader
 
 '   test running with a blank tool settings file
 '
@@ -92,8 +101,6 @@ Dilettante picsave      https://www.vbforums.com/showthread.php?808301-VB6-PicSa
 '       Create a new resource file with the three OCXs inserted as well as the custom manifest #24
 '           Test locally and on desktop with the new RES file.
 '           You might have to do this each time there is a new version of CCRimageList.ocx
-
-'       Elroy's code to add balloon tips to comboBox
 '
 ' Bugs:
 ' =====
@@ -129,7 +136,6 @@ Dilettante picsave      https://www.vbforums.com/showthread.php?808301-VB6-PicSa
 
         o  When the current Icon field is changed manually by cut/paste to a specific icon allow that
 
-'
 ' There are a few new functions that I'd like to add in the task list:
 ' ====================================================================
 '
