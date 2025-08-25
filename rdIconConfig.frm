@@ -1,7 +1,7 @@
 VERSION 5.00
-Object = "{FB95F7DD-5143-4C75-88F9-A53515A946D7}#2.0#0"; "CCRTreeView.ocx"
+Object = "{FB95F7DD-5143-4C75-88F9-A53515A946D7}#2.0#0"; "ccrtreeview.ocx"
 Object = "{13E244CC-5B1A-45EA-A5BC-D3906B9ABB79}#1.0#0"; "CCRSlider.ocx"
-Object = "{FA5FEA4A-5ED5-4004-A509-2DABC30D42A7}#1.0#0"; "CCRImageList.ocx"
+Object = "{FA5FEA4A-5ED5-4004-A509-2DABC30D42A7}#1.0#0"; "ccrimagelist.ocx"
 Begin VB.Form rDIconConfigForm 
    Appearance      =   0  'Flat
    BorderStyle     =   1  'Fixed Single
@@ -6526,7 +6526,7 @@ Private Sub btnSet_Click()
     sFilename = txtCurrentIcon.Text
     
     sTitle = txtLabelName.Text
-    If sDockletFile = vbNullString Or sDockletFile = "0" Then
+    If (sDockletFile = vbNullString Or sDockletFile = "0") Then
         sCommand = txtTarget.Text
     Else
         sDockletFile = txtTarget.Text
@@ -8674,7 +8674,7 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
         txtStartIn.Text = sWorkingDirectory
         
         'If the docklet entry in the settings.ini is populated then blank off all the target, folder and image fields
-        If sDockletFile <> "" Then
+        If (sDockletFile = vbNullString Or sDockletFile = "0") Then
               txtLabelName.Enabled = False
               txtCurrentIcon.Enabled = False
               
@@ -8759,7 +8759,7 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
     displayedIconCounter = thisRecordNumber - 1 ' the first visible is the record after the blank record 1
     
     'If the docklet entry in the settings.ini is populated then set a helpful tooltiptext
-    If sDockletFile <> "" Then
+    If (sDockletFile = vbNullString Or sDockletFile = "0") Then
         picBox.ToolTipText = " Icon number " & displayedIconCounter & "You can modify this docklet by selecting a new target, click on the ... button next to the target field."
     Else
         picBox.ToolTipText = " Icon number " & displayedIconCounter & " = " & sFilename
@@ -10762,7 +10762,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
     'set the fields for this icon to the correct value as supplied
     txtLabelName.Text = sTitle
     
-    If sDockletFile <> vbNullString Then
+    If (sDockletFile <> vbNullString Or sDockletFile <> "0") Then
         txtTarget.Text = sDockletFile
     Else
         txtTarget.Text = sCommand
@@ -13683,7 +13683,7 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
     'set the fields for this icon to the correct value as supplied
     txtLabelName.Text = sTitle
     
-    If sDockletFile <> vbNullString Then
+    If (sDockletFile = vbNullString Or sDockletFile = "0") Then
         txtTarget.Text = sDockletFile
     Else
         txtTarget.Text = sCommand
