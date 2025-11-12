@@ -124,9 +124,11 @@ Private Type IID
     Data3 As Integer
     Data4(0 To 7) As Byte
 End Type
+
 Private Declare Function CLSIDFromString Lib "ole32" ( _
     ByVal lpsz As Long, _
     ByRef clsid As IID) As Long
+    
 Private Declare Function PrivateExtractIcons Lib "user32" _
                 Alias "PrivateExtractIconsA" ( _
                 ByVal lpszFile As String, _
@@ -397,7 +399,7 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
     Dim hIcon() As Long
     Dim hIconID() As Long
     Dim nIcons As Long: nIcons = 0
-    Dim result As Long: result = 0
+    Dim Result As Long: Result = 0
     Dim flags As Long: flags = 0
     Dim i As Long: i = 0
     
@@ -441,11 +443,11 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
     flags = LR_LOADFROMFILE '16
 
     ' Call PrivateExtractIcons with the 5th param set to nothing, solely to obtain the total number of Icons in the file.
-    result = PrivateExtractIcons(FileName, lIconIndex, xSize, ySize, ByVal 0&, ByVal 0&, 0&, 0&)
+    Result = PrivateExtractIcons(FileName, lIconIndex, xSize, ySize, ByVal 0&, ByVal 0&, 0&, 0&)
     
-    If result = 0 Then
+    If Result = 0 Then
         MsgBox "Failed to extract icon."
-        GoTo Cleanup
+        GoTo CleanUp
     End If
     
     ' The Filename is the resource string/filepath.
@@ -458,14 +460,14 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
     ' If you call it with nicon set to this number and niconindex=0 it will extract ALL your icons in one go.
     ' eg. PrivateExtractIcons(sExeName, lIconIndex, xSize, ySize,  hIcon(LBound(hIcon)), hIconID(LBound(hIconID)), nIcons * 2, LR_LOADFROMFILE)
 
-    nIcons = result
+    nIcons = Result
     
     ' Dimension the arrays to the number of icons.
     ReDim hIcon(lIconIndex To lIconIndex + nIcons * 2 - 1)
     ReDim hIconID(lIconIndex To lIconIndex + nIcons * 2 - 1)
 
     ' use the undocumented PrivateExtractIcons to extract the icons we require where the 5th param is a pointer to the returned array of handles to extracted icons
-    result = PrivateExtractIcons(FileName, lIconIndex, xSize, _
+    Result = PrivateExtractIcons(FileName, lIconIndex, xSize, _
                             ySize, hIcon(LBound(hIcon)), _
                             hIconID(LBound(hIconID)), _
                             nIcons * 2, flags)
@@ -488,11 +490,11 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
             .AutoRedraw = True
 
             'creates a GDI+ image bitmap (hImage) using the icon handle from the icon handle array populated by PrivateExtractIcons
-            result = GdipCreateBitmapFromHICON(hIcon(LBound(hIcon)), hImage)
+            Result = GdipCreateBitmapFromHICON(hIcon(LBound(hIcon)), hImage)
             
-            If result <> 0 Or hImage = 0 Then
+            If Result <> 0 Or hImage = 0 Then
                 MsgBox "Failed to create bitmap from icon."
-                GoTo Cleanup
+                GoTo CleanUp
             Else
                 ' Creates a GDIP Graphics object (hGraphics) that is associated with the current device context, that being the target picbox
                 GdipCreateFromHDC .hDC, hGraphics
@@ -525,7 +527,7 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
         End With
     End If
     
-Cleanup:
+CleanUp:
 
     ' get rid of the icons we created
     Call DestroyIcon(hIcon(i + lIconIndex - 1))
@@ -578,7 +580,7 @@ Private Function CreateIcon(ByVal hImage As Long) As IPicture
     Dim pic As IPicture
     Dim dsc As PictDesc
     Dim IID(0 To 15) As Byte
-    Dim result As Long: result = 0
+    Dim Result As Long: Result = 0
     
    On Error GoTo CreateIcon_Error
 
@@ -590,13 +592,13 @@ Private Function CreateIcon(ByVal hImage As Long) As IPicture
            .PicType = VBRUN.PictureTypeConstants.vbPicTypeBitmap
         End With
         
-        result = OLE_CLSIDFromString(StrPtr(IID_IPicture), _
+        Result = OLE_CLSIDFromString(StrPtr(IID_IPicture), _
                                                         VarPtr(IID(0)))
                                                     
-        If (result = OLE_ERROR_CODES.S_OK) Then
-            result = Ole_CreatePic(dsc, VarPtr(IID(0)), True, pic)
+        If (Result = OLE_ERROR_CODES.S_OK) Then
+            Result = Ole_CreatePic(dsc, VarPtr(IID(0)), True, pic)
             
-            If (result = OLE_ERROR_CODES.S_OK) Then
+            If (Result = OLE_ERROR_CODES.S_OK) Then
                 Set CreateIcon = pic
             End If
         End If
