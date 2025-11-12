@@ -8275,7 +8275,7 @@ displaySizes:
         
     ' DAEB TBD
     If InStr("exe,dll", LCase$(suffix)) <> 0 Then
-        Call displayEmbeddedIcons(FileName, targetPicBox, thisImageSize)
+        Call displayEmbeddedIcons(FileName, targetPicBox, thisImageSize, False)
         picSize = FileLen(FileName)
         lblFileInfo.Caption = "File Size: " & Format(picSize, "###,###,###") & " bytes (binary)"
     End If
@@ -8815,7 +8815,7 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
             ' test as to whether it is an .EXE or a .DLL
             If InStr("exe,dll", LCase$(suffix)) <> 0 Then
                 'FileName = txtCurrentIcon.Text ' revert to the relative path which is what is expected
-                If fillPicBox = True Then Call displayEmbeddedIcons(filestring, picBox, icoPreset)
+                If fillPicBox = True Then Call displayEmbeddedIcons(filestring, picBox, icoPreset, False)
                 picSize = FileLen(filestring)
                 lblFileInfo.Caption = "File Size: " & Format(picSize, "###,###,###") & " bytes (binary)"
 
@@ -9179,7 +9179,7 @@ Private Sub populateThumbnails(ByVal baseImageSize As Long, ByRef startItem As I
                             If thisThumbnailCacheCount = 0 Then thisThumbnailCacheCount = 250 ' default value
                             
                             ' limit the cache to certain number of image items to prevent out of memory messages
-                            If imlThumbnailCache.ListImages.Count <= thisThumbnailCacheCount Then
+                            If imlThumbnailCache.ListImages.count <= thisThumbnailCacheCount Then
                                 
                                 ' add the current thumbnail to the cache with a unique key
                                 Set picTemporaryStore.Picture = picThumbIcon(useloop).Image
@@ -9823,7 +9823,7 @@ Private Sub readTreeviewDefaultFolder()
     folderTreeView.HideSelection = False ' Ensures found item highlighted
 
     If defaultFolderNodeKey <> vbNullString Then
-        For iX = 1 To folderTreeView.Nodes.Count
+        For iX = 1 To folderTreeView.Nodes.count
             If Trim$(folderTreeView.Nodes(iX).Key) = Trim$(defaultFolderNodeKey) Then
                 iFound = True
                 Exit For
@@ -17234,9 +17234,9 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
     ' if there is more than one file dropped reject the drop
     ' if the dock is not the bottom layer then pop up a message box
     ' ie. don't pop it up if layered underneath everything as no-one will see the msgbox
-    If Data.Files.Count > 1 Then
+    If Data.Files.count > 1 Then
        ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.Count, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.count, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.count
         Exit Sub
     End If
