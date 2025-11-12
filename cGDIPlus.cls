@@ -64,7 +64,7 @@ Private Type EncoderParameter
 End Type
 '-- Encoder Parameters structure
 Private Type EncoderParameters
-    count     As Long
+    Count     As Long
     Parameter As EncoderParameter
 End Type
 Private Type ImageCodecInfo
@@ -104,7 +104,7 @@ Private Type GdiplusStartupInput
 End Type
 Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRef inputbuf As GdiplusStartupInput, Optional ByVal outputbuf As Long = 0) As Long
 Private Declare Sub GdiplusShutdown Lib "gdiplus" (ByVal Token As Long)
-Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal filename As Long, ByRef hImage As Long) As Long
+Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, ByRef hImage As Long) As Long
 Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As IUnknown, ByRef Image As Long) As Long
 Private Declare Function GdipGetImageBounds Lib "GdiPlus.dll" (ByVal nImage As Long, ByRef srcRect As RECTF, ByRef srcUnit As Long) As Long
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal Image As Long) As Long
@@ -170,7 +170,7 @@ Public Function isGDIplusOk(Optional ByRef gdiToken As Long, Optional ByVal Keep
     End If
 End Function
 
-Public Function SaveToPNG(ByVal filename As String, ByRef outStream() As Byte, ByRef cHost As c32bppDIB, Optional ByVal GlobalToken As Long) As Boolean
+Public Function SaveToPNG(ByVal FileName As String, ByRef outStream() As Byte, ByRef cHost As c32bppDIB, Optional ByVal GlobalToken As Long) As Boolean
 
     ' Function uses GDI+ to create a PNG file or stream
     ' Parameters:
@@ -202,7 +202,7 @@ Public Function SaveToPNG(ByVal filename As String, ByRef outStream() As Byte, B
             ' dib is bottom up, scan0 does top down, so flip it
             Call ModifyImageAttributes(6)
             
-            If filename = vbNullString Then
+            If FileName = vbNullString Then
                 ' Saving to stream/array. Create a null stream (IUnknown object)
                 Erase outStream
                 Set IIStream = CreateStream(outStream)
@@ -215,7 +215,7 @@ Public Function SaveToPNG(ByVal filename As String, ByRef outStream() As Byte, B
             Else    ' saving to file
                 ' Note: If you are calling this from outside the c32bppDIB class, the file
                 ' must not exist; otherwise, the function fails.
-                SaveToPNG = (GdipSaveImageToFile(m_hImage, StrPtr(filename), uEncCLSID(0&), ByVal 0&) = 0&)
+                SaveToPNG = (GdipSaveImageToFile(m_hImage, StrPtr(FileName), uEncCLSID(0&), ByVal 0&) = 0&)
             End If
         End If
     End If
@@ -239,13 +239,13 @@ Private Function pvPtrToStrW(ByVal lpsz As Long) As String
     
 End Function
 
-Private Function pvGetEncoderClsID(ByRef strMimeType As String, ByRef ClassID() As Long) As Long
+Public Function pvGetEncoderClsID(ByRef strMimeType As String, ByRef ClassID() As Long) As Long
   ' supporting routine for SaveToPNG
   Dim Num      As Long
   Dim Size     As Long
-  Dim LIdx     As Long
+  Dim lIdx     As Long
   Dim ICI()    As ImageCodecInfo
-  Dim buffer() As Byte
+  Dim Buffer() As Byte
     
     pvGetEncoderClsID = -1 ' Failure flag
     
@@ -255,25 +255,25 @@ Private Function pvGetEncoderClsID(ByRef strMimeType As String, ByRef ClassID() 
     
     '-- Allocate room for the arrays dynamically
     ReDim ICI(1 To Num) As ImageCodecInfo
-    ReDim buffer(1 To Size) As Byte
+    ReDim Buffer(1 To Size) As Byte
     
     '-- Get the array and string data
-    Call GdipGetImageEncoders(Num, Size, buffer(1))
+    Call GdipGetImageEncoders(Num, Size, Buffer(1))
     '-- Copy the class headers
-    Call CopyMemory(ICI(1), buffer(1), (Len(ICI(1)) * Num))
+    Call CopyMemory(ICI(1), Buffer(1), (Len(ICI(1)) * Num))
     
     '-- Loop through all the codecs
-    For LIdx = 1& To Num
+    For lIdx = 1& To Num
         '-- Must convert the pointer into a usable string
-        If (StrComp(pvPtrToStrW(ICI(LIdx).MimeType), strMimeType, vbTextCompare) = 0) Then
-            CopyMemory ClassID(0), ICI(LIdx).ClassID(0), 16& ' Save the Class ID
-            pvGetEncoderClsID = LIdx      ' Return the index number for success
+        If (StrComp(pvPtrToStrW(ICI(lIdx).MimeType), strMimeType, vbTextCompare) = 0) Then
+            CopyMemory ClassID(0), ICI(lIdx).ClassID(0), 16& ' Save the Class ID
+            pvGetEncoderClsID = lIdx      ' Return the index number for success
             Exit For
         End If
-    Next LIdx
+    Next lIdx
     '-- Free the memory
     Erase ICI
-    Erase buffer
+    Erase Buffer
 End Function
 
 Friend Function RenderGDIplus(ByRef cHost As c32bppDIB, ByVal hDC As Long, _
@@ -427,7 +427,7 @@ Friend Function RenderGDIplus(ByRef cHost As c32bppDIB, ByVal hDC As Long, _
 
 End Function
 
-Friend Function GDIplusLoadPNG(ByVal filename As String, ByRef pngStream() As Byte, ByRef cHost As c32bppDIB, Optional ByVal GlobalToken As Long) As Boolean
+Friend Function GDIplusLoadPNG(ByVal FileName As String, ByRef pngStream() As Byte, ByRef cHost As c32bppDIB, Optional ByVal GlobalToken As Long) As Boolean
 'Exit Function      ' un-rem to test/force PNG loading without GDI+
 
     ' Purpose: Use GDI+ to load a PNG either by fileName or by array/stream
@@ -455,7 +455,7 @@ Dim pStream As IUnknown
     
     On Error GoTo ExitRoutine
     
-    If filename = vbNullString Then ' we need an array vs file name
+    If FileName = vbNullString Then ' we need an array vs file name
         ' hack of my own. Create an IUnknown Stream that has the same properties
         ' and minimum methods needed as the IStream interface which VB does not
         ' expose. Once the stream is created, we have GDI+ load from it
@@ -463,7 +463,7 @@ Dim pStream As IUnknown
         If Not pStream Is Nothing Then Call GdipLoadImageFromStream(pStream, hImage)
 
     Else    ' we use the passed file name; have GDI+ load the file
-        Call GdipLoadImageFromFile(StrPtr(filename), hImage)
+        Call GdipLoadImageFromFile(StrPtr(FileName), hImage)
     End If
     
     If Not hImage = 0& Then

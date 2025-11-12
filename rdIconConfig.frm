@@ -3740,7 +3740,7 @@ Private Sub selectApplication(ByVal inputFolderName As String, ByRef retFileName
         End If
     End If
     
-    If Not sDockletFile = vbNullString Or Not sDockletFile = "0" Then
+    If Not sDockletFile = "0" Then
         If fFExists(sDockletFile) Then
             ' extract the folder name from the string
             dllPath = getFolderNameFromPath(sDockletFile)
@@ -6526,7 +6526,7 @@ Private Sub btnSet_Click()
     sFilename = txtCurrentIcon.Text
     
     sTitle = txtLabelName.Text
-    If (sDockletFile = vbNullString Or sDockletFile = "0") Then
+    If (sDockletFile = "0") Then
         sCommand = txtTarget.Text
     Else
         sDockletFile = txtTarget.Text
@@ -8673,8 +8673,10 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
         txtArguments.Text = sArguments
         txtStartIn.Text = sWorkingDirectory
         
+        sDockletFile = "0" ' debug
+        
         'If the docklet entry in the settings.ini is populated then blank off all the target, folder and image fields
-        If (sDockletFile <> vbNullString And sDockletFile <> "0") Then
+        If (sDockletFile <> "0") Then
               txtLabelName.Enabled = False
               txtCurrentIcon.Enabled = False
               
@@ -8759,7 +8761,7 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
     displayedIconCounter = thisRecordNumber - 1 ' the first visible is the record after the blank record 1
     
     'If the docklet entry in the settings.ini is populated then set a helpful tooltiptext
-    If (sDockletFile = vbNullString Or sDockletFile = "0") Then
+    If (sDockletFile = "0") Then
         picBox.ToolTipText = " Icon number " & displayedIconCounter & "You can modify this docklet by selecting a new target, click on the ... button next to the target field."
     Else
         picBox.ToolTipText = " Icon number " & displayedIconCounter & " = " & sFilename
@@ -10762,7 +10764,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
     'set the fields for this icon to the correct value as supplied
     txtLabelName.Text = sTitle
     
-    If (sDockletFile <> vbNullString Or sDockletFile <> "0") Then
+    If sDockletFile <> "0" Then
         txtTarget.Text = sDockletFile
     Else
         txtTarget.Text = sCommand
@@ -13683,7 +13685,7 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
     'set the fields for this icon to the correct value as supplied
     txtLabelName.Text = sTitle
     
-    If (sDockletFile = vbNullString Or sDockletFile = "0") Then
+    If (sDockletFile = "0") Then
         txtTarget.Text = sDockletFile
     Else
         txtTarget.Text = sCommand

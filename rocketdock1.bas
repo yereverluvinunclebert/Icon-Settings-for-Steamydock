@@ -116,7 +116,17 @@ Private Declare Function Ole_CreatePic Lib "olepro32" _
                 ByRef iPic As IPicture _
 ) As Long
 
-Private Declare Function OLE_CLSIDFromString Lib "ole32" Alias "CLSIDFromString" (ByVal lpszProgID As Long, ByVal pCLSID As Long) As Long
+Private Declare Function OLE_CLSIDFromString Lib "ole32" Alias "CLSIDFromString" (ByVal lpszProgID As Long, ByVal pclsid As Long) As Long
+
+Private Type IID
+    Data1 As Long
+    Data2 As Integer
+    Data3 As Integer
+    Data4(0 To 7) As Byte
+End Type
+Private Declare Function CLSIDFromString Lib "ole32" ( _
+    ByVal lpsz As Long, _
+    ByRef clsid As IID) As Long
 Private Declare Function PrivateExtractIcons Lib "user32" _
                 Alias "PrivateExtractIconsA" ( _
                 ByVal lpszFile As String, _
@@ -385,27 +395,22 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
     Dim xSize As Long: xSize = 0
     Dim ySize As Long: ySize = 0
     Dim hIcon() As Long
-
     Dim hIconID() As Long
     Dim nIcons As Long: nIcons = 0
-    Dim Result As Long: Result = 0
+    Dim result As Long: result = 0
     Dim flags As Long: flags = 0
     Dim i As Long: i = 0
     
-    'Dim pic As IPicture ' interface for a Picture object
     Dim pic As StdPicture ' interface for a Picture object
-    
-    Dim cICO As New cICOparser  ' cICOParser.cls
-    Dim cImage As c32bppDIB  ' c32bppDIB.cls
         
-    Dim outputFilename As String: outputFilename = "arse1.png"
-    Dim outputFilenameICO As String: outputFilenameICO = "arse1.ico"
+    'Dim outputFilename As String: outputFilename = "arse1.png"
     
     Dim GSI As GdiplusStartupInput
-    Dim hToken As Long
-    Dim uEncCLSID(0 To 3) As Long
-    
-    Dim SaveToPNG As Boolean
+    Dim hToken As Long: hToken = 0
+    Dim hGraphics As Long: hGraphics = 0
+    Dim hImage As Long: hImage = 0
+    Dim ImageFormatPNG As IID
+    'Dim SaveToPNG As Boolean: SaveToPNG = False
 
     On Error GoTo displayEmbeddedIcons_Error
     
@@ -435,8 +440,13 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
     '
     flags = LR_LOADFROMFILE '16
 
-    ' Call PrivateExtractIcons with the 5th param set to nothing solely to obtain the total number of Icons in the file.
-    Result = PrivateExtractIcons(FileName, lIconIndex, xSize, ySize, ByVal 0&, ByVal 0&, 0&, 0&) ' 63
+    ' Call PrivateExtractIcons with the 5th param set to nothing, solely to obtain the total number of Icons in the file.
+    result = PrivateExtractIcons(FileName, lIconIndex, xSize, ySize, ByVal 0&, ByVal 0&, 0&, 0&)
+    
+    If result = 0 Then
+        MsgBox "Failed to extract icon."
+        GoTo Cleanup
+    End If
     
     ' The Filename is the resource string/filepath.
     ' lIconIndex is the index.
@@ -446,194 +456,82 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
     ' nicons is the number of icons you wish to extract.
     
     ' If you call it with nicon set to this number and niconindex=0 it will extract ALL your icons in one go.
-    
-    ' eg. PrivateExtractIcons ('C:\Users\Public\Documents\RAD Studio\Projects\2010\Aero Colorizer\AeroColorizer.exe', 0, 128, 128, @hIcon, @nIconId, 1, LR_LOADFROMFILE)
-    ' PrivateExtractIcons(sExeName, lIconIndex, xSize, ySize,  hIcon(LBound(hIcon)), hIconID(LBound(hIconID)), nIcons * 2, LR_LOADFROMFILE)
+    ' eg. PrivateExtractIcons(sExeName, lIconIndex, xSize, ySize,  hIcon(LBound(hIcon)), hIconID(LBound(hIconID)), nIcons * 2, LR_LOADFROMFILE)
 
-    nIcons = Result ' 63
+    nIcons = result
     
     ' Dimension the arrays to the number of icons.
     ReDim hIcon(lIconIndex To lIconIndex + nIcons * 2 - 1)
     ReDim hIconID(lIconIndex To lIconIndex + nIcons * 2 - 1)
 
     ' use the undocumented PrivateExtractIcons to extract the icons we require where the 5th param is a pointer to the returned array of handles to extracted icons
-    Result = PrivateExtractIcons(FileName, lIconIndex, xSize, _
+    result = PrivateExtractIcons(FileName, lIconIndex, xSize, _
                             ySize, hIcon(LBound(hIcon)), _
                             hIconID(LBound(hIconID)), _
                             nIcons * 2, flags)
         
-    ' create an Ipicture icon with a handle, no specific size
+    ' create an Ipicture icon with a handle, no specific size - to check as to a valid pic before we write directly to the targetPicBox
     Set pic = CreateIcon(hIcon(i + lIconIndex - 1))
-    ' do we need the above in order to display the icon on the targe picbox? No.
-    ' we do this as a check as to a valid pic before we write directly to the targetPicBox
-    ' also, we now create a DIB from the pic with the hope that I can use that to extract the image and save an .ICO file
-    
-    ' BEGIN next bit might be useful, unsure
-    
-        ' initialise a 32bpp alpha-compatible image bitmap.
-        Set cImage = New c32bppDIB ' c32bppDIB.cls
-        Dim res As Boolean
-        ' pass to icon/cursor parser, convert a single icon from a stdPicture/iPicture or handle to a 32bpp bitmap
-        res = cICO.ConvertstdPicTo32bpp(pic.handle, cImage)
-        'Call cICO.ConvertstdPicTo32bpp(hIcon(i + lIconIndex - 1), cImage) ' this also seems to work. compiles
-        
-        Set cICO = Nothing
-    
-    ' END
-'
-    ' cImage.handle
-    
-    ' because we have the pic as ipicture from the above CreateIcon, we should be able to save the icon to a PNG with a bit of luck using the handle to the ICO and GDI+
-
-    
-    
-' See BUGLIST.TXT FOR A FULL DESCRIPTION OF THE PROGRESS TO THIS POINT.
-    
-'    next task is to try ICOwriter class, creating an icon and saving
-
-
-'    Call NewICO(), then AddImage() one or more times, then BuildICO().
-'
-'    After that you can use the ICO property to get a Byte Array or the
-'    SaveICO() method to save it to disk, or both.
-
-'    Dim icoWriter As New icoWriter
-'    Call icoWriter.SaveICO(outputFilenameICO, True)
-
-
-
         
     ' resize and place the target picbox according to the size of the icon
     ' (rather than placing the icon in the middle of the picbox as I should, I can code that later)
     
     Call centrePreviewImage(targetPicBox, IconSize)
-    
-    Dim hGraphics As Long
-    Dim hImage As Long
             
-    ' Draw the icon directly onto the respective picturebox control.
+    ' Draw the icon directly onto the respective picturebox control and save as a PNG
     If Not (pic Is Nothing) Then
         With targetPicBox
         
             'ensure the picbox is empty first
-            'Set .Picture = LoadPicture(vbNullString)
+            .Picture = LoadPicture(vbNullString)
             .Cls
             .AutoRedraw = True
-               
-            ' DrawIconEx can draw a transparent image from a good image handle directly onto the target picture box
-            ' Call DrawIconEx(.hDC, 0, 0, hIcon(LBound(hIcon)), IconSize, IconSize, 0, 0, DI_NORMAL)
-            
-            ' centre image using a better method
-'            Call DrawIconEx(.hDC, _
-'                        ScaleX(x, ScaleMode, vbPixels) - WidthPx \ 2, _
-'                        ScaleY(y, ScaleMode, vbPixels) - HeightPx \ 2, _
-'                        hIcon(LBound(hIcon)), _
-'                        IconSize, _
-'                        IconSize, _
-'                        0, _
-'                        WIN32_NULL, _
-'               DI_NORMAL)
 
-            'creates an image bitmap from the icon handle
-            GdipCreateBitmapFromHICON hIcon(LBound(hIcon)), hImage
-            If hImage <> 0& Then
-                ' Creates a Graphics object that is associated with a specified device context
+            'creates a GDI+ image bitmap (hImage) using the icon handle from the icon handle array populated by PrivateExtractIcons
+            result = GdipCreateBitmapFromHICON(hIcon(LBound(hIcon)), hImage)
+            
+            If result <> 0 Or hImage = 0 Then
+                MsgBox "Failed to create bitmap from icon."
+                GoTo Cleanup
+            Else
+                ' Creates a GDIP Graphics object (hGraphics) that is associated with the current device context, that being the target picbox
                 GdipCreateFromHDC .hDC, hGraphics
                 
-                'Draws an image at a specified location
+                ' Draws an image at a specified location using the image bitmap and graphics object, in effect writing the image to the picbox
                 '                      hGraphics, hImage, destX, destY, destWidth, destHeight, srcX, srcY, srcWidth, srcHeight, UnitPixel, hImgAttr, 0&, 0&
                 GdipDrawImageRectRectI hGraphics, hImage, 0, 0, IconSize, IconSize, 0, 0, 256, 256, 2&, 0, 0, 0
-                    
-                    
-'                Dim tSI As GdiplusStartupInput
-'                Dim lRes As Long, lGDIP As Long, lBitmap As Long
-'                Dim X As Long, Y As Long, wide As Long, high As Long
-'                Dim myDIB As Long, myDC As Long, desktopDC As Long
-'                Dim bi24BitInfo As BITMAPINFO
-'                Dim bitmapData() As Byte
-'                Dim pcin As PCURSORINFO
-'                Dim piinfo As ICONINFO
-'                ' Starting position/Size of capture (full screen)
-'                X = 0: Y = 0
-'                wide = Screen.Width / Screen.TwipsPerPixelX
-'                high = Screen.Height / Screen.TwipsPerPixelY
-'                '
-'                With bi24BitInfo.bmiHeader
-'                  .biBitCount = 24
-'                  .biCompression = BI_RGB
-'                  .biPlanes = 1
-'                  .biSize = Len(bi24BitInfo.bmiHeader)
-'                  .biWidth = wide
-'                  .biHeight = high
-'                  .biDataSize = ((.biWidth * 3 + 3) And &HFFFFFFFC) * .biHeight
-'                  ReDim bitmapData(0 To .biDataSize - 1)
-'                End With
-'                frmscrcontrol.Caption = UBound(bitmapData)
-'                myDC = CreateCompatibleDC(0)
-'                myDIB = CreateDIBSection(myDC, bi24BitInfo, DIB_RGB_COLORS, ByVal 0&, ByVal 0&, ByVal 0&)
-'                SelectObject myDC, myDIB
-'                desktopDC = GetDC(0)
-'                BitBlt myDC, 0, 0, bi24BitInfo.bmiHeader.biWidth, bi24BitInfo.bmiHeader.biHeight, desktopDC, X, Y, vbSrcCopy Or CAPTUREBLT
-'                ' Include mouse cursor?
-'                If IncludeMouseCursor = True Then
-'                    pcin.cbSize = Len(pcin)
-'                    GetCursorInfo pcin
-'                    GetIconInfo pcin.hCursor, piinfo
-'                    DrawIcon myDC, pcin.ptScreenPos.X - piinfo.xHotspot, pcin.ptScreenPos.Y - piinfo.yHotspot, pcin.hCursor
-'                    If piinfo.hbmMask Then DeleteObject piinfo.hbmMask
-'                    If piinfo.hbmColor Then DeleteObject piinfo.hbmColor
-'                End If
-'                Call GetDIBits(myDC, myDIB, 0, bi24BitInfo.bmiHeader.biHeight, bitmapData(0), bi24BitInfo, DIB_RGB_COLORS)
-'
-'
-'
-'               ' save as JPG
-'               '------------
-'               'Initialize GDI+
-'               tSI.GdiplusVersion = 1
-'                lRes = GdiplusStartup(lGDIP, tSI)
-'                ' Create the GDI+ bitmap from the image handle
-'                lRes = GdipCreateBitmapFromHBITMAP(myDIB, 0, lBitmap)
-'                If lRes = 0 Then
-'                   Dim tJpgEncoder As GUID
-'                   Dim tParams As EncoderParameters
-'                   ' Initialize the encoder GUID
-'                   CLSIDFromString StrPtr("{557CF401-1A04-11D3-9A73-0000F81EF32E}"), tJpgEncoder
-'                   ' Initialize the encoder parameters
-'                   tParams.Count = 1
-'                   With tParams.Parameter ' Quality
-'                      ' Set the Quality GUID
-'                      CLSIDFromString StrPtr("{1D5BE4B5-FA4A-452D-9CDD-5DB35105E7EB}"), .GUID
-'                      .NumberOfValues = 1
-'                      .Type = 4
-'                      .Value = VarPtr(Quality)
-'                   End With
-'                   ' Save the image
-'                   lRes = GdipSaveImageToFile(lBitmap, StrPtr(FileName), tJpgEncoder, tParams)
-'                   ' Destroy the bitmap
-'                   GdipDisposeImage lBitmap
-'                End If
-                SaveToPNG = (GdipSaveImageToFile(hImage, StrPtr(outputFilename), uEncCLSID(0&), ByVal 0&) = 0&)
+                
+'               centre image using a better method
+'                        ScaleX(x, ScaleMode, vbPixels) - WidthPx \ 2, _
+'                        ScaleY(y, ScaleMode, vbPixels) - HeightPx \ 2, _
+'                        IconSize, _
+'                        IconSize, _
 
-                GdipDeleteGraphics hGraphics
-                GdipDisposeImage hImage: hImage = 0&
+                ' In iconSettings we prove that it is possible to extract the PNG from extract the PNG from the DLL and write that to a file
+                ' this is of little use here as we write to a picbox and display our PNG image there
+                ' In SD, we will take this routine and use it to write a PNG to the local profile area and then insert the PNG into the dictionary at runtime startup.
+
+'                ' set the encoder class identifier to handle the image bitmap as a PNG
+'                CLSIDFromString StrPtr("{557CF406-1A04-11D3-9A73-0000F81EF32E}"), ImageFormatPNG
+''
+'                ' extract a PNG of the image bitmap and save to file
+'                SaveToPNG = GdipSaveImageToFile(hImage, StrPtr(outputFilename), ImageFormatPNG, ByVal 0&) = 0&
+'
+'                If SaveToPNG = False Then
+'                    MsgBox "Failed to save PNG."
+'                End If
             End If
-            
             .Refresh
-
         End With
-        
-        'save the target box contents as an ico, no alpha channel
-        'SavePicture targetPicBox.Image, outputFilenameICO
-        
-        ' using Dil's picSave class, this will save a PNG into the target app folder but it is non-alpha blend as it is straight from the target picbox
-        'Call PicSave.SavePicture(targetPicBox.Image, outputFilename, fmtPNG, 70) ' uses picSave.cls
     End If
     
+Cleanup:
+
     ' get rid of the icons we created
     Call DestroyIcon(hIcon(i + lIconIndex - 1))
-    
-    GdiplusShutdown hToken
+    Call GdipDeleteGraphics(hGraphics)
+    Call GdipDisposeImage(hImage): hImage = 0&
+    Call GdiplusShutdown(hToken)
 
    On Error GoTo 0
    Exit Sub
@@ -643,6 +541,8 @@ displayEmbeddedIcons_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure displayEmbeddedIcons of Module mdlMain"
     
 End Sub
+
+
 
 '---------------------------------------------------------------------------------------
 ' Procedure : make32BitLong
@@ -670,15 +570,15 @@ End Function
 ' Procedure : CreateIcon
 ' Author    : beededea
 ' Date      : 14/07/2019
-' Purpose   :
+' Purpose   : This method creates an icon based on a handle
 '---------------------------------------------------------------------------------------
 '
 Private Function CreateIcon(ByVal hImage As Long) As IPicture
-    ' This method creates an icon based on a handle
+    
     Dim pic As IPicture
     Dim dsc As PictDesc
     Dim IID(0 To 15) As Byte
-    Dim Result As Long: Result = 0
+    Dim result As Long: result = 0
     
    On Error GoTo CreateIcon_Error
 
@@ -690,13 +590,13 @@ Private Function CreateIcon(ByVal hImage As Long) As IPicture
            .PicType = VBRUN.PictureTypeConstants.vbPicTypeBitmap
         End With
         
-        Result = OLE_CLSIDFromString(StrPtr(IID_IPicture), _
+        result = OLE_CLSIDFromString(StrPtr(IID_IPicture), _
                                                         VarPtr(IID(0)))
                                                     
-        If (Result = OLE_ERROR_CODES.S_OK) Then
-            Result = Ole_CreatePic(dsc, VarPtr(IID(0)), True, pic)
+        If (result = OLE_ERROR_CODES.S_OK) Then
+            result = Ole_CreatePic(dsc, VarPtr(IID(0)), True, pic)
             
-            If (Result = OLE_ERROR_CODES.S_OK) Then
+            If (result = OLE_ERROR_CODES.S_OK) Then
                 Set CreateIcon = pic
             End If
         End If
