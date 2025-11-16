@@ -2634,7 +2634,7 @@ Private Sub Form_Load()
     ' vars set to initial start values
     Call setGlobalVarsStartValues
                 
-    ' set form resizing variables
+    ' set form resizing variables only
     Call setFormResizingVarsAndProperties
             
     ' subclass ALL forms created by intercepting WM_Create messages, identifying dialog forms to centre them in the middle of the monitor - specifically the font form.
@@ -8154,6 +8154,7 @@ Private Sub displayResizedImage(ByVal FileName As String, ByRef targetPicBox As 
     Dim picHeight As Long: picHeight = 0
     Dim picSize As Long: picSize = 0
     Dim thisImageSize As Long: thisImageSize = 0
+    Dim returnedFilename As String: returnedFilename = vbNullString
                 
     On Error GoTo displayResizedImage_Error
     
@@ -8274,9 +8275,11 @@ displaySizes:
     End If
         
     ' DAEB TBD
-    If InStr("exe,dll", LCase$(suffix)) <> 0 Then
-        Call displayEmbeddedIcons(FileName, targetPicBox, thisImageSize, False)
-        picSize = FileLen(FileName)
+    If InStr("exe", LCase$(suffix)) <> 0 Then
+        returnedFilename = fExtractEmbeddedPNGFromEXE(FileName, targetPicBox, thisImageSize, False)
+        'Call displayEmbeddedIcons(FileName, targetPicBox, thisImageSize, False)
+        
+        picSize = FileLen(returnedFilename)
         lblFileInfo.Caption = "File Size: " & Format(picSize, "###,###,###") & " bytes (binary)"
     End If
     
@@ -8647,6 +8650,8 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
     Dim suffix As String: suffix = vbNullString
     Dim picSize As Long: picSize = 0
     Dim displayedIconCounter As Integer: displayedIconCounter = 0
+    Dim bSuccess As Boolean: bSuccess = False
+    Dim returnedFilename As String: returnedFilename = vbNullString
     
     'if it is a good icon then read the data
     On Error GoTo displayIconElement_Error
@@ -8798,7 +8803,11 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
     ' if the user drags an icon to the dock then RD takes a icon link of the following form:
     'FileName = "C:\Program Files (x86)\Microsoft Visual Studio 8\Common7\IDE\vbexpress.exe?62453184"
     
-    If InStr(sFilename, "?") Then ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
+    ' extract the suffix
+    suffix = ExtractSuffix(FileName)
+    
+    ' test as to whether it is an .EXE or a .DLL
+    If InStr("exe", LCase$(suffix)) <> 0 Then ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
         ' does the string contain a ? if so it probably has an embedded .ICO
         qPos = InStr(1, FileName, "?")
         If qPos <> 0 Then
@@ -8808,25 +8817,25 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
         
         ' test the resulting filestring exists
         If fFExists(filestring) Then
-            ' extract the suffix
-            suffix = ExtractSuffix(filestring)
-
             'suffix = right$(filestring, Len(filestring) - InStr(1, filestring, "."))
-            ' test as to whether it is an .EXE or a .DLL
-            If InStr("exe,dll", LCase$(suffix)) <> 0 Then
+
+            'If InStr("exe", LCase$(suffix)) <> 0 Then
                 'FileName = txtCurrentIcon.Text ' revert to the relative path which is what is expected
-                If fillPicBox = True Then Call displayEmbeddedIcons(filestring, picBox, icoPreset, False)
-                picSize = FileLen(filestring)
+                If fillPicBox = True Then
+                    returnedFilename = fExtractEmbeddedPNGFromEXE(filestring, picBox, icoPreset, False)
+                    'Call displayEmbeddedIcons(filestring, picBox, icoPreset, False)
+                End If
+                picSize = FileLen(returnedFilename)
                 lblFileInfo.Caption = "File Size: " & Format(picSize, "###,###,###") & " bytes (binary)"
 
-            Else
-                ' the file may have a ? in the string but does not match otherwise in any useful way
-                If defaultDock = 0 Then ' ' .19 DAEB 01/03/2021 rDIConConfigForm.frm Separated the Rocketdock/Steamydock specific actions
-                    FileName = rdAppPath & "\icons\" & "help.png"
-                Else
-                    FileName = sdAppPath & "\icons\" & "help.png"
-                End If
-            End If
+'            Else
+'                ' the file may have a ? in the string but does not match otherwise in any useful way
+'                If defaultDock = 0 Then ' ' .19 DAEB 01/03/2021 rDIConConfigForm.frm Separated the Rocketdock/Steamydock specific actions
+'                    FileName = rdAppPath & "\icons\" & "help.png"
+'                Else
+'                    FileName = sdAppPath & "\icons\" & "help.png"
+'                End If
+'            End If
             
         Else ' the file doesn't exist in any form with ? or otherwise as a valid path
             If sIsSeparator = 1 Then
@@ -17264,32 +17273,29 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                   
                   Effect = vbDropEffectCopy
                  
-                  'if an exe is dragged and dropped onto RD it is given an id, that it appends to the binary name after an additional "?"
+                  'if an exe or DLL is dragged and dropped onto RD it is given an id, that it appends to the binary name after an additional "?"
                   ' that ? signifies what? Well, possibly it is the handle of the embedded icon only added the one time, so that when the binary is read in the future the handle is already there
                   ' and that can be used to populate image array? Untested.
-                  ' in this case we just need to note the ? and then query the binary for an embedded icon handle and compare it to the id that RD has given it.
+                  ' in this case we just need to note the exe and then query the binary for an embedded icon handle and compare it to the id that RD has given it.
                   ' if it is the same then we can perhaps simulate the same.
+                  ' RD can handle DLLs that have code that create a rocketdock add-in, Steamydock does not have that capability so we do not allow DLLs
                   
                   If suffix = ".exe" Then
-                    ' we should, if it is a EXE dig into it to determine the icon using privateExtractIcon
-                                         
-                    ' However, we do not extract the icon from the shortcut as it will be useless for steamydock
-                    ' VB6 not being able to extract and handle a transparent PNG form
-                    ' even if it was we have no current method of making a transparent PNG from a bitmap or ICO that
-                    ' I can easily transfer to the GDI collection - but I am working on it...
-                    ' the vast majority of default icons are far too small for steamydock in any case.
-                    ' the result of the above is that there is currently no icon extracted, though that may change.
-                    
-                    ' instead we have a list of apps that we can match the shortcut name against, it exists in an external comma
-                    ' delimited file. The list has two identification factors that are used to find a match and then we find an
-                    ' associated icon to use with a relative path.
-                       
-                    iconFilename = identifyAppIcons(iconCommand) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
-                       
-                    If fFExists(iconFilename) Then
-                      iconImage = iconFilename
+                    ' dig into the EXE to determine the icon to use using privateExtractIcon
+                    If rDRetainIcons = "1" Then
+                        iconFilename = fExtractEmbeddedPNGFromEXE(iconCommand, picRdMap(rdIconNumber), 32, True)
+                        'Call displayEmbeddedIcons(iconCommand, picRdMap(rdIconNumber), 32, True)
                     Else
-                      iconImage = App.Path & "\my collection\steampunk icons MKVI" & "\document-EXE.png"
+                        ' as an alternative, we have a list of apps that we can match the shortcut name against, it exists in an external comma
+                        ' delimited file. The list has two identification factors that are used to find a match and then we find an
+                        ' associated icon to use with a relative path.
+                        iconFilename = identifyAppIcons(iconCommand) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
+                    End If
+                    
+                    If fFExists(iconFilename) Then
+                        iconImage = iconFilename
+                    Else
+                        iconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
                     End If
                     
                   End If
@@ -17566,6 +17572,8 @@ Public Sub readSettingsFile() '(ByVal location As String, ByVal PzGSettingsFile 
     If fFExists(toolSettingsFile) Then
 
         gblSdIconSettingsDefaultEditor = GetINISetting("Software\IconSettings", "iconSettingsDefaultEditor", toolSettingsFile)
+        rDRetainIcons = GetINISetting("Software\SteamyDock\DockSettings", "RetainIcons", dockSettingsFile) ' .18 DAEB 07/09/2022 docksettings save and restore the chkRetainIcons checkbox value
+        
         gblRdDebugFlg = GetINISetting("Software\IconSettings", "debugFlg", toolSettingsFile)
         debugFlg = Val(gblRdDebugFlg)
 
@@ -17592,6 +17600,10 @@ Private Sub validateInputs()
    On Error GoTo validateInputs_Error
                     
     If gblFormPrimaryHeightTwips = vbNullString Then gblFormPrimaryHeightTwips = CStr(gblStartFormHeight)
+    
+    If rDRetainIcons = vbNullString Then rDRetainIcons = "1" '
+    If Val(rDRetainIcons) <= 0 And Val(rDRetainIcons) > 1 Then rDRetainIcons = "1" '
+    
         
    On Error GoTo 0
    Exit Sub

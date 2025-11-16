@@ -50,7 +50,7 @@ Description="SteamyDock's icon settings utility"
 CompatibleMode="0"
 MajorVer=0
 MinorVer=9
-RevisionVer=2476
+RevisionVer=2493
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="Pre-release version. Alpha."
@@ -1033,10 +1033,11 @@ GenerateMap=0
 TSAware=0
 XPManifest=0
 ResBuildName=.\rocket1.dll
-ReplaceIcon=0
+ReplaceIcon=1
 SendCommandArgs=0
 SymbDbgPref=0
 RevisionVersion=1
+AppIconFile=.\build resources\SteamyRocket256.ico
 
 [TASK175]
 Description=test for file existence when running persistentDebug.exe

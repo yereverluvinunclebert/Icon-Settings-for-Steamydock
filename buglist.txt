@@ -46,9 +46,15 @@ resizing bug divide by zero
 first blank item hidden
 new images
 
+cogs above blank items
+can now read PNGs from DLLs or EXEs
+
 ' Current Task:
 ' =============
 
+' Adding world of tanks it makes the target soffice.exe
+' When adding an icon from a binary it should respect the docksettings setting to read from file or have SD choose one from the list
+' When a binary is displayed in the map it should also be shown in the preview image
 ' credit Magic Ink
 
 ' Status:
@@ -64,8 +70,6 @@ but leaves the final icon duplicated. the Final control needs to be deleted from
 Currently using the main iconsettings.dat so any changes are instant. We need to create an intersettings.dat that is modified and only written to the main when we click SET
 
 menu option to add a 'file'
-
-test with someYguy's GDIPimageloader
 
 '   test running with a blank tool settings file
 '
