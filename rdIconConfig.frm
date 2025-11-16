@@ -8203,7 +8203,7 @@ Private Sub displayResizedImage(ByVal FileName As String, ByRef targetPicBox As 
         
         'because the earlier method draws the ico images from the top left of the
         'pictureBox we have to manually set the picbox to size and position for each icon size
-        Call centrePreviewImage(targetPicBox, gblIcoSizePreset, gblResizeRatio)
+        Call centrePreviewImage(targetPicBox, thisImageSize)
         Set targetPicBox.Picture = StdPictureEx.LoadPicture(FileName, lpsCustom, , thisImageSize, thisImageSize)
     End If
 
