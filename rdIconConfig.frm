@@ -17220,7 +17220,6 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
     Dim ndesc As String: ndesc = vbNullString
     Dim nwork As String: nwork = vbNullString
     Dim nargs As String: nargs = vbNullString
-    'Dim shortCutMethod As Integer
     Dim thisShortcut As Link
     Dim sJustTheFilename As String: sJustTheFilename = vbNullString
     
@@ -17278,112 +17277,112 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                     sJustTheFilename = ExtractFilenameWithoutSuffix(sJustTheFilename)
                     iconTitle = sJustTheFilename
                     
-                  'if an exe or DLL is dragged and dropped onto RD it is given an id, that it appends to the binary name after an additional "?"
-                  ' that ? signifies what? Well, possibly it is the handle of the embedded icon only added the one time, so that when the binary is read in the future the handle is already there
-                  ' and that can be used to populate image array? Untested.
-                  ' in this case we just need to note the exe and then query the binary for an embedded icon handle and compare it to the id that RD has given it.
-                  ' if it is the same then we can perhaps simulate the same.
-                  ' RD can handle DLLs that have code that create a rocketdock add-in, Steamydock does not have that capability so we do not allow DLLs
+                    'if an exe or DLL is dragged and dropped onto RD it is given an id, that it appends to the binary name after an additional "?"
+                    ' that ? signifies what? Well, possibly it is the handle of the embedded icon only added the one time, so that when the binary is read in the future the handle is already there
+                    ' and that can be used to populate image array? Untested.
+                    ' in this case we just need to note the exe and then query the binary for an embedded icon handle and compare it to the id that RD has given it.
+                    ' if it is the same then we can perhaps simulate the same.
+                    ' RD can handle DLLs that have code that create a rocketdock add-in, Steamydock does not have that capability so we do not allow DLLs
+                    
+                    If suffix = ".exe" Then
+                      ' dig into the EXE to determine the icon to use using privateExtractIcon
+                      If rDRetainIcons = "1" Then
+                          iconFilename = fExtractEmbeddedPNGFromEXE(iconCommand, picRdMap(rdIconNumber), 32, True)
+                      Else
+                          ' as an alternative, we have a list of apps that we can match the shortcut name against, it exists in an external comma
+                          ' delimited file. The list has two identification factors that are used to find a match and then we find an
+                          ' associated icon to use with a relative path.
+                          iconFilename = identifyAppIcons(iconCommand) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
+                      End If
+                      
+                      If fFExists(iconFilename) Then
+                          iconImage = iconFilename
+                      Else
+                          iconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
+                      End If
+                      
+                    End If
                   
-                  If suffix = ".exe" Then
-                    ' dig into the EXE to determine the icon to use using privateExtractIcon
-                    If rDRetainIcons = "1" Then
-                        iconFilename = fExtractEmbeddedPNGFromEXE(iconCommand, picRdMap(rdIconNumber), 32, True)
-                    Else
-                        ' as an alternative, we have a list of apps that we can match the shortcut name against, it exists in an external comma
+                    If suffix = ".msc" Then
+                        ' if it is a MSC then  give it a SYSTEM type icon (EVENT)
+                        
+                        ' if there is no icon embedded found then use the default icon
+                         ' check the icon exists
+                        iconFilename = App.Path & "\my collection\steampunk icons MKVI" & "\document-msc.png"
+                        If fFExists(iconFilename) Then
+                            iconImage = iconFilename
+                        End If
+                    End If
+                    
+                    If suffix = ".bat" Then
+                        ' if it is a BAT then give it a BATCH type icon (NOTEPAD)
+                        
+                        ' if there is no icon embedded found then use the default icon
+                         ' check the icon exists
+                        iconFilename = App.Path & "\my collection\steampunk icons MKVI" & "\document-bat.png"
+                        If fFExists(iconFilename) Then
+                            iconImage = iconFilename
+                        End If
+                    End If
+                    
+                    If suffix = ".cpl" Then
+                        ' if it is a CPL then give it a SYSTEM type icon (CONSOLE)
+                        
+                        ' if there is no icon embedded found then use the default icon
+                         ' check the icon exists
+                        iconFilename = App.Path & "\my collection\steampunk icons MKVI" & "\document-cpl.png"
+                        If fFExists(iconFilename) Then
+                            iconImage = iconFilename
+                        End If
+                    End If
+                    
+                    '       If it is a shortcut we have some code to investigate the shortcut for the link details
+                    If suffix = ".lnk" Then
+                          ' if it is a short cut then you can use two methods, the first is currently limited to only
+                          ' producing the path alone but it does avoid using the shell method that causes FPs to occur in av tools
+                    
+                          Call GetShortcutInfo(iconCommand, thisShortcut) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
+                                         
+                          iconTitle = getFileNameFromPath(thisShortcut.FileName)
+                          
+                          If Not thisShortcut.FileName = "" Then
+                              iconCommand = LCase$(thisShortcut.FileName)
+                          End If
+                          iconArguments = thisShortcut.Arguments
+                          iconWorkingDirectory = thisShortcut.RelPath
+                          
+                          ' .55 DAEB 19/04/2021 frmMain.frm Added call to the older function to identify an icon using the shell object
+                          'if the icontitle and command are blank then this is user-created link that only provides the relative path
+                          If iconTitle = "" And thisShortcut.FileName = "" And Not iconWorkingDirectory = "" Then
+                              Call GetShellShortcutInfo(iconCommand, nname, npath, ndesc, nwork, nargs)
+                      
+                              iconTitle = nname
+                              iconCommand = npath
+                              iconArguments = nargs
+                              iconWorkingDirectory = nwork
+                          End If
+                         
+                        ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
+                        
+                        ' we do not extract the icon from the shortcut as it will be useless for steamydock
+                        ' VB6 not being able to extract and handle a transparent PNG form
+                        ' even if it was we have no current method of making a transparent PNG from a bitmap or ICO that
+                        ' I can easily transfer to the GDI collection - but I am working on it...
+                        ' the vast majority of default icons are far too small for steamydock in any case.
+                        ' the result of the above is that there is currently no icon extracted, though that may change.
+                        
+                        ' instead we have a list of apps that we can match the shortcut name against, it exists in an external comma
                         ' delimited file. The list has two identification factors that are used to find a match and then we find an
                         ' associated icon to use with a relative path.
-                        iconFilename = identifyAppIcons(iconCommand) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
-                    End If
-                    
-                    If fFExists(iconFilename) Then
-                        iconImage = iconFilename
-                    Else
-                        iconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
-                    End If
-                    
-                  End If
-                  
-                  If suffix = ".msc" Then
-                      ' if it is a MSC then  give it a SYSTEM type icon (EVENT)
-                      
-                      ' if there is no icon embedded found then use the default icon
-                       ' check the icon exists
-                      iconFilename = App.Path & "\my collection\steampunk icons MKVI" & "\document-msc.png"
-                      If fFExists(iconFilename) Then
-                          iconImage = iconFilename
-                      End If
-                  End If
-                  
-                  If suffix = ".bat" Then
-                      ' if it is a BAT then give it a BATCH type icon (NOTEPAD)
-                      
-                      ' if there is no icon embedded found then use the default icon
-                       ' check the icon exists
-                      iconFilename = App.Path & "\my collection\steampunk icons MKVI" & "\document-bat.png"
-                      If fFExists(iconFilename) Then
-                          iconImage = iconFilename
-                      End If
-                  End If
-                  
-                  If suffix = ".cpl" Then
-                      ' if it is a CPL then give it a SYSTEM type icon (CONSOLE)
-                      
-                      ' if there is no icon embedded found then use the default icon
-                       ' check the icon exists
-                      iconFilename = App.Path & "\my collection\steampunk icons MKVI" & "\document-cpl.png"
-                      If fFExists(iconFilename) Then
-                          iconImage = iconFilename
-                      End If
-                  End If
-                  
-            '       If it is a shortcut we have some code to investigate the shortcut for the link details
-                  If suffix = ".lnk" Then
-                        ' if it is a short cut then you can use two methods, the first is currently limited to only
-                        ' producing the path alone but it does avoid using the shell method that causes FPs to occur in av tools
-
-                        Call GetShortcutInfo(iconCommand, thisShortcut) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
-                                       
-                        iconTitle = getFileNameFromPath(thisShortcut.FileName)
                         
-                        If Not thisShortcut.FileName = "" Then
-                            iconCommand = LCase$(thisShortcut.FileName)
+                        iconFilename = identifyAppIcons(iconCommand)
+                         
+                        If fFExists(iconFilename) Then
+                          iconImage = iconFilename
+                        Else
+                          iconImage = App.Path & "\my collection\steampunk icons MKVI" & "\document-lnk.png"
                         End If
-                        iconArguments = thisShortcut.Arguments
-                        iconWorkingDirectory = thisShortcut.RelPath
-                        
-                        ' .55 DAEB 19/04/2021 frmMain.frm Added call to the older function to identify an icon using the shell object
-                        'if the icontitle and command are blank then this is user-created link that only provides the relative path
-                        If iconTitle = "" And thisShortcut.FileName = "" And Not iconWorkingDirectory = "" Then
-                            Call GetShellShortcutInfo(iconCommand, nname, npath, ndesc, nwork, nargs)
-                    
-                            iconTitle = nname
-                            iconCommand = npath
-                            iconArguments = nargs
-                            iconWorkingDirectory = nwork
-                        End If
-                       
-                      ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
-                      
-                      ' we do not extract the icon from the shortcut as it will be useless for steamydock
-                      ' VB6 not being able to extract and handle a transparent PNG form
-                      ' even if it was we have no current method of making a transparent PNG from a bitmap or ICO that
-                      ' I can easily transfer to the GDI collection - but I am working on it...
-                      ' the vast majority of default icons are far too small for steamydock in any case.
-                      ' the result of the above is that there is currently no icon extracted, though that may change.
-                      
-                      ' instead we have a list of apps that we can match the shortcut name against, it exists in an external comma
-                      ' delimited file. The list has two identification factors that are used to find a match and then we find an
-                      ' associated icon to use with a relative path.
-                      
-                      iconFilename = identifyAppIcons(iconCommand)
-                       
-                      If fFExists(iconFilename) Then
-                        iconImage = iconFilename
-                      Else
-                        iconImage = App.Path & "\my collection\steampunk icons MKVI" & "\document-lnk.png"
-                      End If
-                  End If
+                    End If
             
               ElseIf InStr(".png, .bmp, .gif, .jpg, .jpeg, .ico, .tif, .tiff", suffix) <> 0 Then
                   ' See if this is a file name ending in bmp, gif, jpg, or jpeg or tiff.

@@ -49,13 +49,31 @@ new images
 cogs above blank items
 can now read PNGs from DLLs or EXEs
 
-' Current Task:
-' =============
+' resizing - save the new size
+' resizing - restore the new size on restart
 
 ' Adding world of tanks it makes the target soffice.exe
 ' When adding an icon from a binary it should respect the docksettings setting to read from file or have SD choose one from the list
 ' When a binary is displayed in the map it should also be shown in the preview image
+' read the docksettings and determine chkRetainIcons
+' the value of chkRetainIcons must be used to determine whether the icon is automatically pulled from the embedded icon or the collection
+
+
+' Current Task:
+' =============
+
 ' credit Magic Ink
+
+' separate the writing of the picbox and the writing of the PNG to two separate functions with return values true/false
+
+' Test binaries, dragging to the dock
+'    no embedded icon
+'    different icon sizes
+'    try the Panzer gauges
+
+' When you selecting an icon using the btnIconSelect to specifically select an icon, if the user chooses a DLL then we can use extractEmbeddedIcons to extract the icon to a PNG.
+
+' if no icon found then drop down to the automatic selection
 
 ' Status:
 ' =======
@@ -109,18 +127,12 @@ Dilettante picsave      https://www.vbforums.com/showthread.php?808301-VB6-PicSa
 ' Bugs:
 ' =====
 
-'       resizing - save the new size
-
-'       resizing - restore the new size on restart
+inserting via menu at the end of the dock
 
 '       when editing an icon, dragging and dropping to the map, the set button is not enabled
 '       when editing an icon, dragging and dropping to the map, the close button does not change to cancel
 '       cancel does not revert the icon dragged to the dock
-'
-'       read the docksettings and determine chkRetainIcons
-'
-'       the value of chkRetainIcons must be used to determine whether the icon is automatically pulled from the embedded icon or the collection
-'
+''
 '       update the help file.
 '
 '       note: - Compile the other associated projects regularly as they use shared code in modules 2 & 3.
