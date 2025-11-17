@@ -157,6 +157,93 @@ Project References:
 	OLE Automation - drag and drop  
 	Microsoft Shell Controls and Automation
 
+
+' Notes:
+'           Integers are retained (rather than longs) as some of these are passed to
+'           library API functions in code that is not my own so I am loathe to change.
+'           A lot of the code provided (by better devs than me) seems to have code quality
+'           issues (as does mine!) - I haven't gone through all the 3rd party code to fix every
+'           problem but I have fixed quite a few. My own code has significant quality isses.
+'
+'           The icons are displayed using Lavolpe's transparent DIB image code,
+'           except for the .ico files which use his earlier StdPictureEx class.
+'           The original ico code caused many strange visual artifacts and complete failures to show .ico files.
+'           especially when other image types were displayed on screen simultaneously.
+'
+' Summary:
+'           The program reads the contents of the folder and sub-folders into a treeview and displays the first 12 of the
+'           icons using 12 dynamically created picboxes.
+'
+'           VB6 does not support more modern transparent image types natively. The core of this program is Lavolpe's
+'           image handling code allowing it to read and display all types of images including those that support
+'           transparencies. These are then rendered into standard picture boxes.
+'
+'           The icons are displayed using Lavolpe's transparent DIB image code, except for the .ico files which use the earlier StdPictureEx class.
+'           DLLs and EXEs with embedded icons are handled using an undocumented API named PrivateExtractIcons.
+'           One selected image is extracted and displayed in smaller size in the map and in larger size in the preview window.
+'			GDI+ is used to convert and extract the PNG to file.
+'
+'           LaVolpe's methods of image handling are used only in Rocketdock.
+'
+'           A copy of Rocketdock's settings are transferred from the registry or settings.ini into an interim
+'           settings file which provides a common method of handling the data.
+'           The icon details are read from this file and the details
+'           of the selected icon are displayed in the text boxes in the 'properties' frame. This data is also
+'           read when the user chooses to the display the Rocketdock map.
+'
+'           In that 'map' each dock image is displayed in smaller form in dynamically created picboxes.
+'           The RD map acts a cache of images that takes a few seconds to create but
+'           doing it this way means there is no subsequent delay when viewing any other part of the map.
+'           The images on the map can then be scrolled into visibility viewing fifteen icons at a time. It has
+'           been tested with a map containing up to 67 icons.
+'
+'           The icon details are written to the registry or the settings file but only after Rocketdock
+'           has been closed and just before it is restarted otherwise it will overwrite any settings
+'           changes when it exits.
+'
+'           The utility itself has some configuration details that it stores in its own local settings.ini file.
+'
+'           The font selection and file/folder dialogs are generated using Win32 APIs rather than the
+'           common dialog OCX which dispensed with another OCX.
+'
+'           I have used Krool's amazing control replacement project. The specific code for
+'           just two of the controls (treeview and slider) has been incorporated rather than all 32 of
+'           Krool's complete package.
+'
+'           In the population of the thumbnail pane we use a primitive post-fetch cache, ie. it speeds up any access
+'           after each first image read. When the cache is filled (limited by a count) it adds no more and does not
+'           clear up the oldest item freeing the space, it just stops populating.
+'
+'           The cache is populated using a VB6 imageList replacement from Krool.
+'
+'           For each image read from file and displayed, it is added to the imageList in its resized form.
+'           Each image was given a unique name as a key relating to its position in the grid. This key's existence is
+'           checked just before any image is accessed, if the key exists then the resized .picture is extracted from
+'           the imageList rather than reading it from file.
+'
+'           Each subsequent access is much, much faster as we are retrieving from memory and only retrieving a tiny
+'           image rather than the big 256x256 one on disc.
+'
+'           We limit the cache to certain number of image items to prevent out of memory messages, the images that
+'           we are cacheing are only very small (32x32 or 16x16) so a limit of 250/500 is probably fine.
+'
+'           When the cache is full we do not attempt to remove the oldest image added as we would have to keep a track
+'           of the insert times and this would require complexity outside the imageList.
+'
+'           I could attempt an array of images and see if that is faster than an imageList (I am sure it will be) but
+'           having each image stored under a unique key is a very useful feature, the extra functionality it provides
+'           by default I would have to build manually in code. The imageList cache is also as fast as I need it to be.
+'           Remember the images are very small and are fast to load in any case, the result of very fast CPUs and SSDs.
+'
+'           I also created a timer that was designed to be used to populate the cache in advance, in a pre-fetch manner.
+'           Used in conjunction with an idletime tester it could preload images into the cache when the app. is idle,
+'           perhaps 4 icons at a time every 5 seconds or so. It would not help much when scrolling down as it would have
+'           to be running in the same thread and would slow down normal operation. If VB6 supported multi threading it
+'           might be sensible to implement it. Part-coded, it is disabled for now.	
+
+'           This latter cacheing method was only really useful when running on slwer machines from 10 years ago. 
+'           Modern PCs are so fast that opening a number of images is a trivial task that occurs very quickly.
+
 LICENCE AGREEMENTS:
 
 Copyright 2023 Dean Beedell
@@ -169,3 +256,4 @@ With regard to the commercial use of incorporated images, permission and a
 licence would need to be obtained from the original owner and creator, ie. me.
 
 ![desktop1](https://github.com/yereverluvinunclebert/rocketdock/assets/2788342/f2d3be1e-c98f-4597-9c8d-503486cf5afb)
+
