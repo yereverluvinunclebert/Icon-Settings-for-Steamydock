@@ -27,5 +27,5 @@ IcoWriter = 104, 104, 1150, 734,
 Module1 = 85, -8, 1007, 584, 
 common3 = 418, 237, 1274, 613, 
 common = 28, 37, 1160, 592, 
-rDIconConfigForm = 103, 43, 1445, 880, Z, 238, 77, 1422, 895, C
-modEmbeddedIcons = 0, 0, 0, 0, C
+rDIconConfigForm = 103, 43, 1445, 880, , 238, 77, 1422, 895, C
+modEmbeddedIcons = 390, 390, 1459, 1697, Z

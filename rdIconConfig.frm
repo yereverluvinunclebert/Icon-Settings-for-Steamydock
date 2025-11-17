@@ -11325,7 +11325,7 @@ Private Sub txtLabelName_Change()
    If debugFlg = 1 Then debugLog "%txtLabelName_Change"
 
     btnSet.Enabled = True ' tell the program that something has changed
-        btnCancel.Visible = True
+    btnCancel.Visible = True
     btnClose.Visible = False
 
    On Error GoTo 0
@@ -11452,7 +11452,7 @@ Private Sub txtTarget_Change()
    If debugFlg = 1 Then debugLog "%txtTarget_Change"
 
     btnSet.Enabled = True ' tell the program that something has changed
-        btnCancel.Visible = True
+    btnCancel.Visible = True
     btnClose.Visible = False
 
    On Error GoTo 0
@@ -13694,11 +13694,11 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
     'set the fields for this icon to the correct value as supplied
     txtLabelName.Text = sTitle
     
-    If (sDockletFile = "0") Then
-        txtTarget.Text = sDockletFile
-    Else
+'    If (sDockletFile = "0") Then
+'        txtTarget.Text = sDockletFile
+'    Else
         txtTarget.Text = sCommand
-    End If
+'    End If
     
     txtArguments.Text = sArguments
     txtStartIn.Text = sWorkingDirectory
@@ -17222,7 +17222,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
     Dim nargs As String: nargs = vbNullString
     'Dim shortCutMethod As Integer
     Dim thisShortcut As Link
-
+    Dim sJustTheFilename As String: sJustTheFilename = vbNullString
     
     On Error GoTo picRdMap_OLEDragDrop
     
@@ -17271,8 +17271,13 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
             suffix = LCase$(ExtractSuffixWithDot(Data.Files(1)))
             If InStr(".exe,.bat,.msc,.cpl,.lnk", suffix) <> 0 Then
                   
-                  Effect = vbDropEffectCopy
-                 
+                    Effect = vbDropEffectCopy
+                   
+                    ' take the filename, extract just the filename body minus the suffix
+                    sJustTheFilename = Mid(iconTitle, InStrRev(iconTitle, "\") + 1, Len(iconTitle))
+                    sJustTheFilename = ExtractFilenameWithoutSuffix(sJustTheFilename)
+                    iconTitle = sJustTheFilename
+                    
                   'if an exe or DLL is dragged and dropped onto RD it is given an id, that it appends to the binary name after an additional "?"
                   ' that ? signifies what? Well, possibly it is the handle of the embedded icon only added the one time, so that when the binary is read in the future the handle is already there
                   ' and that can be used to populate image array? Untested.
@@ -17284,7 +17289,6 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                     ' dig into the EXE to determine the icon to use using privateExtractIcon
                     If rDRetainIcons = "1" Then
                         iconFilename = fExtractEmbeddedPNGFromEXE(iconCommand, picRdMap(rdIconNumber), 32, True)
-                        'Call displayEmbeddedIcons(iconCommand, picRdMap(rdIconNumber), 32, True)
                     Else
                         ' as an alternative, we have a list of apps that we can match the shortcut name against, it exists in an external comma
                         ' delimited file. The list has two identification factors that are used to find a match and then we find an
