@@ -112,6 +112,8 @@ o Krools replacement for the Microsoft Windows Common Controls found in
 mscomctl.ocx (treeview, slider) are replicated by the addition of three
 dedicated OCX files that are shipped with this package.
 
+![references](https://github.com/user-attachments/assets/c5219a23-58e9-47dc-887c-41f852a94fe0)
+
 During development these should be copied to C:\windows\syswow64 and should be registered.
 
 - CCRImageList.ocx
@@ -258,6 +260,7 @@ With regard to the commercial use of incorporated images, permission and a
 licence would need to be obtained from the original owner and creator, ie. me.
 
 ![desktop1](https://github.com/yereverluvinunclebert/rocketdock/assets/2788342/f2d3be1e-c98f-4597-9c8d-503486cf5afb)
+
 
 
 
