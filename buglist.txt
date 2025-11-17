@@ -58,22 +58,21 @@ can now read PNGs from DLLs or EXEs
 ' read the docksettings and determine chkRetainIcons
 ' the value of chkRetainIcons must be used to determine whether the icon is automatically pulled from the embedded icon or the collection
 
+' if no icon found then drop down to the automatic selection
 
 ' Current Task:
 ' =============
 
 ' credit Magic Ink
 
+' Test binaries, dragging to the dock, different icon sizes
+
 ' separate the writing of the picbox and the writing of the PNG to two separate functions with return values true/false
 
-' Test binaries, dragging to the dock
-'    no embedded icon
-'    different icon sizes
-'    try the Panzer gauges
+' When you use the btnIconSelect to specifically select an EXE, the preview image is not filled.
 
-' When you selecting an icon using the btnIconSelect to specifically select an icon, if the user chooses a DLL then we can use extractEmbeddedIcons to extract the icon to a PNG.
+' When you use the btnIconSelect to specifically select a DLL then we can use extractEmbeddedIcons to extract the icon to a PNG.
 
-' if no icon found then drop down to the automatic selection
 
 ' Status:
 ' =======

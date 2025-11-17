@@ -12984,14 +12984,14 @@ Private Sub mnuHelpPdf_click()
    On Error GoTo mnuHelpPdf_click_Error
    If debugFlg = 1 Then debugLog "%mnuHelpPdf_click"
 
-    answer = msgBoxA("This option opens a browser window and displays this tool's help. Proceed?", vbQuestion + vbYesNo, "Display Help for this tool? ", True, "mnuHelpPdf_click")
-    If answer = vbYes Then
-        If fFExists(App.Path & "\help\Rocketdock Enhanced Settings.html") Then
-            Call ShellExecute(Me.hWnd, "Open", App.Path & "\help\Rocketdock Enhanced Settings.html", vbNullString, App.Path, 1)
+'    answer = msgBoxA("This option opens a browser window and displays this tool's help. Proceed?", vbQuestion + vbYesNo, "Display Help for this tool? ", True, "mnuHelpPdf_click")
+'    If answer = vbYes Then
+        If fFExists(App.Path & "\help\help.chm") Then
+            Call ShellExecute(Me.hWnd, "Open", App.Path & "\help\help.chm", vbNullString, App.Path, 1)
         Else
             MsgBox ("The help file -Rocketdock Enhanced Settings.html- is missing from the help folder.")
         End If
-    End If
+'    End If
 
    On Error GoTo 0
    Exit Sub
