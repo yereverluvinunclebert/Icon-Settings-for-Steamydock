@@ -2654,6 +2654,9 @@ Private Sub Form_Load()
           
     'if the process already exists then kill it
     'Call killPreviousInstance ' .13 DAEB 27/02/2021 rdIConConfigFrm moved to a subroutine for clarity
+    
+    ' call the function to connect to or create the database
+    Call connectSQLDatabase
                
     ' get the location of this tool's settings file
     Call getToolSettingsFile
@@ -2796,6 +2799,34 @@ Form_Load_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_Load of Form rDIconConfigForm"
                 
+End Sub
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : connectSQLDatabase
+' Author    : beededea
+' Date      : 07/12/2025
+' Purpose   : test connection to DB exists, if not then connect or create.
+'---------------------------------------------------------------------------------------
+'
+Private Sub connectSQLDatabase()
+    On Error GoTo connectSQLDatabase_Error
+    
+        ' call the function to connect to or create the database
+        Call connectDatabase
+
+        ' Registers the progress handler callback
+'        With DBConnection
+'            .SetProgressHandler me
+'        End With
+
+    On Error GoTo 0
+    Exit Sub
+
+connectSQLDatabase_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure connectSQLDatabase of Form dock"
+
 End Sub
 
 
@@ -5875,10 +5906,11 @@ Private Sub readDockConfiguration()
 '        chkReadConfig.Value = 1
         
         ' read the count from the settings file and find the last icon
-        rdIconUpperBound = Val(GetINISetting("Software\SteamyDock\IconSettings\Icons", "count", interimSettingsFile))
+        'rdIconUpperBound = Val(GetINISetting("Software\SteamyDock\IconSettings\Icons", "count", interimSettingsFile))
         ' validate
         
-
+        ' read the database and get the record count
+        rdIconUpperBound = getRecordCount()
         
         ' copy the original configs out of the registry and into a settings file that we will operate upon
 
@@ -5986,6 +6018,9 @@ Private Sub readRocketDockSettings()
    If debugFlg = 1 Then debugLog "%" & "readRocketDockSettings"
 
     origSettingsFile = rdAppPath & "\settings.ini" ' Rocketdock 's settings file
+    
+    ' get the recordcount directly from the database
+    rdIconUpperBound = getRecordCount()
         
     If fFExists(origSettingsFile) Then ' does the original settings.ini exist?
         frmRegistry.chkReadRegistry.Value = 0
@@ -6002,7 +6037,8 @@ Private Sub readRocketDockSettings()
         FileCopy origSettingsFile, interimSettingsFile
         
         ' read the rocketdock settings.ini and find the very last icon
-        rdIconUpperBound = Val(GetINISetting("Software\SteamyDock\IconSettings\Icons", "count", interimSettingsFile))
+        'rdIconUpperBound = Val(GetINISetting("Software\SteamyDock\IconSettings\Icons", "count", interimSettingsFile))
+        
 
     Else
         frmRegistry.chkReadRegistry.Value = 1
@@ -6014,7 +6050,7 @@ Private Sub readRocketDockSettings()
         frmRegistry.chkWriteConfig.Value = 0
         
         ' read the rocketdock registry and find the last icon
-        rdIconUpperBound = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", "count")
+       ' rdIconUpperBound = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", "count")
 
                 
         ' copy the original ICON configs out of the registry and into a settings file that we will operate upon
@@ -9408,7 +9444,7 @@ Public Sub deleteRdMap(Optional ByVal backupFirst As Boolean = False, Optional B
     rdIconUpperBound = rdIconUpperBound - 1
     
     'amend the count
-    PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, interimSettingsFile
+    'PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, interimSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     'set the slider bar
     rdMapHScroll.Max = 1
@@ -13642,7 +13678,7 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
          
          Call zeroAllIconCharacteristics
          
-          Call readIconSettingsIni(useloop, False)
+         Call readIconSettingsIni(useloop, False)
         
         ' and increment the identifier by one
          Call writeIconSettingsIni(useloop + 1, False)
@@ -13650,10 +13686,13 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
     Next useloop
     
     'increment the new icon count
-    rdIconUpperBound = rdIconUpperBound + 1
+    'rdIconUpperBound = rdIconUpperBound + 1
+    
+    ' read the database and get the record count
+    rdIconUpperBound = getRecordCount()
     
     'amend the count in both the alternative rdSettings.ini
-    PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, interimSettingsFile
+    'PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, interimSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
     'set the slider bar to the new maximum
@@ -13667,10 +13706,10 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
         'do nothing
     Else
         Load picRdMap(rdIconUpperBound) ' dynamically extend the number of picture boxes by one
-        picRdMap(rdIconUpperBound).Width = 500
-        picRdMap(rdIconUpperBound).Height = 500
-        picRdMap(rdIconUpperBound).Left = picRdMap(rdIconUpperBound - 1).Left + gblBoxSpacing
-        picRdMap(rdIconUpperBound).Top = 30
+        picRdMap(rdIconUpperBound).Width = 500 * gblResizeRatio
+        picRdMap(rdIconUpperBound).Height = 500 * gblResizeRatio
+        picRdMap(rdIconUpperBound).Left = picRdMap(rdIconUpperBound - 1).Left + (gblBoxSpacing * gblResizeRatio)
+        picRdMap(rdIconUpperBound).Top = 30 * gblResizeRatio
         picRdMap(rdIconUpperBound).Visible = True
     End If
     
@@ -15425,7 +15464,7 @@ Private Sub deleteRdMapPosition(ByVal thisIconNumber As Integer, Optional confir
     'the write to the actual settings or registry happens when the user "saves & restarts"
     
     If thisIconNumber <= rdIconUpperBound Then 'if not the top icon loop through them all and reassign the values
-        For useloop = thisIconNumber To rdIconUpperBound
+        For useloop = thisIconNumber To rdIconUpperBound - 1
             
             ' read the rocketdock alternative rdsettings.ini one item up in the list
             'readSettingsIni (useloop + 1) ' the alternative rdsettings.ini only exists when RD is set to use it
@@ -15451,10 +15490,16 @@ Private Sub deleteRdMapPosition(ByVal thisIconNumber As Integer, Optional confir
     storeLeft = storeLeft - gblBoxSpacing
         
     'decrement the icon count and the maximum icon
-    rdIconUpperBound = rdIconUpperBound - 1
+    'rdIconUpperBound = rdIconUpperBound - 1
+    
+    ' query the database for the final record, if the record is found then delete it
+    If querySingleRecordFromDatabase(rdIconUpperBound) = True Then Call deleteSpecificKey(rdIconUpperBound)
+    
+    ' read the database and get the record count
+    rdIconUpperBound = getRecordCount()
     
     'amend the count in both the alternative rdSettings.ini
-    PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, interimSettingsFile
+    'PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, interimSettingsFile
     
     'set the slider bar to the new maximum
     rdMapHScroll.Max = rdIconUpperBound - 1

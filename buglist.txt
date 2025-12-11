@@ -1,67 +1,13 @@
-' Tasks Done:
-' ===========
+' Tasks Done at the END
 
-' when dropping down the additional button options, stretch the image box downward too?
-' we need to fill the space below the image preview.
-'       For win 11 bottom cut off - need to add another 100 twips
-' added option buttons for running the second app beforehand/afterwards
-' added new field and selection button for choosing an application to terminate
-' added initialisation, reading/writing parameters to handle the beforehand/afterwards saving and setting
-' added initialisation, reading/writing parameters to handle the application to terminate
-' added balloon tooltip handling to new controls
-' modified code to enlarge the dropdown area and pull it back as required.
-' modify help to document the application to terminate and run second app beforehand/afterwards.
-' take the X/Y position and store it, when restarting, set it as per FCW.
-' menu option to move the utility to the centre of the main monitor
-' code added to find whether the utility is off screen - works for monitor one.
-' rDIconConfigForm - all routines are now byVal or byRef
-' rDIconConfigForm - all routines have their local variables initialised
-' adjust Form Position on startup placing form onto Correct Monitor when placed off screen due to monitor/resolution changes
-' checks the date and time of the dock settings file and reloads the map after re-reading the icon details
-' fixed the prev/next button msgbox, message box now shows the question icon and title bar.
-' add themeing to the dock generation form taken from the main utility.
-' pulled the prev/next button code together so it shares the same code
-' Messagebox msgBoxA module to save the context of the message to allow specific msgboxes to go away
-' pulled the map prev/next button code together so it shares the same code
-' test for the folderTreeView.DropHighlight.Key and checking that (folderTreeView.SelectedItem Is Nothing) to determine which item in the folder tree to open.
-' no longer attempts to style above the number of icons we actually have
-' remove persistentDebug.exe
-' Elroy's code to add balloon tips to comboBox
 
-' Add subclass (?) scrolling to the main scrollbar - done
-
-' form sizing on Windows 10
-' after a resize do not read from the cache
-' modify the height of the form to take ito account the win10/11 larger title bar
-
-' sometimes reszies when a 2nd windows is opened
-' sometimes baulks at a resize when reszied too quickly after a form_load
-' the form is not displayed until all controls are created
-
-' set DPI awareness
-
-fast reading of icon settings using random access file
-
-resizing bug divide by zero
-first blank item hidden
-new images
-
-cogs above blank items
-can now read PNGs from DLLs or EXEs
-
-' resizing - save the new size
-' resizing - restore the new size on restart
-
-' Adding world of tanks it makes the target soffice.exe
-' When adding an icon from a binary it should respect the docksettings setting to read from file or have SD choose one from the list
-' When a binary is displayed in the map it should also be shown in the preview image
-' read the docksettings and determine chkRetainIcons
-' the value of chkRetainIcons must be used to determine whether the icon is automatically pulled from the embedded icon or the collection
-
-' if no icon found then drop down to the automatic selection
 
 ' Current Task:
 ' =============
+
+' add a switch to enable/disable the random access data file & toggle databse access for testing speed.
+
+' icon map move to the left leaves an incorret image in place.
 
 ' credit Magic Ink
 
@@ -83,6 +29,7 @@ but leaves the final icon duplicated. the Final control needs to be deleted from
 ' Generally the tool is complete barring some bugs to resolve and new features I would like to implement.
 '
 ' Tasks:
+' =======
 
 Currently using the main iconsettings.dat so any changes are instant. We need to create an intersettings.dat that is modified and only written to the main when we click SET
 
@@ -104,7 +51,6 @@ menu option to add a 'file'
 '   add to credits
 '       Procedure : adjustFormPositionToCorrectMonitor
 '       Author    : Hypetia from TekTips https://www.tek-tips.com/userinfo.cfm?member=Hypetia
-Dilettante picsave      https://www.vbforums.com/showthread.php?808301-VB6-PicSave-Simple-SavePicture-as-GIF-PNG-JPEG
 '
 '   Krool's CCRImageList.ocx component to replace the MS imageList, we are using this already - WIP
 '       OCX built successfully after OLEGUIDS.TLB problem, not available and incorrect version.
@@ -153,90 +99,8 @@ inserting via menu at the end of the dock
 
 ' There are a few new functions that I'd like to add in the task list:
 ' ====================================================================
-'
-'    1. When adding a shortcut to the dock we need to determine the built-in ico and give the option to extract that.
 
-     2. Embedded icon in a DLL or binary. Extract as an ICO file with alpha channel intact.
-
-'       Currently, the class code uses GDI+ to read the PNG files.
-'       GdipLoadImageFromFile
-'       GdipGetImageBounds
-'       GdipCreateFromHdc
-'       GdipDrawImageRectRectI
-'       It is rendered ie. directly written into a picturebox.
-
-        Tried using various old VB6 ICON EXTRACTOR tools to read and extract ICOs from DLLs and EXEs, entirely possible with some tools using pure code and no APIs
-        but the overhead in code is huge. In addition, the only working code I have that is able to write an .ICO with alpha (VB6_Icon_Extractor), only reads a certain number of icons then 
-        crashes when it meets the the larger size Vista+ icons. It reads the resource into memory not using any APIs, so in general the code is not readily adaptable.
-        It could be modified to read only the largest 48 x 48 icon and then fail gracefully from that point. It could then be co-erced to save to a good ICO file. Some stripping down required.
-
-        This is it here, I think
-        https://www.vbforums.com/showthread.php?904814-VB6-Icon-Extractor-App
-
-        The larger icons in Vista+ is the reason why I use PrivateExtractIconsA as it should be able to extract all the icons up to 48x48
-
-        I have managed to extract the icons and can write them directly to a VB6 picture control using drawiconEx
-
-        The problem is that I want an alpha channel intact image and any VB6 control does not.
-
-        I have managed to create an Ipicture icon with a handle using CreateIcon, which is then converted to a 32bpp bitmap using ConvertstdPicTo32bpp (LaVolpe c32bppDIB.cls)
-        I have not used that DIB yet but the plan is to convert that to a bitstream and then write that to a file. Seems plausible.
-        because we have the pic as ipicture from the above CreateIcon, we should be able to save the icon to a PNG with a bit of luck using the handle to the ICO and GDI+
-
-        No progress made from this point.
-
-        I currently use Dil's picSave to save from a VB6 control to a PNG, this is fine but it loses the alpha channel, leaving a square background.
-        I can also save to a ICO using Vb6 SavePicture with the same issue.
-
-        Next simple stage is to try ICOwriter class, creating an icon and saving, Call NewICO(), then AddImage() one or more times, then BuildICO()
-
-        FreeImage.DLL
-        There is a solution on github I think, that the Trick has used that uses the C++ FreeImage.DLL worth exploring.
-
-       via CreateIconFromResourceEx API (which handles PNG as of Vista)      as a replacement for createIcon?
-
-
-LoadLibrary
-LoadIcon
-LoadImage
-GdipCreateBitmapFromResource
-GdipLoadImageFromStream  <--- png Resource (advanced)
-EnumResourceNames
-LoadResource
-
-look at this next, how to obtain icons from a handle...
-GDI+ Workaround: ICONs from Handle
-https://www.vbforums.com/showthread.php?813055-GDI-Workaround-ICONs
-
-https://www.vbforums.com/showthread.php?582216-RESOLVED-Maintain-Icon-s-Alpha-Channel-using-GDIPlus
-
-
-vb6 Extract PNG from resource DLL  in Cintanotes and at this URL
-http://leandroascierto.com/foro/index.php?topic=711.0
-
-        How will this eventually work?
-
-        o When an application is dragged to the dock, if it is a binary or DLL and has an embedded ico then
-          write that as current icon and target fields
-          extract the icon
-          write that to the target picbox using drawIconEx
-          write that to the RDmap picbox using drawIconEx at a reduced size
-
-        o  When added via the menu do the same
-
-        o When the current Icon field is changed manually by cut/paste to a specific icon path trigger the above
-        o Same with the button select, (only partially operating)
-
-        In Rocketdock it does not matter how we display the icon, just that we do so. The missing aplha channel is unimportant.
-
-        In Steamydock, when it encounters a .exe or DLL we can try to extract the ICO using the VB6_Icon_Extractor code and then write that .ICO file during startup 
-        When we encounter a.EXE or DLL in the icon identifier field we substitute an ICO file of the same name and add that to the collection.
-
-
-' ====================================================================
-
-
-'
+'    1. Folder name
 '    2. Test with empty dock and first run with no prior install of anything.
 '
 '    3. Ensure the laptop OCX configuration pulls all the OCX from the local versions of the three OCX
@@ -276,3 +140,76 @@ http://leandroascierto.com/foro/index.php?topic=711.0
 '
 '   SD Avant manager - test the animation routine for the dock, circledock might be worth looking at?
 '
+
+
+
+
+
+
+' Tasks Done:
+' ===========
+
+' when dropping down the additional button options, stretch the image box downward too?
+' we need to fill the space below the image preview.
+'       For win 11 bottom cut off - need to add another 100 twips
+' added option buttons for running the second app beforehand/afterwards
+' added new field and selection button for choosing an application to terminate
+' added initialisation, reading/writing parameters to handle the beforehand/afterwards saving and setting
+' added initialisation, reading/writing parameters to handle the application to terminate
+' added balloon tooltip handling to new controls
+' modified code to enlarge the dropdown area and pull it back as required.
+' modify help to document the application to terminate and run second app beforehand/afterwards.
+' take the X/Y position and store it, when restarting, set it as per FCW.
+' menu option to move the utility to the centre of the main monitor
+' code added to find whether the utility is off screen - works for monitor one.
+' rDIconConfigForm - all routines are now byVal or byRef
+' rDIconConfigForm - all routines have their local variables initialised
+' adjust Form Position on startup placing form onto Correct Monitor when placed off screen due to monitor/resolution changes
+' checks the date and time of the dock settings file and reloads the map after re-reading the icon details
+' fixed the prev/next button msgbox, message box now shows the question icon and title bar.
+' add themeing to the dock generation form taken from the main utility.
+' pulled the prev/next button code together so it shares the same code
+' Messagebox msgBoxA module to save the context of the message to allow specific msgboxes to go away
+' pulled the map prev/next button code together so it shares the same code
+' test for the folderTreeView.DropHighlight.Key and checking that (folderTreeView.SelectedItem Is Nothing) to determine which item in the folder tree to open.
+' no longer attempts to style above the number of icons we actually have
+' remove persistentDebug.exe
+' Elroy's code to add balloon tips to comboBox
+
+' Add subclass (?) scrolling to the main scrollbar - done
+
+' form sizing on Windows 10
+' after a resize do not read from the cache
+' modify the height of the form to take ito account the win10/11 larger title bar
+
+' sometimes reszies when a 2nd windows is opened
+' sometimes baulks at a resize when reszied too quickly after a form_load
+' the form is not displayed until all controls are created
+
+' set DPI awareness
+
+' fast reading of icon settings using random access file
+
+' resizing bug divide by zero
+' first blank item hidden
+' new images
+
+' cogs above blank items
+' can now read PNGs from DLLs or EXEs
+
+' resizing - save the new size
+' resizing - restore the new size on restart
+
+' Adding world of tanks it makes the target soffice.exe
+' When adding an icon from a binary it should respect the docksettings setting to read from file or have SD choose one from the list
+' When a binary is displayed in the map it should also be shown in the preview image
+' read the docksettings and determine chkRetainIcons
+' the value of chkRetainIcons must be used to determine whether the icon is automatically pulled from the embedded icon or the collection
+
+' if no icon found then drop down to the automatic selection
+
+' reading embedded icons in binaries and DLLs
+
+' convert random access file to SQLite database
+
+' always extract the COUNT from the database using SELECT COUNT(fIconFileName) from iconDataTable and remove any code extracting it from settings.ini

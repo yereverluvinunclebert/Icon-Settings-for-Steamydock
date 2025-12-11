@@ -1134,7 +1134,7 @@ Private Sub rdbProgramData_Click()
 
     Dim userprof As String: userprof = vbNullString ' %userprofile%
     Dim ProgramData As String: ProgramData = vbNullString '
-    Dim s As Integer: s = 0
+    Dim S As Integer: S = 0
     Dim totalShortsFound As Integer: totalShortsFound = 0
     
     On Error GoTo rdbProgramData_Click_Error
@@ -1146,12 +1146,12 @@ Private Sub rdbProgramData_Click()
     txtFileFilter.Text = "*.lnk"
     
     txtPathToTest.Text = ProgramData & "\Microsoft\Windows\Start Menu\Programs"
-    s = fCheckStartup
-    totalShortsFound = totalShortsFound + s
+    S = fCheckStartup
+    totalShortsFound = totalShortsFound + S
     
     txtPathToTest.Text = userprof & "\AppData\Roaming\Microsoft\Windows\Start Menu\Programs"
-    s = fCheckStartup
-    totalShortsFound = totalShortsFound + s
+    S = fCheckStartup
+    totalShortsFound = totalShortsFound + S
 
     lblTitle.Caption = "STARTUP MENU LIST OF INSTALLED SOFTWARE IN %PROGRAMDATA%"
     lblInformation.Caption = "The system Program Data area and the user profile are the two locations where all " & vbCrLf & _
@@ -1190,7 +1190,7 @@ Private Sub rdbRegistry_Click()
     Dim keyToSearch As String: keyToSearch = vbNullString
     Dim locationToSearch As Long: locationToSearch = 0
     Dim totalKeysFound As Integer: totalKeysFound = 0
-    Dim s As Integer: s = 0
+    Dim S As Integer: S = 0
     Dim textVersion As String: textVersion = vbNullString
     
     On Error GoTo rdbRegistry_Click_Error
@@ -1210,20 +1210,20 @@ Private Sub rdbRegistry_Click()
     'xFileName = App.Path & "\ins.txt"
     
     keyToSearch = "Software\Classes\Installer\Products"
-    s = readInstalledAppsRegistry(HKEY_LOCAL_MACHINE, keyToSearch)
-    totalKeysFound = totalKeysFound + s
+    S = readInstalledAppsRegistry(HKEY_LOCAL_MACHINE, keyToSearch)
+    totalKeysFound = totalKeysFound + S
     
     keyToSearch = "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
-    s = readInstalledAppsRegistry(HKEY_LOCAL_MACHINE, keyToSearch)
-    totalKeysFound = totalKeysFound + s
+    S = readInstalledAppsRegistry(HKEY_LOCAL_MACHINE, keyToSearch)
+    totalKeysFound = totalKeysFound + S
     
     keyToSearch = "Software\Microsoft\Windows\CurrentVersion\Uninstall"
-    s = readInstalledAppsRegistry(HKEY_LOCAL_MACHINE, keyToSearch)
-    totalKeysFound = totalKeysFound + s
+    S = readInstalledAppsRegistry(HKEY_LOCAL_MACHINE, keyToSearch)
+    totalKeysFound = totalKeysFound + S
     
     keyToSearch = "Software\Microsoft\Windows\CurrentVersion\Installer\UserData"
-    s = readInstalledAppsRegistry(HKEY_LOCAL_MACHINE, keyToSearch)
-    totalKeysFound = totalKeysFound + s
+    S = readInstalledAppsRegistry(HKEY_LOCAL_MACHINE, keyToSearch)
+    totalKeysFound = totalKeysFound + S
     
     txtNumOfFiles.Text = totalKeysFound & " Valid entries found"
     
@@ -1263,7 +1263,7 @@ Private Sub SaveSizes()
     ' Save the controls' positions and sizes.
     On Error GoTo SaveSizes_Error
 
-    ReDim swFormControlPositions(1 To Controls.Count)
+    ReDim swFormControlPositions(1 To Controls.count)
     i = 1
     For Each Ctrl In Controls
         With swFormControlPositions(i)
@@ -1416,10 +1416,11 @@ Public Sub generateDockInformation()
     
         Next useloop2
         
-        rdIconUpperBound = lbxApprovedList.ListCount
+        'rdIconUpperBound = lbxApprovedList.ListCount
+    
         
         'amend the count to one more than the max as 0- is a valid icon
-        PutINISetting location & "\Icons", "count", rdIconUpperBound, interimSettingsFile
+        'PutINISetting location & "\Icons", "count", rdIconUpperBound, interimSettingsFile
     
     ElseIf frmConfirmDock.rdbAppend = True Then ' is the option append? If so, write the new icons to the end.
         
@@ -1443,10 +1444,10 @@ Public Sub generateDockInformation()
             
          Next useloop2
 
-        rdIconUpperBound = newMaximum
+        'rdIconUpperBound = newMaximum
 
         'amend the count to one more than the max as 0- is a valid icon
-        PutINISetting location & "\Icons", "count", rdIconUpperBound, interimSettingsFile
+        'PutINISetting location & "\Icons", "count", rdIconUpperBound, interimSettingsFile
     
     ElseIf frmConfirmDock.rdbPrepend = True Then ' is the option prepend?
 
@@ -1481,10 +1482,11 @@ Public Sub generateDockInformation()
 
         Next useloop2
 
-        rdIconUpperBound = newMaximum
+        'rdIconUpperBound = newMaximum
+    
 
         ' amend the count to one more than the max as 0- is a valid icon
-        PutINISetting location & "\Icons", "count", rdIconUpperBound, interimSettingsFile
+        'PutINISetting location & "\Icons", "count", rdIconUpperBound, interimSettingsFile
     
     ElseIf frmConfirmDock.rdbCurrent = True Then     ' is the option at current icon?
 
@@ -1521,12 +1523,15 @@ Public Sub generateDockInformation()
             
         Next useloop2
 
-        rdIconUpperBound = newMaximum
+        'rdIconUpperBound = newMaximum
 
         'amend the count
-        PutINISetting location & "\Icons", "count", rdIconUpperBound, interimSettingsFile
+        'PutINISetting location & "\Icons", "count", rdIconUpperBound, interimSettingsFile
 
     End If
+    
+    ' read the database and get the record count
+    rdIconUpperBound = getRecordCount()
 
      ' close the frmConfirmDock and the generate form, clear the app. list
     frmConfirmDock.Hide
