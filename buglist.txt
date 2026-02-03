@@ -2,12 +2,18 @@
 
 
 
-' Current Task:
-' =============
+
+' Status:
+' =======
+
+' Generally the tool is complete barring some bugs to resolve and new features I would like to implement.
+'
+' Tasks:
+' =======
 
 ' add a switch to enable/disable the random access data file & toggle databse access for testing speed.
 
-' icon map move to the left leaves an incorret image in place.
+' icon map move to the left leaves an incorrect image in place.
 
 ' credit Magic Ink
 
@@ -19,21 +25,7 @@
 
 ' When you use the btnIconSelect to specifically select a DLL then we can use extractEmbeddedIcons to extract the icon to a PNG.
 
-
-' Status:
-' =======
-
-When SD adds an icon, then deletes it. RD will renew the dock automatically and the total number of icons in the map should adjust. It seems to do it correctly
-but leaves the final icon duplicated. the Final control needs to be deleted from the array
-
-' Generally the tool is complete barring some bugs to resolve and new features I would like to implement.
-'
-' Tasks:
-' =======
-
-Currently using the main iconsettings.dat so any changes are instant. We need to create an intersettings.dat that is modified and only written to the main when we click SET
-
-menu option to add a 'file'
+' menu option to add a 'file'
 
 '   test running with a blank tool settings file
 '
@@ -72,7 +64,7 @@ menu option to add a 'file'
 ' Bugs:
 ' =====
 
-inserting via menu at the end of the dock
+'       inserting via menu at the end of the dock
 
 '       when editing an icon, dragging and dropping to the map, the set button is not enabled
 '       when editing an icon, dragging and dropping to the map, the close button does not change to cancel
@@ -213,3 +205,6 @@ inserting via menu at the end of the dock
 ' convert random access file to SQLite database
 
 ' always extract the COUNT from the database using SELECT COUNT(fIconFileName) from iconDataTable and remove any code extracting it from settings.ini
+
+' When SD adds an icon, then deletes it. RD will renew the dock automatically and the total number of icons in the map should adjust. It seems to do it correctly
+     but leaves the final icon duplicated. the Final control needs to be deleted from the array

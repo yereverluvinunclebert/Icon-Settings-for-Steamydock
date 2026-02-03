@@ -2638,7 +2638,7 @@ Private Sub Form_Load()
     Call setFormResizingVarsAndProperties
             
     ' subclass ALL forms created by intercepting WM_Create messages, identifying dialog forms to centre them in the middle of the monitor - specifically the font form.
-    If Not InIDE Then subclassDialogForms
+    If Not InIde Then subclassDialogForms
     
     ' subclass controls that need additional functionality that VB6 does not provide (scrollwheel/balloon tooltips)
     Call subClassControls
@@ -2654,6 +2654,9 @@ Private Sub Form_Load()
           
     'if the process already exists then kill it
     'Call killPreviousInstance ' .13 DAEB 27/02/2021 rdIConConfigFrm moved to a subroutine for clarity
+    
+    ' check the main dock settings file exists
+    Call locateDockSettingsFile
     
     ' call the function to connect to or create the database
     Call connectSQLDatabase
@@ -2672,9 +2675,6 @@ Private Sub Form_Load()
     
     ' set the default path to the icons root
     Call setInitialPath ' .13 DAEB 27/02/2021 rdIConConfigFrm moved to a subroutine for clarity
-        
-    ' check the main dock settings file exists
-    Call locateDockSettingsFile
     
     ' copy the dock settings file to the interim version
     Call copyDockSettingsFile
@@ -2874,7 +2874,7 @@ Private Sub Form_Resize()
     pvtFormResizedByDrag = True
     
     ' only call this if the resize is done in code
-    If InIDE Or gblFormResizedInCode = True Then
+    If InIde Or gblFormResizedInCode = True Then
         Call Form_Resize_Event
     End If
                 
@@ -8560,18 +8560,19 @@ End Sub
 ' Procedure : preButtonClick
 ' Author    : beededea
 ' Date      : 06/04/2023
-' Purpose   :
+' Purpose   : Called on a next or previous preview button. Prior to moving to the next icon, if changes have been made
+'             then it warns the user before losing them. It then displays the correct image in the map.
 '---------------------------------------------------------------------------------------
 '
 Private Sub preButtonClick(ByVal exitSubFlg As Boolean)
-    
-    'if the modification flag is set then ask before moving to the next icon
+
     Dim answer As VbMsgBoxResult: answer = vbNo
     
     On Error GoTo preButtonClick_Error
 
     'If debugFlg = 1 Then debugLog "%" & "btnPrev_Click"
 
+    'if the modification flag is set then ask before moving to the next icon
     If btnSet.Enabled = True Then
         ' 17/11/2020    .03 DAEB Replaced the confirmation dialog with an automatic save when moving from one icon to another using the right/left icon buttons
         If chkToggleDialogs.Value = 1 Then
@@ -8587,7 +8588,7 @@ Private Sub preButtonClick(ByVal exitSubFlg As Boolean)
         End If
         If pvtMapImageChanged = True Then
             ' now change the icon image back again
-            ' the target picture control and the icon size
+            ' the target picture control, ie. the map, and the icon size
             Call displayResizedImage(previousIcon, picRdMap(rdIconNumber), 32)
             pvtMapImageChanged = False
         End If
@@ -8611,14 +8612,15 @@ End Sub
 ' Procedure : postButtonClick
 ' Author    : beededea
 ' Date      : 06/04/2023
-' Purpose   :
+' Purpose   : Called on a next or previous preview button. Prior to moving to an earlier icon, if changes have been made
+'             then it warns the user before losing them. It then displays the correct image in the map.
 '---------------------------------------------------------------------------------------
 '
 Private Sub postButtonClick(ByVal oldiconNumber As Integer, ByVal theButton As String)
-    
-    ' only move the map if the array has been populated,
+
     On Error GoTo postButtonClick_Error
     
+    ' only move the map if the array has been populated,
     If Not picRdMap(2).ToolTipText = vbNullString Then
         ' I want to test to see if the picture property is populated but
         ' as the picture property is not being set by Lavolpe's method then we can't test for it
@@ -8642,6 +8644,7 @@ Private Sub postButtonClick(ByVal oldiconNumber As Integer, ByVal theButton As S
 
     Call showIconLargeNumber
     
+    ' now display the icon in preview at larger size, on its own, bottom left.
     Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False)
     
     'remove and reset the highlighting on the Rocket dock map
@@ -8680,6 +8683,7 @@ End Sub
 '
 ' .79 DAEB 28/05/2022 rDIConConfig.frm new parameter to determine when to populate the dragicon
 Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox As PictureBox, fillPicBox As Boolean, ByRef icoPreset As Integer, ByVal showProperties As Boolean, ByVal fillDragIcon As Boolean, Optional ByVal showBlank As Boolean)
+    
     Dim FileName As String: FileName = vbNullString
     Dim qPos As Long: qPos = 0
     Dim filestring As String: filestring = vbNullString
@@ -8689,10 +8693,10 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
     Dim bSuccess As Boolean: bSuccess = False
     Dim returnedFilename As String: returnedFilename = vbNullString
     
-    'if it is a good icon then read the data
     On Error GoTo displayIconElement_Error
     If debugFlg = 1 Then debugLog "%" & "displayIconElement"
 
+    ' read the icon data
     If fFExists(interimSettingsFile) Then '
         Call readIconSettingsIni(thisRecordNumber, False)
     End If
@@ -8704,48 +8708,41 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
         lblBlankText.Visible = False
     End If
 
-    'showProperties = True
     If showProperties = True Then
-        ' if the incoming text has <quote> then replace those with a " TODO ?
         txtCurrentIcon.Text = sFilename ' build the full path
-        
         txtLabelName.Text = sTitle
         txtTarget.Text = sCommand
         txtArguments.Text = sArguments
         txtStartIn.Text = sWorkingDirectory
-        
         sDockletFile = "0" ' debug
         
         'If the docklet entry in the settings.ini is populated then blank off all the target, folder and image fields
         If (sDockletFile <> "0") Then
-              txtLabelName.Enabled = False
-              txtCurrentIcon.Enabled = False
-              
-              'only enable the target fields and use the target field as a temporary location for the docklet data
-              txtTarget.Text = sDockletFile
-              txtTarget.Enabled = True
-              btnTarget.Enabled = True
-              
-              txtArguments.Enabled = False
-              txtStartIn.Enabled = False
-              cmbRunState.Enabled = False
-              cmbOpenRunning.Enabled = False
-              chkRunElevated.Enabled = False
-              btnSelectStart.Enabled = False
+            txtLabelName.Enabled = False
+            txtCurrentIcon.Enabled = False
+            '
+            'only enable the target fields and use the target field as a temporary location for the docklet data
+            txtTarget.Text = sDockletFile
+            txtTarget.Enabled = True
+            btnTarget.Enabled = True
+            '
+            txtArguments.Enabled = False
+            txtStartIn.Enabled = False
+            cmbRunState.Enabled = False
+            cmbOpenRunning.Enabled = False
+            chkRunElevated.Enabled = False
+            btnSelectStart.Enabled = False
         Else
-              txtLabelName.Enabled = True
-              txtCurrentIcon.Enabled = True
-              txtTarget.Enabled = True
-              txtArguments.Enabled = True
-              txtStartIn.Enabled = True
-              cmbRunState.Enabled = True
-
-
-                chkRunElevated.Enabled = True
-                cmbOpenRunning.Enabled = True
-
-              btnTarget.Enabled = True
-              btnSelectStart.Enabled = True
+            txtLabelName.Enabled = True
+            txtCurrentIcon.Enabled = True
+            txtTarget.Enabled = True
+            txtArguments.Enabled = True
+            txtStartIn.Enabled = True
+            cmbRunState.Enabled = True
+            chkRunElevated.Enabled = True
+            cmbOpenRunning.Enabled = True
+            btnTarget.Enabled = True
+            btnSelectStart.Enabled = True
         End If
         
         If sIsSeparator = "1" Then
@@ -8842,7 +8839,7 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
     ' extract the suffix
     suffix = ExtractSuffix(FileName)
     
-    ' test as to whether it is an .EXE or a .DLL
+    ' if the filename is an .EXE or a .DLL then we have to extract the image from the embedded icon
     If InStr("exe", LCase$(suffix)) <> 0 Then ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
         ' does the string contain a ? if so it probably has an embedded .ICO
         qPos = InStr(1, FileName, "?")
@@ -11263,7 +11260,7 @@ Public Sub themeTimer_Timer()
     ' and avoid changing the background colour when running from within the IDE
     
     SysClr = GetSysColor(COLOR_BTNFACE)
-    If InIDE = False Then
+    If InIde = False Then
         If debugFlg = 1 Then debugLog "COLOR_BTNFACE = " & SysClr  ' generates too many debug statements in the log
         If SysClr <> gblStoreThemeColour Then
             Call setThemeColour(Me)
@@ -15694,7 +15691,7 @@ Public Sub thisForm_Unload() ' name follows VB6 standard naming convention
     On Error GoTo Form_Unload_Error
         
     ' Release the subclass hook for dialog forms
-    If Not InIDE Then ReleaseHook
+    If Not InIde Then ReleaseHook
 
     Call saveMainFormPosition
 
@@ -17721,7 +17718,7 @@ Private Sub subClassControls()
     
    On Error GoTo subClassControls_Error
 
-    If InIDE Then
+    If InIde Then
         MsgBox "NOTE: Running in IDE so Sub classing is disabled" & vbCrLf & "Mousewheel will not scroll icon maps and balloon tooltips will not display on comboboxes"
     Else
         ' sub classing code to intercept messages to the form itself in order to capture WM_EXITSIZEMOVE messages that occur AFTER the form has been resized
