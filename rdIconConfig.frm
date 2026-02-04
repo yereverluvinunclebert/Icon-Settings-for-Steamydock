@@ -2509,6 +2509,13 @@ Private Declare Function SetProcessDpiAwareness Lib "shcore.dll" (ByVal Value As
 
 '------------------------------------------------------ ENDS
 
+Private Declare Function GdipCreateFromHDC Lib "GdiPlus.dll" (ByVal hDC As Long, hGraphics As Long) As Long
+Private Declare Function GdipFillRectangleI Lib "GdiPlus.dll" (ByVal graphics As Long, ByVal brush As Long, ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal Height As Long) As Long
+Private Declare Function GdipDeleteBrush Lib "GdiPlus.dll" (ByVal brush As Long) As Long
+Private Declare Function GdipDeleteGraphics Lib "GdiPlus.dll" (ByVal mGraphics As Long) As Long
+Private Declare Function GdipCreateSolidFill Lib "GdiPlus.dll" (ByVal color As Long, brush As Long) As Long
+        
+
 '---------------------------------------------------------------------------------------
 ' Procedure : btnCloseMoreConfig_Click
 ' Author    : beededea
@@ -2734,7 +2741,7 @@ Private Sub Form_Load()
     Call readTreeviewDefaultFolder
     
     ' display the first icon in the preview window
-    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False)
+    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False, False)
          
     ' set the theme colour on startup
     Call setThemeSkin(Me) ' .05 17/11/2020 rDIconConfigForm.frm DAEB Added the missing code to read/write the current theme to the tool's own settings file
@@ -4464,7 +4471,7 @@ Private Sub settingsTimer_Timer()
     
                 Call populateDockMap(rdIconLowerBound) ' show the map from position zero
     
-                Call displayIconElement(lastIconChanged, picPreview, True, gblIcoSizePreset, True, False)
+                Call displayIconElement(lastIconChanged, picPreview, True, gblIcoSizePreset, True, False, False)
     
                 btnSet.Enabled = False ' this has to be done at the end
                 pvtMapImageChanged = False
@@ -6535,7 +6542,7 @@ Private Sub btnKillIcon_Click()
         End If
         
         ' now display the current icon textual and preview details, the previous icon displayed now havin been deleted
-        Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False)
+        Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False, False)
    
    On Error GoTo 0
    Exit Sub
@@ -6608,7 +6615,7 @@ Private Sub btnSet_Click()
         'only if the rdMAp has already been displayed already do we carry out the image refresh
         If Not picRdMap(2).ToolTipText = vbNullString Then ' check that the array has been populated already
             ' we just reload the sole picbox that has changed
-            Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False)
+            Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False)
         End If
         iconChanged = False
     End If
@@ -8090,7 +8097,7 @@ Private Sub postMapPageUpDown()
    
     Call showIconLargeNumber
     
-    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False)
+    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False, False)
     
     'set the highlighting on the Rocket dock map
     picRdMap(rdIconNumber).BorderStyle = 1
@@ -8184,14 +8191,14 @@ End Sub
 '             both methods are supplied by LaVolpe.
 '---------------------------------------------------------------------------------------
 '
-Private Sub displayResizedImage(ByVal FileName As String, ByRef targetPicBox As PictureBox, ByVal thisBaseImageSize As Integer)
+Private Sub displayResizedImage(ByVal FileName As String, ByRef targetPicBox As PictureBox, ByVal thisBaseImageSize As Integer, Optional ByVal isSelected As Boolean)
     Dim suffix As String: suffix = vbNullString
     Dim picWidth As Long: picWidth = 0
     Dim picHeight As Long: picHeight = 0
     Dim picSize As Long: picSize = 0
     Dim thisImageSize As Long: thisImageSize = 0
     Dim returnedFilename As String: returnedFilename = vbNullString
-                
+
     On Error GoTo displayResizedImage_Error
     
     If debugFlg = 1 Then debugLog "%" & "displayResizedImage"
@@ -8217,8 +8224,9 @@ Private Sub displayResizedImage(ByVal FileName As String, ByRef targetPicBox As 
     ' multiply the base ImageSize by the resize ratio to obtain the displayed image size
     thisImageSize = thisBaseImageSize * gblResizeRatio
     
-    ' using Lavolpe's later method as it allows for resizing of PNGs and all other types
+    ' This section is the main area where we read and display the image types using LaVolpe's GDI+ classes.
     If InStr("png,jpg,bmp,jpeg,tif,gif", LCase$(suffix)) <> 0 Then
+        
         If targetPicBox.Name = "picPreview" Then
             targetPicBox.Left = 345
             targetPicBox.Top = 210
@@ -8226,42 +8234,57 @@ Private Sub displayResizedImage(ByVal FileName As String, ByRef targetPicBox As 
             targetPicBox.Height = 3450 * gblResizeRatio
         End If
         
+        ' using Lavolpe's 'later' method as it allows for resizing of PNGs and all other types using GDI+
         Set cImage = New c32bppDIB
         cImage.LoadPictureFile FileName, thisImageSize, thisImageSize, False, 32
-        Call refreshPicBox(targetPicBox, thisImageSize)
+        Call refreshPicBox(targetPicBox, thisImageSize, isSelected)
         
         ' see ref point 0001 in cPNGparser.cls for PNG size extraction
         lblWidthHeight.Caption = " width " & origWidth & " height " & origHeight & " (pixels)"
 
     ElseIf InStr("ico", LCase$(suffix)) <> 0 Then
-        ' *.ico
-        ' using Lavolpe's earlier StdPictureEx method as it allows for correct display of ICOs
-        ' the later method above has a bug with some ICOs
+
+        ' using Lavolpe's earlier StdPictureEx method as it allows for correct display of ICOs using GDI+ without corruption.
+        ' the 'later' method above has a bug with dispalying multiple ICOs
         
         'because the earlier method draws the ico images from the top left of the
         'pictureBox we have to manually set the picbox to size and position for each icon size
         Call centrePreviewImage(targetPicBox, gblIcoSizePreset, gblResizeRatio)
         Set targetPicBox.Picture = StdPictureEx.LoadPicture(FileName, lpsCustom, , thisImageSize, thisImageSize)
+        
     End If
-
-    ' display the sizes from the image types that are native to VB6
     
-    ' check the size of the image and display it,
-    ' unlike the .NET version, the sizing has to be done after the display of the image
+    ' add the blue overlay here if required (selected icon)
+    Call alterBlueOverlay(targetPicBox, isSelected)
+        
+    ' check the size of the image and the number of icons in an ICO image (multiple) and display it,
+    ' the sizing has to be done after the display of the image
     ' as it is LaVolpe's code that does the extraction of the icon count.
-    'FileName = "C:\Program Files\Rocketdock\"
+    
+    ' Also handle any errors generated by corrupt ICO files
+
     If InStr("jpg,bmp,jpeg,gif", LCase$(suffix)) <> 0 Then
-        Call checkImageSize(FileName, picWidth, picHeight) 'check the size of the image
+        
+        ' check the size of the standard image types
+        Call checkImageSize(FileName, picWidth, picHeight)
         lblWidthHeight.Caption = " width " & picWidth & " height " & picHeight & " (pixels)"
+    
     ElseIf InStr("ico", LCase$(suffix)) <> 0 Then
-        ' captureIconCount is obtained elsewhere in Lavolpe's StdPictureEx code
+        ' captureIconCount the number of icons in a multiple ICO, is obtained elsewhere in Lavolpe's StdPictureEx code
         If captureIconCount = 1 Then
 
+            ' corrupt ICO causes an error, I don't want to use a goto but error handling in VB6 requires it
             On Error GoTo handleResizing_Error
-            Call checkImageSize(FileName, picWidth, picHeight) 'check the size of the image
-            GoTo displaySizes ' don't want to use a goto but error handling in VB6...
+            
+            'check the size of the image
+            Call checkImageSize(FileName, picWidth, picHeight)
+            
+            ' don't want to use a goto but error handling in VB6...
+            GoTo displaySizes
             
 handleResizing_Error:
+                
+             ' error trap, normally bypassed
                 
              ' if the ico file is damaged then display a blank icon
              ' an example of damage is an icon with an incorrect header count of thousands
@@ -8276,7 +8299,7 @@ handleResizing_Error:
                  FileName = rdAppPath & "\icons\" & "help.png"
              End If
              
-             'display image here after the error is handled
+             'display blank image here after the error is handled
              Set targetPicBox.Picture = Nothing
 
              Set cImage = New c32bppDIB
@@ -8290,6 +8313,8 @@ handleResizing_Error:
         End If
         
 displaySizes:
+
+        ' normal program flow resumes
 
         If InStr("ico", LCase$(suffix)) <> 0 Then
             If captureIconCount > 1 Then
@@ -8310,10 +8335,12 @@ displaySizes:
             
     End If
         
-    ' DAEB TBD
+    ' The following lines should not ever be encountered, when a binary is dragged to the dock
+    ' the embedded image will have already been extracted and written to a temporary file location as a PNG
+    ' the item's icon location will be referenced to that folder and filename.
+    
     If InStr("exe", LCase$(suffix)) <> 0 Then
         returnedFilename = fExtractEmbeddedPNGFromEXE(FileName, targetPicBox, thisImageSize, False)
-        'Call displayEmbeddedIcons(FileName, targetPicBox, thisImageSize, False)
         
         picSize = FileLen(returnedFilename)
         lblFileInfo.Caption = "File Size: " & Format(picSize, "###,###,###") & " bytes (binary)"
@@ -8333,6 +8360,49 @@ displayResizedImage_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure displayResizedImage of Form rDIconConfigForm"
                 
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : alterBlueOverlay
+' Author    : beededea
+' Date      : 04/02/2026
+' Purpose   : add or remove the blue overlay here if required (selected icon) GDI+ blue overlay
+'---------------------------------------------------------------------------------------
+'
+Private Sub alterBlueOverlay(ByRef targetPicBox As PictureBox, Optional ByVal isSelected As Boolean)
+    
+    Dim lGraphics As Long: lGraphics = 0
+    Dim hBrush As Long: hBrush = 0
+    Dim lArgbBlue As Long: lArgbBlue = 0
+    
+    On Error GoTo alterBlueOverlay_Error
+
+    If isSelected = True Then
+        lArgbBlue = &H250078D7   ' Alpha=25, R=0, G=120, B=215
+      Else
+        lArgbBlue = 0      ' Alpha=0
+    End If
+    
+    ' Create Graphics from the PictureBox
+    GdipCreateFromHDC targetPicBox.hDC, lGraphics
+
+    ' Create a Semi-Transparent Blue Brush
+    GdipCreateSolidFill lArgbBlue, hBrush
+
+    ' Overlay the graphics Tint
+    GdipFillRectangleI lGraphics, hBrush, 0, 0, targetPicBox.ScaleWidth, targetPicBox.ScaleHeight
+    
+    ' now tidy up
+    GdipDeleteBrush hBrush
+    GdipDeleteGraphics lGraphics
+
+    On Error GoTo 0
+    Exit Sub
+
+alterBlueOverlay_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure alterBlueOverlay of Form rDIconConfigForm"
+
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -8645,7 +8715,7 @@ Private Sub postButtonClick(ByVal oldiconNumber As Integer, ByVal theButton As S
     Call showIconLargeNumber
     
     ' now display the icon in preview at larger size, on its own, bottom left.
-    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False)
+    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False, False, True)
     
     'remove and reset the highlighting on the Rocket dock map
     picRdMap(oldiconNumber).BorderStyle = 0
@@ -8682,7 +8752,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 ' .79 DAEB 28/05/2022 rDIConConfig.frm new parameter to determine when to populate the dragicon
-Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox As PictureBox, fillPicBox As Boolean, ByRef icoPreset As Integer, ByVal showProperties As Boolean, ByVal fillDragIcon As Boolean, Optional ByVal showBlank As Boolean)
+Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox As PictureBox, fillPicBox As Boolean, ByRef icoPreset As Integer, ByVal showProperties As Boolean, ByVal fillDragIcon As Boolean, ByVal showBlank As Boolean, Optional ByVal isSelected As Boolean)
     
     Dim FileName As String: FileName = vbNullString
     Dim qPos As Long: qPos = 0
@@ -8833,20 +8903,25 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
         End If
     End If
 
-    ' if the user drags an icon to the dock then RD takes a icon link of the following form:
-    'FileName = "C:\Program Files (x86)\Microsoft Visual Studio 8\Common7\IDE\vbexpress.exe?62453184"
-    
     ' extract the suffix
     suffix = ExtractSuffix(FileName)
+        
+    ' The following lines should not ever be encountered, when a binary is dragged to the dock
+    ' the embedded image will have already been extracted and written to a temporary file location as a PNG
+    ' the item's icon location will be referenced to that folder and filename.
     
-    ' if the filename is an .EXE or a .DLL then we have to extract the image from the embedded icon
+     ' if the filename is an .EXE or a .DLL then we have to extract the image from the embedded icon
     If InStr("exe", LCase$(suffix)) <> 0 Then ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
         ' does the string contain a ? if so it probably has an embedded .ICO
-        qPos = InStr(1, FileName, "?")
-        If qPos <> 0 Then
-            ' extract the string before the ? (qPos)
-            filestring = Mid$(FileName, 1, qPos - 1)
-        End If
+        
+        ' if the user drags an icon to the dock then RD takes a icon link of the following form:
+        'FileName = "C:\Program Files (x86)\Microsoft Visual Studio 8\Common7\IDE\vbexpress.exe?62453184"
+    
+'        qPos = InStr(1, FileName, "?")
+'        If qPos <> 0 Then
+'            ' extract the string before the ? (qPos)
+'            filestring = Mid$(FileName, 1, qPos - 1)
+'        End If
         
         ' test the resulting filestring exists
         If fFExists(filestring) Then
@@ -8854,10 +8929,10 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
 
             'If InStr("exe", LCase$(suffix)) <> 0 Then
                 'FileName = txtCurrentIcon.Text ' revert to the relative path which is what is expected
-                If fillPicBox = True Then
-                    returnedFilename = fExtractEmbeddedPNGFromEXE(filestring, picBox, icoPreset, False)
-                    'Call displayEmbeddedIcons(filestring, picBox, icoPreset, False)
-                End If
+'                If fillPicBox = True Then
+'                    returnedFilename = fExtractEmbeddedPNGFromEXE(filestring, picBox, icoPreset, False)
+'                    'Call displayEmbeddedIcons(filestring, picBox, icoPreset, False)
+'                End If
                 picSize = FileLen(returnedFilename)
                 lblFileInfo.Caption = "File Size: " & Format(picSize, "###,###,###") & " bytes (binary)"
 
@@ -8883,26 +8958,26 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
             If fillPicBox = True Then Call displayResizedImage(FileName, picBox, icoPreset)
             'dllFrame.Visible = False
         End If
-    Else
-        If fillPicBox = True Then
-            Call displayResizedImage(FileName, picBox, icoPreset) ' fill the main picture box
-            
-            ' .78 DAEB 28/05/2022 rDIConConfig.frm We should only fill the temporary store when this routine has been called due to a click on the map
-            
-            ' now fill the temporary holder for the dragicon
-            If fillDragIcon = True Then
-                ' .78 DAEB 28/05/2022 rDIConConfig.frm Dragging a blank icon within the map should show a drag image a .lnk? Possibly a white box with a thin black boundary.
-                If getFileNameFromPath(sFilename) = "blank.png" Then
-                    Call displayResizedImage(App.Path & "\resources\mapBlank.ico", picTemporaryStore, 64) ' .66 DAEB 04/05/2022 rDIConConfig.frm Use a hidden picbox (picTemporaryStore) to be used to populate the dragIcon.
-                Else
-                    Call displayResizedImage(FileName, picTemporaryStore, 64) ' .66 DAEB 04/05/2022 rDIConConfig.frm Use a hidden picbox (picTemporaryStore) to be used to populate the dragIcon.
-                End If
-                
-            End If
-            
-        End If
-        'dllFrame.Visible = False
+        Exit Sub
     End If
+    
+    ' display a normal icon
+    If fillPicBox = True Then
+        Call displayResizedImage(FileName, picBox, icoPreset, isSelected) ' fill the main picture box
+        
+        ' .78 DAEB 28/05/2022 rDIConConfig.frm We should only fill the temporary store when this routine has been called due to a click on the map
+        
+        ' now fill the temporary holder for the dragicon
+        If fillDragIcon = True Then
+            ' .78 DAEB 28/05/2022 rDIConConfig.frm Dragging a blank icon within the map should show a drag image a .lnk? Possibly a white box with a thin black boundary.
+            If getFileNameFromPath(sFilename) = "blank.png" Then
+                Call displayResizedImage(App.Path & "\resources\mapBlank.ico", picTemporaryStore, 64, False) ' .66 DAEB 04/05/2022 rDIConConfig.frm Use a hidden picbox (picTemporaryStore) to be used to populate the dragIcon.
+            Else
+                Call displayResizedImage(FileName, picTemporaryStore, 64, False) ' .66 DAEB 04/05/2022 rDIConConfig.frm Use a hidden picbox (picTemporaryStore) to be used to populate the dragIcon.
+            End If
+        End If
+    End If
+    'dllFrame.Visible = False
 
    On Error GoTo 0
    Exit Sub
@@ -9450,7 +9525,7 @@ Public Sub deleteRdMap(Optional ByVal backupFirst As Boolean = False, Optional B
     
     If refreshDisplay = True Then
         ' load the new icon as an image in the picturebox
-        Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False)
+        Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False)
         
         Call populateDockMap(rdIconLowerBound) ' regenerate the map from position zero
     End If
@@ -9752,7 +9827,7 @@ Private Sub filesIconList_DblClick()
     
     ' now change the icon image
     ' the target picture control and the icon size
-    Call displayResizedImage(txtCurrentIcon.Text, picRdMap(rdIconNumber), 32)
+    Call displayResizedImage(txtCurrentIcon.Text, picRdMap(rdIconNumber), 32, True)
         
     ' we signify that no changes have been made
     btnSet.Enabled = True ' this has to be done at the end
@@ -10482,7 +10557,7 @@ Private Sub picRdMap_DragDrop(Index As Integer, Source As Control, X As Single, 
     Call showIconLargeNumber
     
     ' show the target icon details only
-    Call displayIconElement(rdIconNumber, picPreview, False, gblIcoSizePreset, True, False) ' < False to showing the image but show the target details
+    Call displayIconElement(rdIconNumber, picPreview, False, gblIcoSizePreset, True, False, False) ' < False to showing the image but show the target details
 
     If Index <= rdIconUpperBound Then
         picRdMap(Index).BorderStyle = 1 ' highlight the new icon position
@@ -10701,7 +10776,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
             Call writeIconSettingsIni(useloop, False)
             
             ' .83 DAEB 03/06/2022 rDIConConfig.frm Display the icon we just moved by dragging, one by one rather than the whole map
-            Call displayIconElement(useloop, picRdMap(useloop), True, 32, True, False)
+            Call displayIconElement(useloop, picRdMap(useloop), True, 32, True, False, False)
         
         Next useloop
         PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
@@ -10737,7 +10812,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
         PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
         Call writeIconSettingsIni(trgtRdIconNumber, False)
             
-        Call displayIconElement(trgtRdIconNumber, picRdMap(trgtRdIconNumber), True, 32, True, False)
+        Call displayIconElement(trgtRdIconNumber, picRdMap(trgtRdIconNumber), True, 32, True, False, False)
 
 '       ' do nothing for the records to the right
 
@@ -10755,7 +10830,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
             'write the the next item up at the current source location effectively overwriting it
             Call writeIconSettingsIni(useloop, False)
         
-            Call displayIconElement(useloop, picRdMap(useloop), True, 32, True, False)
+            Call displayIconElement(useloop, picRdMap(useloop), True, 32, True, False, False)
 
         Next useloop
         PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
@@ -10793,7 +10868,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
         PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
         
         ' .83 DAEB 03/06/2022 rDIConConfig.frm Display the icon we just moved by dragging, one by one rather than the whole map
-        Call displayIconElement(trgtRdIconNumber, picRdMap(trgtRdIconNumber), True, 32, True, False)
+        Call displayIconElement(trgtRdIconNumber, picRdMap(trgtRdIconNumber), True, 32, True, False, False)
 
     End If
                     
@@ -12308,6 +12383,7 @@ End Sub
 '
 Sub picRdMap_MouseDown_event(Index)
     Dim answer As VbMsgBoxResult: answer = vbNo
+    
     On Error GoTo picRdMap_MouseDown_event_Error
 
     If btnSet.Enabled = True Then
@@ -12322,8 +12398,6 @@ Sub picRdMap_MouseDown_event(Index)
 '            Call btnSet_Click
 '        End If
 
-        
-
         If pvtMapImageChanged = True Then
             ' now change the icon image back again
             ' the target picture control and the icon size
@@ -12332,28 +12406,31 @@ Sub picRdMap_MouseDown_event(Index)
         End If
     End If
     
-    'remove the highlighting on the Rocket dock map
+    ' remove the highlighting of the previously highlighted icon on the Rocket dock map, first the border and then the blue overlay
     picRdMap(rdIconNumber).BorderStyle = 0
+    Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False, False)
    
     rdIconNumber = Index
     
+    ' display the large numeral giving the icon count
     Call showIconLargeNumber
 
-    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, True, False)
+    ' display the currently selected icon in preview mode in the larger preview picture box
+    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, True, False, False)
 
-    'set the highlighting on the Rocket dock map
+    ' add the highlighting on the currently selected icon on the Rocket dock map - the blue overlay
+    Call displayIconElement(rdIconNumber, picRdMap(Index), True, 32, True, False, False, True)
+    
+    ' set the border highlighting on the Rocket dock map currently selected icon
     If Index <= rdIconUpperBound Then
         picRdMap(Index).BorderStyle = 1
     End If
     
-    ' TBD
     lastHighlightedRdMapIndex = Index
     
     btnSet.Enabled = False ' this has to be done at the end
     btnClose.Visible = True
     btnCancel.Visible = False
-
-        
 
     On Error GoTo 0
     Exit Sub
@@ -12583,7 +12660,7 @@ Private Sub sliPreviewSize_Change()
     'if the thumbview or fileiconlist have the focus
     If picRdMapGotFocus = True Or previewFrameGotFocus = True Then
         ' if the map or the preview have focus
-        Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False)
+        Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False, False)
     Else
         If textCurrentFolder.Text <> vbNullString Then ' changed from filesIconList.path to textCurrentFolder.Text for compatibility with VB.net
             FileName = textCurrentFolder.Text ' changed from filesIconList.path to textCurrentFolder.Text for compatibility with VB.net
@@ -13508,8 +13585,8 @@ Private Sub menuLeft_Click()
 
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
-    Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False)
-    Call displayIconElement(rdIconNumber - 1, picRdMap(rdIconNumber), True, 32, True, False)
+    Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False)
+    Call displayIconElement(rdIconNumber - 1, picRdMap(rdIconNumber), True, 32, True, False, False)
     
     btnSet.Enabled = False ' tell the program that nothing has changed
     btnClose.Visible = True
@@ -13623,8 +13700,8 @@ Private Sub menuright_Click()
     Call writeIconSettingsIni(rdIconNumber, False)
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
-    Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False)
-    Call displayIconElement(rdIconNumber + 1, picRdMap(rdIconNumber + 1), True, 32, True, False)
+    Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False)
+    Call displayIconElement(rdIconNumber + 1, picRdMap(rdIconNumber + 1), True, 32, True, False, False)
 
     btnSet.Enabled = False ' tell the program that nothing has changed
     btnClose.Visible = True
@@ -13748,7 +13825,7 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
     
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
-    Call displayIconElement(thisIcon, picRdMap(thisIcon), True, 32, True, False)
+    Call displayIconElement(thisIcon, picRdMap(thisIcon), True, 32, True, False, False)
     
     Call populateDockMap(rdIconLowerBound) ' regenerate the map from position zero
       
@@ -15505,7 +15582,7 @@ Private Sub deleteRdMapPosition(ByVal thisIconNumber As Integer, Optional confir
     thisIcon = rdIconNumber
     
     ' load the new icon as an image in the picturebox
-    Call displayIconElement(thisIcon, picRdMap(thisIcon), True, 32, True, False)
+    Call displayIconElement(thisIcon, picRdMap(thisIcon), True, 32, True, False, False)
     
     Call populateDockMap(rdIconLowerBound) ' regenerate the map from position zero
     
@@ -15927,10 +16004,10 @@ End Sub
 ' Procedure : refreshPicBox
 ' Author    : beededea
 ' Date      : 14/07/2019
-' Purpose   :
+' Purpose   : Render a pre-existing 32bpp DIB, (private cImage) to a target DC
 '---------------------------------------------------------------------------------------
 '
-Private Sub refreshPicBox(ByRef picBox As PictureBox, ByVal iconSizing As Integer)
+Private Sub refreshPicBox(ByRef picBox As PictureBox, ByVal iconSizing As Integer, Optional ByVal isSelected As Boolean)
 
     Dim newWidth As Long: newWidth = 0
     Dim newHeight As Long: newHeight = 0
@@ -15956,43 +16033,34 @@ Private Sub refreshPicBox(ByRef picBox As PictureBox, ByVal iconSizing As Intege
     Y = (picBox.ScaleHeight - newHeight) \ 2
     
     picBox.Cls
-    If Not cShadow Is Nothing Then
-        picBox.CurrentX = 20
-        picBox.CurrentY = 5
-        picBox.Print "See c32bppDIB.CreateDropShadow for more ": picBox.CurrentX = 20
-        picBox.Print "Color, Opacity, Blur Effect, ": picBox.CurrentX = 20
-        picBox.Print "  and X,Y Position are adjustable"
-    End If
-    
-    
-    ' Generally, when rotating and/or resizing, it is easier to calculate the center of where you want the image rotated vs
-    '   calculating the top/left coordinate of the resized, rotated image.  The last parameter of the Render call (CenterOnDestXY)
-    '   will render around that center point if that paremeter is set.  So, what about when an image is not rotated? The Render
-    '   function will still draw around that center point if the parameter is true. Or render, starting at the passed
-    '   DestX,DestY coordinates if that parameter is false.
-    
-    ' The Render call only has one required parameter.  All others are optional and defaulted as follows
-        ' srcX, srcY, destX, destY defaults are zero
-        ' srcWidth, destWidth defaults are the image's width
-        ' srcHeight, destHeight defaults are the image's height
-        ' Opacity (Global Alpha) default is 100% opaque, pixel LigthAdjustmnet default is zero (no additional adjustment)
-        ' GrayScale default is not grayscaled
-        ' Rotation angle is at zero degrees
-        ' Rendering image around a center point is false
-    
-    ' the cboAngle entries are at 15 degree intervals, so we simply multiply ListIndex by 15
-    
-    If Not cShadow Is Nothing Then
-        ' the 55 below is the shadow's opacity; hardcoded here but can be modified to your heart's delight
-        cShadow.Render picBox.hDC, X + newWidth \ 2 + ShadowOffset, Y + newHeight \ 2 + ShadowOffset, newWidth * mirrorOffsetX, newHeight * mirrorOffsetY, , , , , _
-            55, , , , , LightAdjustment, 0, True
-    End If
-    
-    Dim ttemp As Integer
-    ttemp = -1
     
     cImage.Render picBox.hDC, X + newWidth \ 2, Y + newHeight \ 2, newWidth * 1, newHeight * 1, , , , , _
         100, , , , -1, 0, 0, True
+'
+'    ' add the blue overlay here
+'
+'    Dim lGraphics As Long: lGraphics = 0
+'    Dim hBrush As Long: hBrush = 0
+'    Dim lArgbBlue As Long: lArgbBlue = 0
+'
+'    If isSelected = True Then
+'        ' Create a Semi-Transparent Blue Brush
+'        lArgbBlue = &H250078D7   ' Alpha=100, R=0, G=120, B=215
+'
+'    Else
+'        lArgbBlue = 0      ' Alpha=0
+'    End If
+'
+'    ' Create Graphics from the PictureBox
+'    GdipCreateFromHDC picBox.hDC, lGraphics
+'
+'    GdipCreateSolidFill lArgbBlue, hBrush
+'
+'    ' Overlay the Tint
+'    GdipFillRectangleI lGraphics, hBrush, 0, 0, picBox.ScaleWidth, picBox.ScaleHeight
+'
+'    GdipDeleteBrush hBrush
+'    GdipDeleteGraphics lGraphics
     
     picBox.Refresh
 
@@ -16152,7 +16220,7 @@ Private Sub menuRun_click()
     
     Call showIconLargeNumber
 
-    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False)
+    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False, False)
     
     ' we signify that all changes have been lost so the "save this icon" will not appear when switching icons
     btnSet.Enabled = False ' this has to be done at the end
