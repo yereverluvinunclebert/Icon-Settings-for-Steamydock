@@ -5281,7 +5281,7 @@ Private Sub determineStartRecord()
                 'MsgBox testingNo
                 rdIconNumber = testingNo
             Else
-                rdIconNumber = rdIconUpperBound * Rnd() + 1
+                rdIconNumber = rdIconUpperBound / 2
             End If
         End If
     Else
@@ -8249,12 +8249,12 @@ Private Sub displayResizedImage(ByVal FileName As String, ByRef targetPicBox As 
         
         'because the earlier method draws the ico images from the top left of the
         'pictureBox we have to manually set the picbox to size and position for each icon size
-        Call centrePreviewImage(targetPicBox, gblIcoSizePreset, gblResizeRatio)
+        If targetPicBox.Name = "picPreview" Then Call centrePreviewImage(targetPicBox, gblIcoSizePreset, gblResizeRatio)
         Set targetPicBox.Picture = StdPictureEx.LoadPicture(FileName, lpsCustom, , thisImageSize, thisImageSize)
         
     End If
     
-    ' add the blue overlay here if required (selected icon)
+    ' add the blue overlay here if selected icon, otherwise remove
     Call alterBlueOverlay(targetPicBox, isSelected)
         
     ' check the size of the image and the number of icons in an ICO image (multiple) and display it,
@@ -8378,7 +8378,7 @@ Private Sub alterBlueOverlay(ByRef targetPicBox As PictureBox, Optional ByVal is
     On Error GoTo alterBlueOverlay_Error
 
     If isSelected = True Then
-        lArgbBlue = &H250078D7   ' Alpha=25, R=0, G=120, B=215
+        lArgbBlue = &H990078D7   ' Alpha=25, R=0, G=120, B=215
       Else
         lArgbBlue = 0      ' Alpha=0
     End If
@@ -8578,7 +8578,9 @@ Private Sub btnPrev_Click()
         Exit Sub
     End If
     
-    Call postButtonClick(oldiconNumber, "btnPrev_Click")
+    Call picRdMap_MouseDown_event(rdIconNumber, oldiconNumber)
+    
+    Call postButtonClick("btnPrev_Click")
 
    On Error GoTo 0
    Exit Sub
@@ -8615,8 +8617,10 @@ Private Sub btnNext_Click()
     If rdIconNumber > rdIconUpperBound Then
         rdIconNumber = rdIconUpperBound
     End If
+    
+    Call picRdMap_MouseDown_event(rdIconNumber, oldiconNumber)
 
-    Call postButtonClick(oldiconNumber, "btnNext_Click")
+    Call postButtonClick("btnNext_Click")
     
    On Error GoTo 0
    Exit Sub
@@ -8664,6 +8668,10 @@ Private Sub preButtonClick(ByVal exitSubFlg As Boolean)
         End If
 
     End If
+    
+'    ' remove the highlighting of the previously highlighted icon on the Rocket dock map, first the border and then the blue overlay
+'    picRdMap(rdIconNumber).BorderStyle = 0
+'    Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False, False)
 
     On Error GoTo 0
     Exit Sub
@@ -8686,7 +8694,7 @@ End Sub
 '             then it warns the user before losing them. It then displays the correct image in the map.
 '---------------------------------------------------------------------------------------
 '
-Private Sub postButtonClick(ByVal oldiconNumber As Integer, ByVal theButton As String)
+Private Sub postButtonClick(ByVal theButton As String)
 
     On Error GoTo postButtonClick_Error
     
@@ -8711,15 +8719,15 @@ Private Sub postButtonClick(ByVal oldiconNumber As Integer, ByVal theButton As S
             End If
         End If
     End If
-
-    Call showIconLargeNumber
     
-    ' now display the icon in preview at larger size, on its own, bottom left.
-    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False, False, True)
-    
-    'remove and reset the highlighting on the Rocket dock map
-    picRdMap(oldiconNumber).BorderStyle = 0
-    picRdMap(rdIconNumber).BorderStyle = 1
+'    ' add the highlighting on the currently selected icon on the Rocket dock map - the blue overlay
+'    picRdMap(rdIconNumber).BorderStyle = 1
+'    Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False, True)
+'
+'    Call showIconLargeNumber
+'
+'    ' now display the icon in preview at larger size, on its own, bottom left.
+'    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False, False, False)
     
     previewFrameGotFocus = True
 
@@ -8753,7 +8761,7 @@ End Sub
 '
 ' .79 DAEB 28/05/2022 rDIConConfig.frm new parameter to determine when to populate the dragicon
 Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox As PictureBox, fillPicBox As Boolean, ByRef icoPreset As Integer, ByVal showProperties As Boolean, ByVal fillDragIcon As Boolean, ByVal showBlank As Boolean, Optional ByVal isSelected As Boolean)
-    
+
     Dim FileName As String: FileName = vbNullString
     Dim qPos As Long: qPos = 0
     Dim filestring As String: filestring = vbNullString
@@ -8869,7 +8877,7 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
     displayedIconCounter = thisRecordNumber - 1 ' the first visible is the record after the blank record 1
     
     'If the docklet entry in the settings.ini is populated then set a helpful tooltiptext
-    If (sDockletFile = "0") Then
+    If (sDockletFile = "1") Then
         picBox.ToolTipText = " Icon number " & displayedIconCounter & "You can modify this docklet by selecting a new target, click on the ... button next to the target field."
     Else
         picBox.ToolTipText = " Icon number " & displayedIconCounter & " = " & sFilename
@@ -8904,7 +8912,7 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
     End If
 
     ' extract the suffix
-    suffix = ExtractSuffix(FileName)
+    'suffix = ExtractSuffix(FileName)
         
     ' The following lines should not ever be encountered, when a binary is dragged to the dock
     ' the embedded image will have already been extracted and written to a temporary file location as a PNG
@@ -8963,6 +8971,11 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
     
     ' display a normal icon
     If fillPicBox = True Then
+        Dim a As String
+        Dim b As Integer
+        a = picBox.Name
+        'b = picBox.Index
+        
         Call displayResizedImage(FileName, picBox, icoPreset, isSelected) ' fill the main picture box
         
         ' .78 DAEB 28/05/2022 rDIConConfig.frm We should only fill the temporary store when this routine has been called due to a click on the map
@@ -12343,7 +12356,7 @@ Private Sub picRdMap_MouseDown(ByRef Index As Integer, ByRef Button As Integer, 
     End If
     
     ' .69 DAEB 16/05/2022 rDIConConfig.frm Moved the core left click code to a separate routine to avoid the clicks-via-code from activating a start drag
-    Call picRdMap_MouseDown_event(Index)
+    Call picRdMap_MouseDown_event(Index, rdIconNumber)
     
     ' .66 DAEB 04/05/2022 rDIConConfig.frm Use a hidden picbox (picTemporaryStore) to be used to populate the dragIcon.
     imlDragIconConverter.ListImages.Clear
@@ -12381,7 +12394,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Sub picRdMap_MouseDown_event(Index)
+Sub picRdMap_MouseDown_event(ByVal currentIndex As Integer, Optional ByVal oldIndex As Integer)
     Dim answer As VbMsgBoxResult: answer = vbNo
     
     On Error GoTo picRdMap_MouseDown_event_Error
@@ -12406,11 +12419,13 @@ Sub picRdMap_MouseDown_event(Index)
         End If
     End If
     
-    ' remove the highlighting of the previously highlighted icon on the Rocket dock map, first the border and then the blue overlay
-    picRdMap(rdIconNumber).BorderStyle = 0
-    Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False, False)
+    If oldIndex <> 0 Then
+        ' remove the highlighting of the previously highlighted icon on the Rocket dock map, first the border and then the blue overlay
+        picRdMap(oldIndex).BorderStyle = 0
+        Call displayIconElement(oldIndex, picRdMap(oldIndex), True, 32, True, False, False, False)
+    End If
    
-    rdIconNumber = Index
+    rdIconNumber = currentIndex
     
     ' display the large numeral giving the icon count
     Call showIconLargeNumber
@@ -12419,14 +12434,14 @@ Sub picRdMap_MouseDown_event(Index)
     Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, True, False, False)
 
     ' add the highlighting on the currently selected icon on the Rocket dock map - the blue overlay
-    Call displayIconElement(rdIconNumber, picRdMap(Index), True, 32, True, False, False, True)
-    
+    Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False, True)
+        
     ' set the border highlighting on the Rocket dock map currently selected icon
-    If Index <= rdIconUpperBound Then
-        picRdMap(Index).BorderStyle = 1
+    If currentIndex <= rdIconUpperBound Then
+        picRdMap(currentIndex).BorderStyle = 1
     End If
     
-    lastHighlightedRdMapIndex = Index
+    lastHighlightedRdMapIndex = currentIndex
     
     btnSet.Enabled = False ' this has to be done at the end
     btnClose.Visible = True

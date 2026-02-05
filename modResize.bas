@@ -64,7 +64,8 @@ Public Sub resizeControls(ByRef thisForm As Form, ByRef m_ControlPositions() As 
                         ' Cannot change height of ComboBoxes.
                         Ctrl.Height = y_scale * .Height
                     End If
-                    On Error Resume Next
+                    
+                    On Error Resume Next ' cater for any controls that do not have a font property that may cause an error
                     
                     If Ctrl.Name = "lblRdIconNumber" Then
                         Ctrl.Font.Size = y_scale * 45
@@ -115,7 +116,7 @@ Public Sub saveControlSizes(ByVal thisForm As Form, ByRef m_ControlPositions() A
     ' Save the controls' positions and sizes.
     On Error GoTo saveControlSizes_Error
 
-    ReDim m_ControlPositions(1 To thisForm.Controls.Count)
+    ReDim m_ControlPositions(1 To thisForm.Controls.count)
     i = 1
     For Each Ctrl In thisForm.Controls
         With m_ControlPositions(i)
