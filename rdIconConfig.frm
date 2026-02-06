@@ -8374,12 +8374,14 @@ Private Sub alterBlueOverlay(ByRef targetPicBox As PictureBox, Optional ByVal is
     Dim lGraphics As Long: lGraphics = 0
     Dim hBrush As Long: hBrush = 0
     Dim lArgbBlue As Long: lArgbBlue = 0
+    Dim lARGBWhite As Long: lARGBWhite = 0
     
     On Error GoTo alterBlueOverlay_Error
-
+    
     If isSelected = True Then
         lArgbBlue = &H990078D7   ' Alpha=25, R=0, G=120, B=215
-      Else
+        lARGBWhite = &HFFFFFFFF
+    Else
         lArgbBlue = 0      ' Alpha=0
     End If
     
@@ -8391,6 +8393,16 @@ Private Sub alterBlueOverlay(ByRef targetPicBox As PictureBox, Optional ByVal is
 
     ' Overlay the graphics Tint
     GdipFillRectangleI lGraphics, hBrush, 0, 0, targetPicBox.ScaleWidth, targetPicBox.ScaleHeight
+    
+    If isSelected = True Then
+        ' create a single white highlight across the top of the blue box
+        GdipCreateSolidFill &HFFFFFFFF, hBrush
+        GdipFillRectangleI lGraphics, hBrush, 2, 1, 52, 1
+        
+        ' create a single white highlight down the left hand edge of the blue box
+        GdipCreateSolidFill &HFFFFFFFF, hBrush
+        GdipFillRectangleI lGraphics, hBrush, 1, 2, 1, 52
+    End If
     
     ' now tidy up
     GdipDeleteBrush hBrush
