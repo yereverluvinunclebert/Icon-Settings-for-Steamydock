@@ -8255,7 +8255,7 @@ Private Sub displayResizedImage(ByVal FileName As String, ByRef targetPicBox As 
     End If
     
     ' add the blue overlay here if selected icon, otherwise remove
-    Call alterBlueOverlay(targetPicBox, isSelected)
+    Call alterBlueOverlay(targetPicBox, thisImageSize, isSelected)
         
     ' check the size of the image and the number of icons in an ICO image (multiple) and display it,
     ' the sizing has to be done after the display of the image
@@ -8369,18 +8369,20 @@ End Sub
 ' Purpose   : add or remove the blue overlay here if required (selected icon) GDI+ blue overlay
 '---------------------------------------------------------------------------------------
 '
-Private Sub alterBlueOverlay(ByRef targetPicBox As PictureBox, Optional ByVal isSelected As Boolean)
+Private Sub alterBlueOverlay(ByRef targetPicBox As PictureBox, ByVal thisImageSize As Long, Optional ByVal isSelected As Boolean)
     
     Dim lGraphics As Long: lGraphics = 0
     Dim hBrush As Long: hBrush = 0
     Dim lArgbBlue As Long: lArgbBlue = 0
     Dim lARGBWhite As Long: lARGBWhite = 0
+    Dim highlightLength As Long: highlightLength = 0
     
     On Error GoTo alterBlueOverlay_Error
     
     If isSelected = True Then
         lArgbBlue = &H990078D7   ' Alpha=25, R=0, G=120, B=215
         lARGBWhite = &HFFFFFFFF
+        highlightLength = thisImageSize * 0.95
     Else
         lArgbBlue = 0      ' Alpha=0
     End If
@@ -8397,11 +8399,11 @@ Private Sub alterBlueOverlay(ByRef targetPicBox As PictureBox, Optional ByVal is
     If isSelected = True Then
         ' create a single white highlight across the top of the blue box
         GdipCreateSolidFill &HFFFFFFFF, hBrush
-        GdipFillRectangleI lGraphics, hBrush, 2, 1, 52, 1
+        GdipFillRectangleI lGraphics, hBrush, 2, 1, highlightLength, 1
         
         ' create a single white highlight down the left hand edge of the blue box
         GdipCreateSolidFill &HFFFFFFFF, hBrush
-        GdipFillRectangleI lGraphics, hBrush, 1, 2, 1, 52
+        GdipFillRectangleI lGraphics, hBrush, 1, 2, 1, highlightLength
     End If
     
     ' now tidy up
