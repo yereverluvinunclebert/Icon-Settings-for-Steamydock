@@ -11,9 +11,23 @@
 ' Tasks:
 ' =======
 
-' add a switch to enable/disable the random access data file & toggle databse access for testing speed.
+'
 
-' icon map move to the left leaves an incorrect image in place.
+' add a switch to enable/disable the random access data file & toggle database access for testing speed.
+
+' add right left keypresses when the the preview keys are in focus
+
+' there is no refresh - OK
+' When the prog. starts up, first time flag indicates that it is the first time.
+' if the resize level is not 0 and it is a first time run then hide the map and do not reveal until the resize starts
+
+' it appears that the resize is happening twice.
+
+' the rotating sand timer, hide it during the restart
+
+' move/copy the single click on the rd icon map to after the resize, if any
+
+' icon map move to the left does succeeded in moving but he imagery is not changed leaving the old image in place.
 
 ' credit Magic Ink
 
@@ -208,3 +222,5 @@
 
 ' When SD adds an icon, then deletes it. RD will renew the dock automatically and the total number of icons in the map should adjust. It seems to do it correctly
      but leaves the final icon duplicated. the Final control needs to be deleted from the array
+     
+' add blue selection overlay to the the selected icon in the map - done

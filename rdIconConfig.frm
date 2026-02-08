@@ -178,13 +178,13 @@ Begin VB.Form rDIconConfigForm
          ForeColor       =   &H80000008&
          Height          =   500
          Index           =   2
-         Left            =   540
+         Left            =   570
          OLEDropMode     =   1  'Manual
          ScaleHeight     =   33
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   33
          TabIndex        =   50
-         Top             =   15
+         Top             =   0
          Width           =   500
       End
    End
@@ -5285,7 +5285,7 @@ Private Sub determineStartRecord()
             End If
         End If
     Else
-        rdIconNumber = rdIconUpperBound * Rnd() + 1
+        rdIconNumber = rdIconUpperBound / 2
     End If
     
     'MsgBox "rdIconNumber = " & rdIconNumber
@@ -5537,19 +5537,19 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub btnNext_KeyDown(ByRef KeyCode As Integer, ByRef Shift As Integer)
-   On Error GoTo btnNext_KeyDown_Error
-   If debugFlg = 1 Then debugLog "%btnNext_KeyDown"
-
-    Call getKeyPress(KeyCode)
-
-   On Error GoTo 0
-   Exit Sub
-
-btnNext_KeyDown_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure btnNext_KeyDown of Form rDIconConfigForm"
-End Sub
+'Private Sub btnNext_KeyDown(ByRef KeyCode As Integer, ByRef Shift As Integer)
+'   On Error GoTo btnNext_KeyDown_Error
+'   If debugFlg = 1 Then debugLog "%btnNext_KeyDown"
+'
+'    'Call getKeyPress(KeyCode)
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'btnNext_KeyDown_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure btnNext_KeyDown of Form rDIconConfigForm"
+'End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : btnPrev_KeyDown
@@ -5558,19 +5558,19 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub btnPrev_KeyDown(ByRef KeyCode As Integer, ByRef Shift As Integer)
-   On Error GoTo btnPrev_KeyDown_Error
-   If debugFlg = 1 Then debugLog "%btnPrev_KeyDown"
-
-    Call getKeyPress(KeyCode)
-
-   On Error GoTo 0
-   Exit Sub
-
-btnPrev_KeyDown_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure btnPrev_KeyDown of Form rDIconConfigForm"
-End Sub
+'Private Sub btnPrev_KeyDown(ByRef KeyCode As Integer, ByRef Shift As Integer)
+'   On Error GoTo btnPrev_KeyDown_Error
+'   If debugFlg = 1 Then debugLog "%btnPrev_KeyDown"
+'
+'    'Call getKeyPress(KeyCode)
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'btnPrev_KeyDown_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure btnPrev_KeyDown of Form rDIconConfigForm"
+'End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : btnRemoveFolder_Click
@@ -8379,6 +8379,7 @@ Private Sub alterBlueOverlay(ByRef targetPicBox As PictureBox, ByVal thisImageSi
     
     On Error GoTo alterBlueOverlay_Error
     
+    ' make the highlight blue if the selected flag is on, otherwise it will be nothing
     If isSelected = True Then
         lArgbBlue = &H990078D7   ' Alpha=25, R=0, G=120, B=215
         lARGBWhite = &HFFFFFFFF
@@ -8595,6 +8596,8 @@ Private Sub btnPrev_Click()
     Call picRdMap_MouseDown_event(rdIconNumber, oldiconNumber)
     
     Call postButtonClick("btnPrev_Click")
+    
+    picRdMap(rdIconNumber).SetFocus
 
    On Error GoTo 0
    Exit Sub
@@ -8635,6 +8638,8 @@ Private Sub btnNext_Click()
     Call picRdMap_MouseDown_event(rdIconNumber, oldiconNumber)
 
     Call postButtonClick("btnNext_Click")
+    
+    picRdMap(rdIconNumber).SetFocus
     
    On Error GoTo 0
    Exit Sub
@@ -12357,6 +12362,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub picRdMap_MouseDown(ByRef Index As Integer, ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
+
     Dim useloop As Integer: useloop = 0
     Dim answer As VbMsgBoxResult: answer = vbNo
     
@@ -12398,6 +12404,8 @@ picRdMap_MouseDown_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure picRdMap_MouseDown of Form rDIconConfigForm"
 End Sub
+
+
 
 
 ' .69 DAEB 16/05/2022 rDIConConfig.frm Moved the core left click code to a separate routine to avoid the clicks-via-code from activating a start drag
@@ -12475,6 +12483,13 @@ picRdMap_MouseDown_event_Error:
 
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : picRdMap_MouseMove
+' Author    : beededea
+' Date      : 07/02/2026
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub picRdMap_MouseMove(ByRef Index As Integer, ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single)
 ' code retained in case I want to do a graphical drag and drop of one item in the map to another
 
@@ -12486,8 +12501,17 @@ Private Sub picRdMap_MouseMove(ByRef Index As Integer, ByRef Button As Integer, 
 ' End If
 ' End With
 
+    On Error GoTo picRdMap_MouseMove_Error
+
    If gblRdEnableBalloonTooltips = "1" Then CreateToolTip picRdMap(Index).hWnd, "This is the icon map. It maps your dock exactly, showing you the same icons that appear in your dock. You can add or delete icons to/from the map. Press save and restart and they will appear in your dock.", _
                   TTIconInfo, "Help on the Icon Map", , , , True
+
+    On Error GoTo 0
+    Exit Sub
+
+picRdMap_MouseMove_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure picRdMap_MouseMove of Form rDIconConfigForm"
 
 End Sub
 
