@@ -140,7 +140,7 @@ Public Type FormFontInfo
   Height As Integer
   UnderLine As Boolean
   Italic As Boolean
-  Color As Long
+  color As Long
 End Type
 
 Private Type LOGFONT
@@ -413,7 +413,7 @@ Private Sub displayFontSelector(ByRef currFont As String, ByRef currSize As Inte
    If debugFlg = 1 Then debugLog "%displayFontSelector"
 
     With thisFont
-      .Color = currColour
+      .color = currColour
       .Height = currSize
       .Weight = currWeight
       '400     Font is normal.
@@ -436,7 +436,7 @@ Private Sub displayFontSelector(ByRef currFont As String, ByRef currSize As Inte
         currWeight = .Weight
         currItalics = .Italic
         currUnderline = .UnderLine
-        currColour = .Color
+        currColour = .color
         'ctl = .Name & " - Size:" & .Height
     End With
 
@@ -473,7 +473,7 @@ Public Function fDialogFont(ByRef F As FormFontInfo) As Boolean
     logFnt.lfUnderline = F.UnderLine * -1
     logFnt.lfHeight = -fMulDiv(CLng(F.Height), GetDeviceCaps(GetDC(hWndAccessApp), LOGPIXELSY), 72)
     Call StringToByte(F.Name, logFnt.lfFaceName())
-    ftStruc.rgbColors = F.Color
+    ftStruc.rgbColors = F.color
     ftStruc.lStructSize = Len(ftStruc)
     
     lMemHandle = GlobalAlloc(GHND, Len(logFnt))
@@ -499,7 +499,7 @@ Public Function fDialogFont(ByRef F As FormFontInfo) As Boolean
       F.UnderLine = CBool(logFnt.lfUnderline)
       F.Name = fByteToString(logFnt.lfFaceName())
       F.Height = CLng(ftStruc.iPointSize / 10)
-      F.Color = ftStruc.rgbColors
+      F.color = ftStruc.rgbColors
       fDialogFont = True
     Else
       fDialogFont = False
@@ -706,7 +706,7 @@ Private Sub rdIconConfigSpecificFonts(ByRef formName As Object, ByRef fntFont As
     Dim useloop As Integer: useloop = 0
     
     ' change the size of the two labels beneath the preview image
-   On Error GoTo rdIconConfigSpecificFonts_Error
+    On Error GoTo rdIconConfigSpecificFonts_Error
 
     formName.lblFileInfo.Font.Size = 7
     formName.lblWidthHeight.Font.Size = 7
@@ -715,6 +715,10 @@ Private Sub rdIconConfigSpecificFonts(ByRef formName As Object, ByRef fntFont As
     formName.lblRdIconNumber.Font.Name = "Trebuchet MS"
     formName.lblRdIconNumber.Font.Size = 45
     
+    
+'    formName.lblMapIndex.Font.Name = "Trebuchet MS"
+'    formName.lblMapIndex.Font.Size = 30
+   
     ' change the font size of the large blank
     formName.lblBlankText.Font.Name = "Trebuchet MS"
     formName.lblBlankText.Font.Size = 45

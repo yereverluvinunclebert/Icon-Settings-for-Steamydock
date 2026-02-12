@@ -11,11 +11,7 @@
 ' Tasks:
 ' =======
 
-'
-
 ' add a switch to enable/disable the random access data file & toggle database access for testing speed.
-
-' add right left keypresses when the the preview keys are in focus
 
 ' there is no refresh - OK
 ' When the prog. starts up, first time flag indicates that it is the first time.
@@ -27,7 +23,9 @@
 
 ' move/copy the single click on the rd icon map to after the resize, if any
 
-' icon map move to the left does succeeded in moving but he imagery is not changed leaving the old image in place.
+' END does not always highlight the last icon blue after a HOME
+
+
 
 ' credit Magic Ink
 
@@ -224,3 +222,7 @@
      but leaves the final icon duplicated. the Final control needs to be deleted from the array
      
 ' add blue selection overlay to the the selected icon in the map - done
+' add right left keypresses when the the preview keys are in focus  - done
+' icon map move to the left does succeeded in moving but the imagery is not changed leaving the old image in place - done
+' icon map move to the left highlights the moved icon - done
+' icon map move to the right highlights the moved icon - done

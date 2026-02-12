@@ -26,9 +26,20 @@ Begin VB.Form rDIconConfigForm
    MinButton       =   0   'False
    ScaleHeight     =   10440
    ScaleWidth      =   10365
+   Begin VB.PictureBox picHidden 
+      Height          =   3060
+      Left            =   2370
+      ScaleHeight     =   3000
+      ScaleWidth      =   3390
+      TabIndex        =   131
+      Top             =   6720
+      Visible         =   0   'False
+      Width           =   3450
+   End
    Begin VB.PictureBox picTemporaryStore 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
+      AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       BeginProperty Font 
@@ -786,9 +797,9 @@ Begin VB.Form rDIconConfigForm
    Begin VB.Frame fraExtraOptions 
       Caption         =   "Extra Configuration "
       Height          =   1995
-      Left            =   4305
+      Left            =   1710
       TabIndex        =   109
-      Top             =   7020
+      Top             =   8310
       Visible         =   0   'False
       Width           =   5895
       Begin VB.CommandButton btnCloseMoreConfig 
@@ -1294,22 +1305,6 @@ Begin VB.Form rDIconConfigForm
          Visible         =   0   'False
          Width           =   345
       End
-      Begin VB.PictureBox picBusy 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   795
-         Left            =   3660
-         Picture         =   "rdIconConfig.frx":42D9
-         ScaleHeight     =   795
-         ScaleWidth      =   825
-         TabIndex        =   53
-         ToolTipText     =   "The program is doing something..."
-         Top             =   1920
-         Visible         =   0   'False
-         Width           =   825
-      End
       Begin VB.CommandButton btnSet 
          Caption         =   "&Set"
          Enabled         =   0   'False
@@ -1387,9 +1382,9 @@ Begin VB.Form rDIconConfigForm
       End
       Begin VB.ComboBox cmbOpenRunning 
          Height          =   330
-         ItemData        =   "rdIconConfig.frx":4D54
+         ItemData        =   "rdIconConfig.frx":42D9
          Left            =   1395
-         List            =   "rdIconConfig.frx":4D61
+         List            =   "rdIconConfig.frx":42E6
          TabIndex        =   6
          Text            =   "Always"
          ToolTipText     =   "Choose what to do if the chosen app is already running"
@@ -1398,9 +1393,9 @@ Begin VB.Form rDIconConfigForm
       End
       Begin VB.ComboBox cmbRunState 
          Height          =   330
-         ItemData        =   "rdIconConfig.frx":4D88
+         ItemData        =   "rdIconConfig.frx":430D
          Left            =   1395
-         List            =   "rdIconConfig.frx":4D95
+         List            =   "rdIconConfig.frx":431A
          TabIndex        =   5
          Text            =   "Normal"
          ToolTipText     =   "Window mode for the program to operate within"
@@ -1438,6 +1433,44 @@ Begin VB.Form rDIconConfigForm
          ToolTipText     =   "The name of the icon as it appears on the dock"
          Top             =   300
          Width           =   4305
+      End
+      Begin VB.PictureBox picBusy 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   795
+         Left            =   3660
+         Picture         =   "rdIconConfig.frx":433C
+         ScaleHeight     =   795
+         ScaleWidth      =   825
+         TabIndex        =   53
+         ToolTipText     =   "The program is doing something..."
+         Top             =   1920
+         Visible         =   0   'False
+         Width           =   825
+      End
+      Begin VB.Label lblMapIndex 
+         Alignment       =   2  'Center
+         AutoSize        =   -1  'True
+         Caption         =   "1"
+         BeginProperty Font 
+            Name            =   "Trebuchet MS"
+            Size            =   45
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   1140
+         Left            =   3780
+         TabIndex        =   130
+         ToolTipText     =   "This is dock icon number one."
+         Top             =   1800
+         Visible         =   0   'False
+         Width           =   480
       End
       Begin VB.Label lblHeight 
          Height          =   225
@@ -8224,35 +8257,60 @@ Private Sub displayResizedImage(ByVal FileName As String, ByRef targetPicBox As 
     ' multiply the base ImageSize by the resize ratio to obtain the displayed image size
     thisImageSize = thisBaseImageSize * gblResizeRatio
     
-    ' This section is the main area where we read and display the image types using LaVolpe's GDI+ classes.
-    If InStr("png,jpg,bmp,jpeg,tif,gif", LCase$(suffix)) <> 0 Then
+    #If TWINBASIC Then
+        If InStr("png,jpg,bmp,jpeg,tif,gif", LCase$(suffix)) <> 0 Then
+            If targetPicBox.Name = "picPreview" Then
+                targetPicBox.Left = 345
+                targetPicBox.Top = 210
+                targetPicBox.Width = 3450 * gblResizeRatio
+                targetPicBox.Height = 3450 * gblResizeRatio
+            End If
+                
+            targetPicBox.Picture = LoadPicture(FileName)
+            
+        ElseIf InStr("ico", LCase$(suffix)) <> 0 Then
+    
+            ' we still have to use Lavolpe's earlier StdPictureEx method as it allows us to extract the correct icon according to the size selected.
+            ' except that it does not work in TwinBasic and only pulls the first, smallest icon.
+            
+            'because the earlier method draws the ico images from the top left of the
+            'pictureBox we have to manually set the picbox to size and position for each icon size
+            If targetPicBox.Name = "picPreview" Then Call centrePreviewImage(targetPicBox, gblIcoSizePreset, gblResizeRatio)
+            Set targetPicBox.Picture = StdPictureEx.LoadPicture(FileName, lpsCustom, , thisImageSize, thisImageSize)
         
-        If targetPicBox.Name = "picPreview" Then
-            targetPicBox.Left = 345
-            targetPicBox.Top = 210
-            targetPicBox.Width = 3450 * gblResizeRatio
-            targetPicBox.Height = 3450 * gblResizeRatio
         End If
-        
-        ' using Lavolpe's 'later' method as it allows for resizing of PNGs and all other types using GDI+
-        Set cImage = New c32bppDIB
-        cImage.LoadPictureFile FileName, thisImageSize, thisImageSize, False, 32
-        Call refreshPicBox(targetPicBox, thisImageSize, isSelected)
-        
-        ' see ref point 0001 in cPNGparser.cls for PNG size extraction
-        lblWidthHeight.Caption = " width " & origWidth & " height " & origHeight & " (pixels)"
-
-    ElseIf InStr("ico", LCase$(suffix)) <> 0 Then
-
-        ' using Lavolpe's earlier StdPictureEx method as it allows for correct display of ICOs using GDI+ without corruption.
-        ' the 'later' method above has a bug with dispalying multiple ICOs
-        
-        'because the earlier method draws the ico images from the top left of the
-        'pictureBox we have to manually set the picbox to size and position for each icon size
-        If targetPicBox.Name = "picPreview" Then Call centrePreviewImage(targetPicBox, gblIcoSizePreset, gblResizeRatio)
-        Set targetPicBox.Picture = StdPictureEx.LoadPicture(FileName, lpsCustom, , thisImageSize, thisImageSize)
-        
-    End If
+    #Else
+    
+        ' This section is the main area where we read and display the image types using LaVolpe's GDI+ classes.
+        If InStr("png,jpg,bmp,jpeg,tif,gif", LCase$(suffix)) <> 0 Then
+            
+            If targetPicBox.Name = "picPreview" Then
+                targetPicBox.Left = 345
+                targetPicBox.Top = 210
+                targetPicBox.Width = 3450 * gblResizeRatio
+                targetPicBox.Height = 3450 * gblResizeRatio
+            End If
+            
+            ' using Lavolpe's 'later' method as it allows for resizing of PNGs and all other types using GDI+
+            Set cImage = New c32bppDIB
+            cImage.LoadPictureFile FileName, thisImageSize, thisImageSize, False, 32
+            Call refreshPicBox(targetPicBox, thisImageSize, isSelected)
+            
+            ' see ref point 0001 in cPNGparser.cls for PNG size extraction
+            lblWidthHeight.Caption = " width " & origWidth & " height " & origHeight & " (pixels)"
+    
+        ElseIf InStr("ico", LCase$(suffix)) <> 0 Then
+    
+            ' using Lavolpe's earlier StdPictureEx method as it allows for correct display of ICOs using GDI+ without corruption.
+            ' the 'later' method above has a bug with dispalying multiple ICOs
+            
+            'because the earlier method draws the ico images from the top left of the
+            'pictureBox we have to manually set the picbox to size and position for each icon size
+            If targetPicBox.Name = "picPreview" Then Call centrePreviewImage(targetPicBox, gblIcoSizePreset, gblResizeRatio)
+            Set targetPicBox.Picture = StdPictureEx.LoadPicture(FileName, lpsCustom, , thisImageSize, thisImageSize)
+            
+        End If
+    #End If
     
     ' add the blue overlay here if selected icon, otherwise remove
     Call alterBlueOverlay(targetPicBox, thisImageSize, isSelected)
@@ -8361,6 +8419,8 @@ displayResizedImage_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure displayResizedImage of Form rDIconConfigForm"
                 
 End Sub
+
+
 
 '---------------------------------------------------------------------------------------
 ' Procedure : alterBlueOverlay
@@ -12369,14 +12429,14 @@ Private Sub picRdMap_MouseDown(ByRef Index As Integer, ByRef Button As Integer, 
     On Error GoTo picRdMap_MouseDown_Error
     If debugFlg = 1 Then debugLog "%" & "picRdMap_MouseDown"
 
+    ' .69 DAEB 16/05/2022 rDIConConfig.frm Moved the core left click code to a separate routine to avoid the clicks-via-code from activating a start drag
+    Call picRdMap_MouseDown_event(Index, rdIconNumber)
+
     If Button = 2 Then
         rdIconNumber = Index ' get the icon number from the array's index
         Me.PopupMenu rdMapMenu, vbPopupMenuRightButton
         Exit Sub
     End If
-    
-    ' .69 DAEB 16/05/2022 rDIConConfig.frm Moved the core left click code to a separate routine to avoid the clicks-via-code from activating a start drag
-    Call picRdMap_MouseDown_event(Index, rdIconNumber)
     
     ' .66 DAEB 04/05/2022 rDIConConfig.frm Use a hidden picbox (picTemporaryStore) to be used to populate the dragIcon.
     imlDragIconConverter.ListImages.Clear
@@ -12441,23 +12501,29 @@ Sub picRdMap_MouseDown_event(ByVal currentIndex As Integer, Optional ByVal oldIn
         End If
     End If
     
+    lblMapIndex.Caption = CStr(currentIndex)
+    
     If oldIndex <> 0 Then
         ' remove the highlighting of the previously highlighted icon on the Rocket dock map, first the border and then the blue overlay
         picRdMap(oldIndex).BorderStyle = 0
+'        picRdMap(59).BorderStyle = 0
+'        picRdMap(60).BorderStyle = 0
+'        picRdMap(62).BorderStyle = 0
         Call displayIconElement(oldIndex, picRdMap(oldIndex), True, 32, True, False, False, False)
     End If
    
     rdIconNumber = currentIndex
     
+    
     ' display the large numeral giving the icon count
     Call showIconLargeNumber
 
     ' display the currently selected icon in preview mode in the larger preview picture box
-    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, True, False, False)
+    Call displayIconElement(currentIndex, picPreview, True, gblIcoSizePreset, True, True, False, False)
 
     ' add the highlighting on the currently selected icon on the Rocket dock map - the blue overlay
-    Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False, True)
-        
+    Call displayIconElement(currentIndex, picRdMap(currentIndex), True, 32, True, False, False, True)
+    
     ' set the border highlighting on the Rocket dock map currently selected icon
     If currentIndex <= rdIconUpperBound Then
         picRdMap(currentIndex).BorderStyle = 1
@@ -13599,7 +13665,7 @@ Private Sub menuLeft_Click()
     End If
     
     ' take the current icon details and write it into the place of the one to the left (-1)
-     Call readIconSettingsIni(rdIconNumber, False)
+    Call readIconSettingsIni(rdIconNumber, False)
     
     Call writeIconSettingsIni(rdIconNumber - 1, False)
 
@@ -13639,7 +13705,11 @@ Private Sub menuLeft_Click()
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
     Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False)
-    Call displayIconElement(rdIconNumber - 1, picRdMap(rdIconNumber), True, 32, True, False, False)
+    'Call displayIconElement(rdIconNumber - 1, picRdMap(rdIconNumber - 1), True, 32, True, False, False, True)
+    
+    rdIconNumber = rdIconNumber - 1
+    
+    Call picRdMap_MouseDown_event(rdIconNumber, rdIconNumber + 1)
     
     btnSet.Enabled = False ' tell the program that nothing has changed
     btnClose.Visible = True
@@ -13754,7 +13824,10 @@ Private Sub menuright_Click()
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
     Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False)
-    Call displayIconElement(rdIconNumber + 1, picRdMap(rdIconNumber + 1), True, 32, True, False, False)
+    'Call displayIconElement(rdIconNumber + 1, picRdMap(rdIconNumber + 1), True, 32, True, False, False)
+    
+    rdIconNumber = rdIconNumber + 1
+    Call picRdMap_MouseDown_event(rdIconNumber, rdIconNumber)
 
     btnSet.Enabled = False ' tell the program that nothing has changed
     btnClose.Visible = True
