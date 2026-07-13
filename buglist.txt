@@ -11,9 +11,11 @@
 ' Tasks:
 ' =======
 
+' END does not always highlight the last icon blue after a HOME
+' backup the .db
+
 ' add a switch to enable/disable the random access data file & toggle database access for testing speed.
 
-' there is no refresh - OK
 ' When the prog. starts up, first time flag indicates that it is the first time.
 ' if the resize level is not 0 and it is a first time run then hide the map and do not reveal until the resize starts
 
@@ -23,13 +25,9 @@
 
 ' move/copy the single click on the rd icon map to after the resize, if any
 
-' END does not always highlight the last icon blue after a HOME
-
-
-
 ' credit Magic Ink
 
-' Test binaries, dragging to the dock, different icon sizes
+' Test binaries, dragging to the map, different icon sizes
 
 ' separate the writing of the picbox and the writing of the PNG to two separate functions with return values true/false
 
@@ -131,6 +129,10 @@
 '   9.  Skin the interface in a medieval manner!  Very Low Priority.
 '
 '   10. Use the lightweight method of reading images from SteamyDock rather than LaVolpe's method using readFromStream.
+'       o LA Volpe's method is very slow when using TwinBasic.
+'       o TB provides native PNG support but does not provide native resizing/rescaling using .PaintPicture method for supposely supported images (only bitmaps)
+'       o a GH request has been raised for the above.
+'       o TB would still require GDI+ scaling function from Steamydock to scale the images, should be straightforward re-use.
 '
 ' Other Tasks:
 '
@@ -226,3 +228,5 @@
 ' icon map move to the left does succeeded in moving but the imagery is not changed leaving the old image in place - done
 ' icon map move to the left highlights the moved icon - done
 ' icon map move to the right highlights the moved icon - done
+
+' icon map move to the left highlighting bugs fixed

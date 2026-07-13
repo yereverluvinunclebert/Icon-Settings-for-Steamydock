@@ -11,7 +11,11 @@ Public Type ControlPositionType
 End Type
 Public swFormControlPositions() As ControlPositionType
 Public gblFormControlPositions() As ControlPositionType
+Public gMsgBoxAControlPositions() As ControlPositionType
 
+
+Public gdMsgBoxACurrentWidth As Double ' don't change this to a property
+Public gdMsgBoxACurrentHeight As Double ' don't change this to a property
 
 
 '---------------------------------------------------------------------------------------
@@ -101,7 +105,7 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : saveControlSizes
+' Procedure : savesizes
 ' Author    : Rod Stephens vb-helper.com
 ' Date      : 16/04/2021
 ' Purpose   : Resize controls to fit when a form resizes
@@ -109,12 +113,12 @@ End Sub
 ' Credit    : Rod Stephens vb-helper.com
 '---------------------------------------------------------------------------------------
 '
-Public Sub saveControlSizes(ByVal thisForm As Form, ByRef m_ControlPositions() As ControlPositionType, ByRef m_FormWid As Long, ByRef m_FormHgt As Long)
+Public Sub savesizes(ByVal thisForm As Form, ByRef m_ControlPositions() As ControlPositionType, ByRef m_FormWid As Double, ByRef m_FormHgt As Double)
     Dim i As Integer: i = 0
     Dim Ctrl As Control
 
     ' Save the controls' positions and sizes.
-    On Error GoTo saveControlSizes_Error
+    On Error GoTo savesizes_Error
 
     ReDim m_ControlPositions(1 To thisForm.Controls.count)
     i = 1
@@ -141,7 +145,7 @@ Public Sub saveControlSizes(ByVal thisForm As Form, ByRef m_ControlPositions() A
    On Error GoTo 0
    Exit Sub
 
-saveControlSizes_Error:
+savesizes_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure saveControlSizes of Form modResize"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure savesizes of Form modResize"
 End Sub

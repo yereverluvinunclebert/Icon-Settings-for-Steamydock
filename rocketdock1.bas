@@ -236,12 +236,37 @@ Public gblProgramStatus As String
 Public gblResizeRatio As Double
 Public gblFormResizedInCode As Boolean
 'Public gblDoNotResize As Boolean
-Public gblStartFormHeight As Long
-Public gblStartFormWidth  As Long
+Public gblStartFormHeight As Double
+Public gblStartFormWidth  As Double
 Public rDIconConfigFormOldHeight As Long
 Public rDIconConfigFormOldWidth As Long
 Public gblFormPrimaryHeightTwips As String
 Public startupFlg As Boolean
+            
+Public gsFormShowAgainChkBox As String
+
+
+Private m_sgsMessageAHeightTwips As String
+Private m_sgsMessageAWidthTwips As String
+
+' vars to obtain actual correct screen width (to correct VB6 bug) twips
+
+Private m_lglPhysicalScreenWidthTwips As Long
+Private m_lglPhysicalScreenHeightTwips As Long
+Private m_lglPhysicalScreenHeightPixels As Long ' pixels
+Private m_lglPhysicalScreenWidthPixels As Long
+
+Private m_lglOldPhysicalScreenHeightPixels As Long
+Private m_lglOldPhysicalScreenWidthPixels As Long
+
+' vars to obtain the virtual (multi-monitor) width
+
+Private m_lglVirtualScreenHeightPixels As Long
+Private m_lglVirtualScreenWidthPixels As Long
+Private m_lglVirtualScreenHeightTwips As Long ' twips
+Private m_lglVirtualScreenWidthTwips As Long
+
+            
             
 'Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
             (lpDest As Any, lpSource As Any, ByVal cbCopy As Long)
@@ -299,8 +324,357 @@ Public startupFlg As Boolean
 
 '------------------------------------------------------ ENDS
 
+'---------------------------------------------------------------------------------------
+' Procedure : gsMessageAHeightTwips
+' Author    : beededea
+' Date      : 08/10/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get gsMessageAHeightTwips() As String
 
+    On Error GoTo gsMessageAHeightTwips_Error
 
+    gsMessageAHeightTwips = m_sgsMessageAHeightTwips
+
+    On Error GoTo 0
+    Exit Property
+
+gsMessageAHeightTwips_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure gsMessageAHeightTwips of Module Module1"
+
+End Property
+
+'---------------------------------------------------------------------------------------
+' Procedure : gsMessageAHeightTwips
+' Author    : beededea
+' Date      : 08/10/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let gsMessageAHeightTwips(ByVal sgsMessageAHeightTwips As String)
+
+    On Error GoTo gsMessageAHeightTwips_Error
+
+    m_sgsMessageAHeightTwips = sgsMessageAHeightTwips
+
+    On Error GoTo 0
+    Exit Property
+
+gsMessageAHeightTwips_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure gsMessageAHeightTwips of Module Module1"
+
+End Property
+
+'---------------------------------------------------------------------------------------
+' Procedure : gsMessageAWidthTwips
+' Author    : beededea
+' Date      : 08/10/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get gsMessageAWidthTwips() As String
+
+    On Error GoTo gsMessageAWidthTwips_Error
+
+    gsMessageAWidthTwips = m_sgsMessageAWidthTwips
+
+    On Error GoTo 0
+    Exit Property
+
+gsMessageAWidthTwips_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure gsMessageAWidthTwips of Module Module1"
+
+End Property
+
+'---------------------------------------------------------------------------------------
+' Procedure : gsMessageAWidthTwips
+' Author    : beededea
+' Date      : 08/10/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let gsMessageAWidthTwips(ByVal sgsMessageAWidthTwips As String)
+
+    On Error GoTo gsMessageAWidthTwips_Error
+
+    m_sgsMessageAWidthTwips = sgsMessageAWidthTwips
+
+    On Error GoTo 0
+    Exit Property
+
+gsMessageAWidthTwips_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure gsMessageAWidthTwips of Module Module1"
+
+End Property
+
+'---------------------------------------------------------------------------------------
+' Procedure : glPhysicalScreenWidthTwips
+' Author    : beededea
+' Date      : 08/10/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get glPhysicalScreenWidthTwips() As Long
+
+    On Error GoTo glPhysicalScreenWidthTwips_Error
+
+    glPhysicalScreenWidthTwips = m_lglPhysicalScreenWidthTwips
+
+    On Error GoTo 0
+    Exit Property
+
+glPhysicalScreenWidthTwips_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure glPhysicalScreenWidthTwips of Module Module1"
+
+End Property
+
+'---------------------------------------------------------------------------------------
+' Procedure : glPhysicalScreenWidthTwips
+' Author    : beededea
+' Date      : 08/10/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let glPhysicalScreenWidthTwips(ByVal lglPhysicalScreenWidthTwips As Long)
+
+    On Error GoTo glPhysicalScreenWidthTwips_Error
+
+    m_lglPhysicalScreenWidthTwips = lglPhysicalScreenWidthTwips
+
+    On Error GoTo 0
+    Exit Property
+
+glPhysicalScreenWidthTwips_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure glPhysicalScreenWidthTwips of Module Module1"
+
+End Property
+
+'---------------------------------------------------------------------------------------
+' Procedure : glPhysicalScreenHeightTwips
+' Author    : beededea
+' Date      : 08/10/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get glPhysicalScreenHeightTwips() As Long
+
+    On Error GoTo glPhysicalScreenHeightTwips_Error
+
+    glPhysicalScreenHeightTwips = m_lglPhysicalScreenHeightTwips
+
+    On Error GoTo 0
+    Exit Property
+
+glPhysicalScreenHeightTwips_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure glPhysicalScreenHeightTwips of Module Module1"
+
+End Property
+
+'---------------------------------------------------------------------------------------
+' Procedure : glPhysicalScreenHeightTwips
+' Author    : beededea
+' Date      : 08/10/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let glPhysicalScreenHeightTwips(ByVal lglPhysicalScreenHeightTwips As Long)
+
+    On Error GoTo glPhysicalScreenHeightTwips_Error
+
+    m_lglPhysicalScreenHeightTwips = lglPhysicalScreenHeightTwips
+
+    On Error GoTo 0
+    Exit Property
+
+glPhysicalScreenHeightTwips_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure glPhysicalScreenHeightTwips of Module Module1"
+
+End Property
+
+'---------------------------------------------------------------------------------------
+' Procedure : glPhysicalScreenHeightPixels
+' Author    : beededea
+' Date      : 08/10/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get glPhysicalScreenHeightPixels() As Long
+
+    On Error GoTo glPhysicalScreenHeightPixels_Error
+
+    glPhysicalScreenHeightPixels = m_lglPhysicalScreenHeightPixels
+
+    On Error GoTo 0
+    Exit Property
+
+glPhysicalScreenHeightPixels_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure glPhysicalScreenHeightPixels of Module Module1"
+
+End Property
+
+'---------------------------------------------------------------------------------------
+' Procedure : glPhysicalScreenHeightPixels
+' Author    : beededea
+' Date      : 08/10/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let glPhysicalScreenHeightPixels(ByVal lglPhysicalScreenHeightPixels As Long)
+
+    On Error GoTo glPhysicalScreenHeightPixels_Error
+
+    m_lglPhysicalScreenHeightPixels = lglPhysicalScreenHeightPixels
+
+    On Error GoTo 0
+    Exit Property
+
+glPhysicalScreenHeightPixels_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure glPhysicalScreenHeightPixels of Module Module1"
+
+End Property
+
+'---------------------------------------------------------------------------------------
+' Procedure : glPhysicalScreenWidthPixels
+' Author    : beededea
+' Date      : 08/10/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get glPhysicalScreenWidthPixels() As Long
+
+    On Error GoTo glPhysicalScreenWidthPixels_Error
+
+    glPhysicalScreenWidthPixels = m_lglPhysicalScreenWidthPixels
+
+    On Error GoTo 0
+    Exit Property
+
+glPhysicalScreenWidthPixels_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure glPhysicalScreenWidthPixels of Module Module1"
+
+End Property
+
+'---------------------------------------------------------------------------------------
+' Procedure : glPhysicalScreenWidthPixels
+' Author    : beededea
+' Date      : 08/10/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let glPhysicalScreenWidthPixels(ByVal lglPhysicalScreenWidthPixels As Long)
+
+    On Error GoTo glPhysicalScreenWidthPixels_Error
+
+    m_lglPhysicalScreenWidthPixels = lglPhysicalScreenWidthPixels
+
+    On Error GoTo 0
+    Exit Property
+
+glPhysicalScreenWidthPixels_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure glPhysicalScreenWidthPixels of Module Module1"
+
+End Property
+
+'---------------------------------------------------------------------------------------
+' Procedure : glOldPhysicalScreenHeightPixels
+' Author    : beededea
+' Date      : 08/10/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get glOldPhysicalScreenHeightPixels() As Long
+
+    On Error GoTo glOldPhysicalScreenHeightPixels_Error
+
+    glOldPhysicalScreenHeightPixels = m_lglOldPhysicalScreenHeightPixels
+
+    On Error GoTo 0
+    Exit Property
+
+glOldPhysicalScreenHeightPixels_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure glOldPhysicalScreenHeightPixels of Module Module1"
+
+End Property
+
+'---------------------------------------------------------------------------------------
+' Procedure : glOldPhysicalScreenHeightPixels
+' Author    : beededea
+' Date      : 08/10/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let glOldPhysicalScreenHeightPixels(ByVal lglOldPhysicalScreenHeightPixels As Long)
+
+    On Error GoTo glOldPhysicalScreenHeightPixels_Error
+
+    m_lglOldPhysicalScreenHeightPixels = lglOldPhysicalScreenHeightPixels
+
+    On Error GoTo 0
+    Exit Property
+
+glOldPhysicalScreenHeightPixels_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure glOldPhysicalScreenHeightPixels of Module Module1"
+
+End Property
+
+'---------------------------------------------------------------------------------------
+' Procedure : glOldPhysicalScreenWidthPixels
+' Author    : beededea
+' Date      : 08/10/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get glOldPhysicalScreenWidthPixels() As Long
+
+    On Error GoTo glOldPhysicalScreenWidthPixels_Error
+
+    glOldPhysicalScreenWidthPixels = m_lglOldPhysicalScreenWidthPixels
+
+    On Error GoTo 0
+    Exit Property
+
+glOldPhysicalScreenWidthPixels_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure glOldPhysicalScreenWidthPixels of Module Module1"
+
+End Property
+
+'---------------------------------------------------------------------------------------
+' Procedure : glOldPhysicalScreenWidthPixels
+' Author    : beededea
+' Date      : 08/10/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let glOldPhysicalScreenWidthPixels(ByVal lglOldPhysicalScreenWidthPixels As Long)
+
+    On Error GoTo glOldPhysicalScreenWidthPixels_Error
+
+    m_lglOldPhysicalScreenWidthPixels = lglOldPhysicalScreenWidthPixels
+
+    On Error GoTo 0
+    Exit Property
+
+glOldPhysicalScreenWidthPixels_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure glOldPhysicalScreenWidthPixels of Module Module1"
+
+End Property
 
 
 '---------------------------------------------------------------------------------------

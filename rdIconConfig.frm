@@ -2816,7 +2816,10 @@ Private Sub Form_Load()
     Call setToolTips
     
     ' save the initial positions of ALL the controls on the form
-    Call saveControlSizes(rDIconConfigForm, gblFormControlPositions(), gblStartFormWidth, gblStartFormHeight)
+    Call savesizes(rDIconConfigForm, gblFormControlPositions(), gblStartFormWidth, gblStartFormHeight)
+    
+    ' set the height of the whole form according to previously saved values but not higher than the screen size
+    Call setFormHeight
     
     ' here we do some sizing things, including storing inital form sizes and re-enabling resizing borderStyle of the form
     Call restoreSizableFormBorderStyle
@@ -2824,11 +2827,9 @@ Private Sub Form_Load()
     ' start the timers
     Call startTheTimers
                 
+    ' now show the form that is hidden until it is composited
     rDIconConfigForm.Show
-    
-    ' set the height of the whole form according to previously saved values but not higher than the screen size
-    Call setFormHeight
-    
+        
     ' note: the final act in startup is the form_resize_event that is triggered by the subclassed WM_EXITSIZEMOVE when the form is finally revealed
     startupFlg = False ' now negate the startup flag
     
@@ -3040,8 +3041,6 @@ Public Sub Form_Moved(sForm As String)
                     pvtFormResizedByDrag = False
                 End If
             End If
-            
-        Case Else
     End Select
     
    On Error GoTo 0
@@ -8526,6 +8525,7 @@ End Sub
 Private Sub btnHomeRdMap()
 
     Dim answer As VbMsgBoxResult: answer = vbNo
+    
     'Dim Filename As String: Filename = vbNullString
     'Dim useloop As Integer
     'Dim ff As Long
@@ -8551,9 +8551,8 @@ Private Sub btnHomeRdMap()
     'Call picRdMap_MouseDown(rdMapHScroll.Value, 1, 0, 0, 0) ' DEAN
     
     ' .69 DAEB 16/05/2022 rDIConConfig.frm Moved the core left click code to a separate routine to avoid the clicks-via-code from activating a start drag
-    Call picRdMap_MouseDown_event(rdMapHScroll.Value)
+    Call picRdMap_MouseDown_event(rdMapHScroll.Value) ' , rdIconNumber)
 
-    
     ' we signify that all changes have been lost
     btnSet.Enabled = False ' this has to be done at the end
     btnClose.Visible = True
@@ -8606,7 +8605,7 @@ Private Sub btnEndRdMap()
     'Call picRdMap_MouseDown(rdMapHScroll.Max, 1, 0, 0, 0) ' DEAN
     
     ' .69 DAEB 16/05/2022 rDIConConfig.frm Moved the core left click code to a separate routine to avoid the clicks-via-code from activating a start drag
-    Call picRdMap_MouseDown_event(rdMapHScroll.Max)
+    Call picRdMap_MouseDown_event(rdMapHScroll.Max) ' , rdIconNumber)
     
     'picRdMap(rdMapHScroll.Max).BorderStyle = 1
 
@@ -8653,7 +8652,7 @@ Private Sub btnPrev_Click()
         Exit Sub
     End If
     
-    Call picRdMap_MouseDown_event(rdIconNumber, oldiconNumber)
+    Call picRdMap_MouseDown_event(rdIconNumber) ' , oldiconNumber)
     
     Call postButtonClick("btnPrev_Click")
     
@@ -8695,7 +8694,7 @@ Private Sub btnNext_Click()
         rdIconNumber = rdIconUpperBound
     End If
     
-    Call picRdMap_MouseDown_event(rdIconNumber, oldiconNumber)
+    Call picRdMap_MouseDown_event(rdIconNumber) ' , oldiconNumber)
 
     Call postButtonClick("btnNext_Click")
     
@@ -11386,13 +11385,13 @@ End Sub
 Private Sub txtSecondApp_Change()
     On Error GoTo txtSecondApp_Change_Error
 
-        btnSet.Enabled = True ' tell the program that something has changed
+    btnSet.Enabled = True ' tell the program that something has changed
     btnCancel.Visible = True
     btnClose.Visible = False
     optRunSecondAppBeforehand.Enabled = True
-        optRunSecondAppAfterward.Enabled = True
-        lblRunSecondAppBeforehand.Enabled = True
-        lblRunSecondAppAfterward.Enabled = True
+    optRunSecondAppAfterward.Enabled = True
+    lblRunSecondAppBeforehand.Enabled = True
+    lblRunSecondAppAfterward.Enabled = True
 
     On Error GoTo 0
     Exit Sub
@@ -12430,7 +12429,7 @@ Private Sub picRdMap_MouseDown(ByRef Index As Integer, ByRef Button As Integer, 
     If debugFlg = 1 Then debugLog "%" & "picRdMap_MouseDown"
 
     ' .69 DAEB 16/05/2022 rDIConConfig.frm Moved the core left click code to a separate routine to avoid the clicks-via-code from activating a start drag
-    Call picRdMap_MouseDown_event(Index, rdIconNumber)
+    Call picRdMap_MouseDown_event(Index) ' , rdIconNumber)
 
     If Button = 2 Then
         rdIconNumber = Index ' get the icon number from the array's index
@@ -12477,7 +12476,9 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Sub picRdMap_MouseDown_event(ByVal currentIndex As Integer, Optional ByVal oldIndex As Integer)
+    
     Dim answer As VbMsgBoxResult: answer = vbNo
+    Static lastMapIndexChosen As Integer
     
     On Error GoTo picRdMap_MouseDown_event_Error
 
@@ -12503,17 +12504,17 @@ Sub picRdMap_MouseDown_event(ByVal currentIndex As Integer, Optional ByVal oldIn
     
     lblMapIndex.Caption = CStr(currentIndex)
     
-    If oldIndex <> 0 Then
+    If lastMapIndexChosen <> 0 Then
         ' remove the highlighting of the previously highlighted icon on the Rocket dock map, first the border and then the blue overlay
-        picRdMap(oldIndex).BorderStyle = 0
+        picRdMap(lastMapIndexChosen).BorderStyle = 0
 '        picRdMap(59).BorderStyle = 0
 '        picRdMap(60).BorderStyle = 0
 '        picRdMap(62).BorderStyle = 0
-        Call displayIconElement(oldIndex, picRdMap(oldIndex), True, 32, True, False, False, False)
+        Call displayIconElement(lastMapIndexChosen, picRdMap(lastMapIndexChosen), True, 32, True, False, False, False)
     End If
    
+    ' set the global icon Number tot he currently selected index
     rdIconNumber = currentIndex
-    
     
     ' display the large numeral giving the icon count
     Call showIconLargeNumber
@@ -12529,7 +12530,11 @@ Sub picRdMap_MouseDown_event(ByVal currentIndex As Integer, Optional ByVal oldIn
         picRdMap(currentIndex).BorderStyle = 1
     End If
     
+    ' used elsewhere
     lastHighlightedRdMapIndex = currentIndex
+    
+    ' save the current index number
+    lastMapIndexChosen = currentIndex
     
     btnSet.Enabled = False ' this has to be done at the end
     btnClose.Visible = True
@@ -13709,7 +13714,7 @@ Private Sub menuLeft_Click()
     
     rdIconNumber = rdIconNumber - 1
     
-    Call picRdMap_MouseDown_event(rdIconNumber, rdIconNumber + 1)
+    Call picRdMap_MouseDown_event(rdIconNumber) ' , rdIconNumber + 1)
     
     btnSet.Enabled = False ' tell the program that nothing has changed
     btnClose.Visible = True
@@ -13827,7 +13832,7 @@ Private Sub menuright_Click()
     'Call displayIconElement(rdIconNumber + 1, picRdMap(rdIconNumber + 1), True, 32, True, False, False)
     
     rdIconNumber = rdIconNumber + 1
-    Call picRdMap_MouseDown_event(rdIconNumber, rdIconNumber)
+    Call picRdMap_MouseDown_event(rdIconNumber) ' , rdIconNumber)
 
     btnSet.Enabled = False ' tell the program that nothing has changed
     btnClose.Visible = True
@@ -18102,7 +18107,7 @@ Private Sub writeFormHeight()
         
 '    Else
 '        gblPrefsSecondaryHeightTwips = Trim$(CStr(widgetPrefs.Height))
-'        sPutINISetting "Software\SteampunkClockCalendar", "prefsSecondaryHeightTwips", gblPrefsSecondaryHeightTwips, gblSettingsFile
+'        PutINISetting "Software\SteampunkClockCalendar", "prefsSecondaryHeightTwips", gblPrefsSecondaryHeightTwips, gblSettingsFile
 '    End If
 
    On Error GoTo 0
