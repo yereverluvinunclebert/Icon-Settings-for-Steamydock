@@ -3012,15 +3012,15 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : Form_Moved
+' Procedure : Form_Moved_Or_Resized
 ' Author    : beededea
 ' Date      : 16/07/2024
 ' Purpose   : Non VB6-standard event caught by subclassing and intercepting the WM_EXITSIZEMOVE (WM_MOVED) event
 '---------------------------------------------------------------------------------------
 '
-Public Sub Form_Moved(sForm As String)
+Public Sub Form_Moved_Or_Resized(sForm As String)
 
-    On Error GoTo Form_Moved_Error
+    On Error GoTo Form_Moved_Or_Resized_Error
         
     'passing a form name as it allows us to potentially subclass another form's movement
     Select Case sForm
@@ -3030,7 +3030,7 @@ Public Sub Form_Moved(sForm As String)
             
                 'MsgBox rDIconConfigFormOldHeight & " " & rDIconConfigForm.Height
             
-                ' test the current form height and width, if the same then it is a form_moved and not a form_resize.
+                ' test the current form height and width, if the same then it is a Form_Moved_Or_Resized and not a form_resize.
                 If rDIconConfigForm.Height = rDIconConfigFormOldHeight And rDIconConfigForm.Width = rDIconConfigFormOldWidth Then
                     Exit Sub
                 Else
@@ -3046,9 +3046,9 @@ Public Sub Form_Moved(sForm As String)
    On Error GoTo 0
    Exit Sub
 
-Form_Moved_Error:
+Form_Moved_Or_Resized_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_Moved of Form rDIconConfigForm"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_Moved_Or_Resized of Form rDIconConfigForm"
 End Sub
 
 '---------------------------------------------------------------------------------------
