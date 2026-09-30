@@ -399,7 +399,7 @@ Private Sub Form_Load()
     txtPathToTest.Text = "C:\Users\beededea\AppData\Roaming\Microsoft\Windows\Start Menu\Programs"
     txtFileFilter.Text = "*.lnk"
     
-    Call SaveSizes
+    Call savesizes
 
     ' .04 DAEB 29/05/2022 formSoftwareList.frm Add the ability to turn the tooltips off in the generate dock utility as per ico. sett.
     Call genSetToolTips
@@ -1134,7 +1134,7 @@ Private Sub rdbProgramData_Click()
 
     Dim userprof As String: userprof = vbNullString ' %userprofile%
     Dim ProgramData As String: ProgramData = vbNullString '
-    Dim S As Integer: S = 0
+    Dim s As Integer: s = 0
     Dim totalShortsFound As Integer: totalShortsFound = 0
     
     On Error GoTo rdbProgramData_Click_Error
@@ -1146,12 +1146,12 @@ Private Sub rdbProgramData_Click()
     txtFileFilter.Text = "*.lnk"
     
     txtPathToTest.Text = ProgramData & "\Microsoft\Windows\Start Menu\Programs"
-    S = fCheckStartup
-    totalShortsFound = totalShortsFound + S
+    s = fCheckStartup
+    totalShortsFound = totalShortsFound + s
     
     txtPathToTest.Text = userprof & "\AppData\Roaming\Microsoft\Windows\Start Menu\Programs"
-    S = fCheckStartup
-    totalShortsFound = totalShortsFound + S
+    s = fCheckStartup
+    totalShortsFound = totalShortsFound + s
 
     lblTitle.Caption = "STARTUP MENU LIST OF INSTALLED SOFTWARE IN %PROGRAMDATA%"
     lblInformation.Caption = "The system Program Data area and the user profile are the two locations where all " & vbCrLf & _
@@ -1190,7 +1190,7 @@ Private Sub rdbRegistry_Click()
     Dim keyToSearch As String: keyToSearch = vbNullString
     Dim locationToSearch As Long: locationToSearch = 0
     Dim totalKeysFound As Integer: totalKeysFound = 0
-    Dim S As Integer: S = 0
+    Dim s As Integer: s = 0
     Dim textVersion As String: textVersion = vbNullString
     
     On Error GoTo rdbRegistry_Click_Error
@@ -1210,20 +1210,20 @@ Private Sub rdbRegistry_Click()
     'xFileName = App.Path & "\ins.txt"
     
     keyToSearch = "Software\Classes\Installer\Products"
-    S = readInstalledAppsRegistry(HKEY_LOCAL_MACHINE, keyToSearch)
-    totalKeysFound = totalKeysFound + S
+    s = readInstalledAppsRegistry(HKEY_LOCAL_MACHINE, keyToSearch)
+    totalKeysFound = totalKeysFound + s
     
     keyToSearch = "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
-    S = readInstalledAppsRegistry(HKEY_LOCAL_MACHINE, keyToSearch)
-    totalKeysFound = totalKeysFound + S
+    s = readInstalledAppsRegistry(HKEY_LOCAL_MACHINE, keyToSearch)
+    totalKeysFound = totalKeysFound + s
     
     keyToSearch = "Software\Microsoft\Windows\CurrentVersion\Uninstall"
-    S = readInstalledAppsRegistry(HKEY_LOCAL_MACHINE, keyToSearch)
-    totalKeysFound = totalKeysFound + S
+    s = readInstalledAppsRegistry(HKEY_LOCAL_MACHINE, keyToSearch)
+    totalKeysFound = totalKeysFound + s
     
     keyToSearch = "Software\Microsoft\Windows\CurrentVersion\Installer\UserData"
-    S = readInstalledAppsRegistry(HKEY_LOCAL_MACHINE, keyToSearch)
-    totalKeysFound = totalKeysFound + S
+    s = readInstalledAppsRegistry(HKEY_LOCAL_MACHINE, keyToSearch)
+    totalKeysFound = totalKeysFound + s
     
     txtNumOfFiles.Text = totalKeysFound & " Valid entries found"
     
@@ -1255,13 +1255,13 @@ End Sub
 ' Credit    : Rod Stephens vb-helper.com
 '---------------------------------------------------------------------------------------
 '
-Private Sub SaveSizes()
+Private Sub savesizes()
     Dim i As Integer: i = 0
     Dim a As Integer: a = 0
     Dim Ctrl As Control
 
     ' Save the controls' positions and sizes.
-    On Error GoTo SaveSizes_Error
+    On Error GoTo savesizes_Error
 
     ReDim swFormControlPositions(1 To Controls.count)
     i = 1
@@ -1297,7 +1297,7 @@ Private Sub SaveSizes()
    On Error GoTo 0
    Exit Sub
 
-SaveSizes_Error:
+savesizes_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure SaveSizes of Form formSoftwareList"
 End Sub
@@ -1457,7 +1457,7 @@ Public Sub generateDockInformation()
         For useloop2 = rdIconUpperBound To rdIconLowerBound Step -1
             
             ' write the alternative settings.ini
-            readIconSettingsIni useloop2, False
+            readIconParams useloop2
 
             ' write the alternative settings.ini
             Call writeIconSettingsIni(useloop2, False)
@@ -1498,7 +1498,7 @@ Public Sub generateDockInformation()
         For useloop2 = rdIconUpperBound To startIcon Step -1
 
         '   read the old icons from the current dock position one at a time from the end to the current position.
-            readIconSettingsIni useloop2, False
+            readIconParams useloop2
 
             ' write them at their new location
             Call writeIconSettingsIni(useloop2, False)

@@ -12,6 +12,7 @@
 ' =======
 
 ' END does not always highlight the last icon blue after a HOME
+
 ' backup the .db
 
 ' add a switch to enable/disable the random access data file & toggle database access for testing speed.
@@ -19,7 +20,8 @@
 ' When the prog. starts up, first time flag indicates that it is the first time.
 ' if the resize level is not 0 and it is a first time run then hide the map and do not reveal until the resize starts
 
-' it appears that the resize is happening twice.
+' 'setting' a new icon into the dock when the tools is resized, causes the new icon to be the incorrect new default size. 
+'     If a refresh is performed all the icons are the new 'set' size.
 
 ' the rotating sand timer, hide it during the restart
 

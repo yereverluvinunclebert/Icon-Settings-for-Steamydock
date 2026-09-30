@@ -2656,6 +2656,10 @@ Private Sub Form_Load()
     
     On Error GoTo Form_Load_Error
     
+    ' dictionary to contain the icons (will eventually replace the above image dictionaries)
+    Set sDockIcons = New Dictionary
+    sDockIcons.CompareMode = 1 'case-insenitive Key-Comparisons
+    
     startupFlg = True
     
     If debugFlg = 1 Then debugLog "%" & "Form_Load"
@@ -2696,7 +2700,7 @@ Private Sub Form_Load()
     'Call killPreviousInstance ' .13 DAEB 27/02/2021 rdIConConfigFrm moved to a subroutine for clarity
     
     ' check the main dock settings file exists
-    Call locateDockSettingsFile
+    Call locateDockSettingsFiles
     
     ' call the function to connect to or create the database
     Call connectSQLDatabase
@@ -2720,7 +2724,7 @@ Private Sub Form_Load()
     Call copyDockSettingsFile
     
     ' open the icon data file
-    Call openIconDataFile
+    'Call openIconDataFile
     
     'do some things for the first and only time
     Call determineFirstRun
@@ -2802,7 +2806,7 @@ Private Sub Form_Load()
     
     If fFExists(interimSettingsFile) Then '
         'get the dockSettingsFile.ini for this icon alone
-        Call readIconSettingsIni(startRecordNumber, False)
+        Call readIconParams(startRecordNumber)
     End If
     
     ' .46 DAEB 16/04/2022 rdIconConfig.frm Made the word Blank visible or not during startup
@@ -2871,28 +2875,28 @@ connectSQLDatabase_Error:
 End Sub
 
 
-'---------------------------------------------------------------------------------------
-' Procedure : openIconDataFile
-' Author    : beededea
-' Date      : 31/07/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
+''---------------------------------------------------------------------------------------
+'' Procedure : openIconDataFile
+'' Author    : beededea
+'' Date      : 31/07/2025
+'' Purpose   :
+''---------------------------------------------------------------------------------------
+''
+'Private Sub openIconDataFile()
 '
-Private Sub openIconDataFile()
-
-   On Error GoTo openIconDataFile_Error
-
-    Close #3
-    Open iconDataFile For Random Shared As #3 Len = Len(iconVar)
-
-   On Error GoTo 0
-   Exit Sub
-
-openIconDataFile_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure openIconDataFile of Form rDIconConfigForm"
-
-End Sub
+'   On Error GoTo openIconDataFile_Error
+'
+'    Close #3
+'    Open iconDataFile For Random Shared As #3 Len = Len(iconVar)
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'openIconDataFile_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure openIconDataFile of Form rDIconConfigForm"
+'
+'End Sub
     
 
 
@@ -4325,6 +4329,7 @@ optRunSecondAppBeforehand_Click_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure optRunSecondAppBeforehand_Click of Form rDIconConfigForm"
 End Sub
 
+
 '---------------------------------------------------------------------------------------
 ' Procedure : picRdMap_OLEDragOver
 ' Author    : beededea
@@ -4494,7 +4499,7 @@ Private Sub settingsTimer_Timer()
                     ' we don't bother to read the current record source here as we have already done so above.
     
                     ' read the rdsettings.ini one item up in the list
-                    Call readIconSettingsIni(useloop, False)
+                    Call readIconParams(useloop)
     
                     ' .83 DAEB 03/06/2022 rDIConConfig.frm Display the icon we just moved by dragging, one by one rather than the whole map
                     'Call displayIconElement(useloop, picRdMap(useloop), True, 32, True, False)
@@ -5957,7 +5962,7 @@ Private Sub readDockConfiguration()
 '            ' get the relevant entries from the registry
 '            location = "Software\SteamyDock\IconSettings\Icons"
 '
-'            Call readIconSettingsIni(useloop, False)
+'            Call readIconParams(useloop, False)
 '
             
 '            sFilename = GetINISetting(location, useloop & "-FileName", interimSettingsFile)
@@ -7786,7 +7791,7 @@ Private Sub btnCancel_Click()
     
     If fFExists(interimSettingsFile) Then '
         'get the rocketdock settings.ini for this icon alone
-        Call readIconSettingsIni(rdIconNumber, False)
+        Call readIconParams(rdIconNumber)
     'Else
         'readRegistryIconValues (rdIconNumber)
     End If
@@ -8854,7 +8859,7 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
 
     ' read the icon data
     If fFExists(interimSettingsFile) Then '
-        Call readIconSettingsIni(thisRecordNumber, False)
+        Call readIconParams(thisRecordNumber)
     End If
 
     ' .46 DAEB 16/04/2022 rdIconConfig.frm Made the word Blank visible or not when clicking on the icon map
@@ -10787,7 +10792,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
     
 
     ' take the source icon details and store those in the stored vars
-    Call readIconSettingsIni(srcRdIconNumber, False)
+    Call readIconParams(srcRdIconNumber)
 
         
     srcFilename = sFilename
@@ -10816,7 +10821,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
     End If
     
     ' read the target icon details and store those in the trgt vars
-    Call readIconSettingsIni(trgtRdIconNumber, False)
+    Call readIconParams(trgtRdIconNumber)
 
 
     trgtFilename = sFilename
@@ -10861,7 +10866,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
             ' we don't bother to read the current record source here as we have already done so above.
             
             ' read the rdsettings.ini one item up in the list
-            Call readIconSettingsIni(useloop + 1, False)
+            Call readIconParams(useloop + 1)
             
             'write the the next item up at the current source location effectively overwriting the current record
             Call writeIconSettingsIni(useloop, False)
@@ -10916,7 +10921,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
         For useloop = srcRdIconNumber To trgtRdIconNumber Step -1
                 
             ' read the rdsettings.ini one item up in the list
-            Call readIconSettingsIni(useloop - 1, False)
+            Call readIconParams(useloop - 1)
             
             'write the the next item up at the current source location effectively overwriting it
             Call writeIconSettingsIni(useloop, False)
@@ -13641,7 +13646,7 @@ Private Sub menuLeft_Click()
     ' .82 DAEB 02/06/2022 rDIConConfig.frm Added check for moving right or left beyond the end of the RDMap.
     If rdIconNumber - 1 < 0 Then Exit Sub
     
-    Call readIconSettingsIni(rdIconNumber - 1, False)
+    Call readIconParams(rdIconNumber - 1)
         
     storedFilename = sFilename
     storedFileName2 = sFileName2
@@ -13670,7 +13675,7 @@ Private Sub menuLeft_Click()
     End If
     
     ' take the current icon details and write it into the place of the one to the left (-1)
-    Call readIconSettingsIni(rdIconNumber, False)
+    Call readIconParams(rdIconNumber)
     
     Call writeIconSettingsIni(rdIconNumber - 1, False)
 
@@ -13765,7 +13770,7 @@ Private Sub menuright_Click()
     If rdIconNumber > rdIconUpperBound Then Exit Sub
     
     ' take the current icon plus one and read its details and store it
-     Call readIconSettingsIni(rdIconNumber + 1, False)
+     Call readIconParams(rdIconNumber + 1)
             
     storedFilename = sFilename
     storedFileName2 = sFileName2
@@ -13793,7 +13798,7 @@ Private Sub menuright_Click()
     End If
     ' take the current icon details and write it into the place of the one to the right
     'readSettingsIni (rdIconNumber)
-     Call readIconSettingsIni(rdIconNumber, False)
+     Call readIconParams(rdIconNumber)
     
     'writeSettingsIni (rdIconNumber + 1)
     Call writeIconSettingsIni(rdIconNumber + 1, False)
@@ -13883,7 +13888,7 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
          
          Call zeroAllIconCharacteristics
          
-         Call readIconSettingsIni(useloop, False)
+         Call readIconParams(useloop)
         
         ' and increment the identifier by one
          Call writeIconSettingsIni(useloop + 1, False)
@@ -15674,7 +15679,7 @@ Private Sub deleteRdMapPosition(ByVal thisIconNumber As Integer, Optional confir
             ' read the rocketdock alternative rdsettings.ini one item up in the list
             'readSettingsIni (useloop + 1) ' the alternative rdsettings.ini only exists when RD is set to use it
             
-             Call readIconSettingsIni(useloop + 1, False)
+             Call readIconParams(useloop + 1)
             
             'write the the new item at the current location effectively overwriting it
             'writeSettingsIni (useloop)

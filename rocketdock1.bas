@@ -166,7 +166,7 @@ Private Type FONTSTRUC
   hDC As Long
   lpLogFont As Long
   iPointSize As Long
-  flags As Long
+  Flags As Long
   rgbColors As Long
   lCustData As Long
   lpfnHook As Long
@@ -185,7 +185,7 @@ Private Type ChooseColorStruct
     hInstance As Long
     rgbResult As Long
     lpCustColors As Long
-    flags As Long
+    Flags As Long
     lCustData As Long
     lpfnHook As Long
     lpTemplateName As String
@@ -865,7 +865,7 @@ Public Function fDialogFont(ByRef F As FormFontInfo) As Boolean
     CopyMemory ByVal lLogFontAddress, logFnt, Len(logFnt)
     ftStruc.lpLogFont = lLogFontAddress
     'ftStruc.flags = CF_SCREENFONTS Or CF_EFFECTS Or CF_INITTOLOGFONTSTRUCT
-    ftStruc.flags = CF_SCREENFONTS Or CF_INITTOLOGFONTSTRUCT
+    ftStruc.Flags = CF_SCREENFONTS Or CF_INITTOLOGFONTSTRUCT
     If ChooseFont(ftStruc) = 1 Then
       CopyMemory logFnt, ByVal lLogFontAddress, Len(logFnt)
       F.Weight = logFnt.lfWeight
@@ -1234,7 +1234,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Sub btnSaveRestart_Click_event(ByRef handle As Long)
+Public Sub btnSaveRestart_Click_event(ByRef Handle As Long)
 
     ' variables declared
 
@@ -1281,7 +1281,7 @@ Public Sub btnSaveRestart_Click_event(ByRef handle As Long)
             'Call readInterimAndWriteConfig ' save the config.
             ' restart rocketdock /steamydock
             If fFExists(NameProcess) Then ' .09 DAEB 07/02/2021 rDIconConfigForm.frm use the fullprocess variable without adding path again - duh!
-                ans = ShellExecute(handle, "Open", NameProcess, vbNullString, App.Path, 1)
+                ans = ShellExecute(Handle, "Open", NameProcess, vbNullString, App.Path, 1)
             End If
         End If
     Else
@@ -1300,7 +1300,7 @@ Public Sub btnSaveRestart_Click_event(ByRef handle As Long)
 
         ' restart rocketdock /steamydock
         If fFExists(NameProcess) Then
-            ans = ShellExecute(handle, "Open", NameProcess, vbNullString, App.Path, 1)
+            ans = ShellExecute(Handle, "Open", NameProcess, vbNullString, App.Path, 1)
         End If
     End If
     '.02 DAEB 26/10/2020   Added function isRunning and changed the logic to fix a bug where the config. would not be saved if the dock was not running. ENDS.
@@ -1417,7 +1417,7 @@ Public Sub readInterimAndWriteConfig()
 '
 '                For useloop = 0 To rdIconUpperBound
 '
-'                    readIconSettingsIni useloop, False
+'                    readIconParams useloop, False
 '
 '                    ' write the steamydock config file
 '
@@ -1453,7 +1453,7 @@ Public Sub readInterimAndWriteConfig()
 '                For useloop = 0 To rdIconUpperBound
 '
 '                     'readSettingsIni (useloop)
-'                    readIconSettingsIni "Software\RocketDock\Icons", useloop, interimSettingsFile
+'                    readIconParams "Software\RocketDock\Icons", useloop, interimSettingsFile
 '
 '                     ' write the rocketdock registry
 '                    writeRegistryOnce (useloop)
