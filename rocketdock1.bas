@@ -1154,7 +1154,7 @@ Public Sub backupDockSettings(Optional ByVal askQuestion As Boolean = False)
 
     If debugFlg = 1 Then debugLog "%" & "btnBackup_Click"
 
-    bkpFilename = fbackupSettings()
+    bkpFilename = backupDatabase()
     If askQuestion = True Then
         ans = msgBoxA("Created an incremental backup of the Dock settings file - " & vbCr & vbCr & bkpFilename & vbCr & vbCr & "Would you like to review ALL the backup files? ", vbQuestion + vbYesNo, "Backing up settings.", False, "none")
         If ans = 6 Then
@@ -1173,10 +1173,10 @@ Public Sub backupDockSettings(Optional ByVal askQuestion As Boolean = False)
             With x_OpenFilename
             '    .hwndOwner = Me.hWnd
             .hInstance = App.hInstance
-            .lpstrTitle = "Select a backup INI file to restore - or cancel"
+            .lpstrTitle = "Select a backup BKP file to restore - or cancel"
             .lpstrInitialDir = dialogInitDir
     
-            .lpstrFilter = "Ini Files" & vbNullChar & "*.*" & vbNullChar & vbNullChar
+            .lpstrFilter = "BKP Files" & vbNullChar & "*.*" & vbNullChar & vbNullChar
             .nFilterIndex = 2
     
             .lpstrFile = String$(x_MaxBuffer, 0)
@@ -1200,7 +1200,7 @@ Public Sub backupDockSettings(Optional ByVal askQuestion As Boolean = False)
                     ' restart rocketdock
                     
                     ' .94 DAEB 26/06/2022 rDIConConfig.frm Backup and restore - fix the problem with dock entries being zeroed after a restore.
-                    FileCopy bkpSettingsFile, dockSettingsFile
+                    FileCopy bkpSettingsFile, gblsIconDataBase
                     
                     Call btnSaveRestart_Click_event(rDIconConfigForm.hWnd)
                 End If
@@ -1322,74 +1322,74 @@ End Sub
 ' Purpose   : Creates an incrementally named backup of the settings.ini
 '---------------------------------------------------------------------------------------
 ' .40 DAEB 09/05/2021 rdIconConfig.frm turned into a function as it returns a value
-
-Public Function fbackupSettings() As String
-
-    Dim bkpSettingsFile As String
-    Dim useloop As Integer: useloop = 0
-    Dim srchSettingsFile As String
-    Dim versionNumberAvailable As Integer
-    Dim bkpfileFound As Boolean: bkpfileFound = False
-    Dim dockSettingsDir As String: dockSettingsDir = vbNullString
-            
-    On Error GoTo fbackupSettings_Error
-   
-    If debugFlg = 1 Then debugLog "%" & "fbackupSettings"
-    
-    dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" '
-
-    ' set the name of the bkp file
-    bkpSettingsFile = dockSettingsDir & "\backup\bkpSettings.ini"
-            
-    'check for any version of the ini file with a suffix exists
-    
-    For useloop = 1 To 32767
-        srchSettingsFile = bkpSettingsFile & "." & useloop
-      
-        If fFExists(srchSettingsFile) Then
-            ' found a file
-            bkpfileFound = True
-        Else
-            ' no file found use this entry
-            GoTo l_exit_bkp_loop
-        End If
-    Next useloop
-            
-l_exit_bkp_loop:
-
-    'MsgBox "check for any version of the ini file with a suffix exists - DONE"
-        
-    If bkpfileFound = True Then
-        bkpfileFound = False
-        versionNumberAvailable = useloop
-        
-        'if versionNumberAvailable >= 32767 then
-            'versionNumberAvailable = 1
-            'If fFExists(bkpSettingsFile) Then
-                'delete bkpSettingsFile
-            'endif
-        'endif
-    Else
-         versionNumberAvailable = 1
-    End If
-    
-    bkpSettingsFile = bkpSettingsFile & "." & Trim$(Str(versionNumberAvailable))
-    If Not fFExists(bkpSettingsFile) Then
-        If fFExists(dockSettingsFile) Then ' .41 DAEB 09/05/2021 rdIconConfig.frm fix copying the dock settings file for backups
-            FileCopy dockSettingsFile, bkpSettingsFile
-        End If
-    End If
-    
-    fbackupSettings = bkpSettingsFile
-
-   On Error GoTo 0
-   Exit Function
-
-fbackupSettings_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fbackupSettings of Form rDIconConfigForm"
-        
-End Function
+'
+'Public Function fbackupSettings() As String
+'
+'    Dim bkpSettingsFile As String
+'    Dim useloop As Integer: useloop = 0
+'    Dim srchSettingsFile As String
+'    Dim versionNumberAvailable As Integer
+'    Dim bkpfileFound As Boolean: bkpfileFound = False
+'    Dim dockSettingsDir As String: dockSettingsDir = vbNullString
+'
+'    On Error GoTo fbackupSettings_Error
+'
+'    If debugFlg = 1 Then debugLog "%" & "fbackupSettings"
+'
+'    dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" '
+'
+'    ' set the name of the bkp file
+'    bkpSettingsFile = dockSettingsDir & "\backup\bkpSettings.ini"
+'
+'    'check for any version of the ini file with a suffix exists
+'
+'    For useloop = 1 To 32767
+'        srchSettingsFile = bkpSettingsFile & "." & useloop
+'
+'        If fFExists(srchSettingsFile) Then
+'            ' found a file
+'            bkpfileFound = True
+'        Else
+'            ' no file found use this entry
+'            GoTo l_exit_bkp_loop
+'        End If
+'    Next useloop
+'
+'l_exit_bkp_loop:
+'
+'    'MsgBox "check for any version of the ini file with a suffix exists - DONE"
+'
+'    If bkpfileFound = True Then
+'        bkpfileFound = False
+'        versionNumberAvailable = useloop
+'
+'        'if versionNumberAvailable >= 32767 then
+'            'versionNumberAvailable = 1
+'            'If fFExists(bkpSettingsFile) Then
+'                'delete bkpSettingsFile
+'            'endif
+'        'endif
+'    Else
+'         versionNumberAvailable = 1
+'    End If
+'
+'    bkpSettingsFile = bkpSettingsFile & "." & Trim$(Str(versionNumberAvailable))
+'    If Not fFExists(bkpSettingsFile) Then
+'        If fFExists(dockSettingsFile) Then ' .41 DAEB 09/05/2021 rdIconConfig.frm fix copying the dock settings file for backups
+'            FileCopy dockSettingsFile, bkpSettingsFile
+'        End If
+'    End If
+'
+'    fbackupSettings = bkpSettingsFile
+'
+'   On Error GoTo 0
+'   Exit Function
+'
+'fbackupSettings_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fbackupSettings of Form rDIconConfigForm"
+'
+'End Function
 
 
 

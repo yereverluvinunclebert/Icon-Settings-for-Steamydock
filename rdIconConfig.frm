@@ -2798,8 +2798,8 @@ Private Sub Form_Load()
     ' set the status of the control buttons at startup
     Call setControlButtonStatus
     
-    ' Creates an incrementally named backup of the settings.ini
-    Call fbackupSettings
+    ' Creates an incrementally named backup of the settings.db
+    Call backupDatabase
             
     ' check the registry for Rocketdock usage (mostly obsolete now)
     Call chkTheRegistry
@@ -5956,46 +5956,13 @@ Private Sub readDockConfiguration()
         ' read the database and get the record count
         rdIconUpperBound = getRecordCount()
         
-        ' copy the original configs out of the registry and into a settings file that we will operate upon
+            ' previously we extracted icondata from the random access data file,
+            ' now we obtain the icon data from the SQLite database with error check returned
+        For useloop = rdIconLowerBound To rdIconUpperBound
 
-'        For useloop = rdIconLowerBound To rdIconUpperBound
-'            ' get the relevant entries from the registry
-'            location = "Software\SteamyDock\IconSettings\Icons"
-'
-'            Call readIconParams(useloop, False)
-'
-            
-'            sFilename = GetINISetting(location, useloop & "-FileName", interimSettingsFile)
-'            sFileName2 = GetINISetting(location, useloop & "-FileName2", interimSettingsFile)
-'            sTitle = GetINISetting(location, useloop & "-Title", interimSettingsFile)
-'            sCommand = GetINISetting(location, useloop & "-Command", interimSettingsFile)
-'            sArguments = GetINISetting(location, useloop & "-Arguments", interimSettingsFile)
-'            sWorkingDirectory = GetINISetting(location, useloop & "-WorkingDirectory", interimSettingsFile)
-'            sShowCmd = GetINISetting(location, useloop & "-ShowCmd", interimSettingsFile)
-'            sOpenRunning = GetINISetting(location, useloop & "-OpenRunning", interimSettingsFile)
-'            sRunElevated = GetINISetting(location, useloop & "-RunElevated", interimSettingsFile)
-'            sIsSeparator = GetINISetting(location, useloop & "-IsSeparator", interimSettingsFile)
-'            sUseContext = GetINISetting(location, useloop & "-UseContext", interimSettingsFile)
-'            sDockletFile = GetINISetting(location, useloop & "-DockletFile", interimSettingsFile)
-             
-'            If defaultDock = 1 Then
-'                sUseDialog = GetINISetting(location, useloop & "-UseDialog", interimSettingsFile)
-'                sUseDialogAfter = GetINISetting(location, useloop & "-UseDialogAfter", interimSettingsFile) ' .06 DAEB 31/01/2021 rdIconConfig.frm Added new checkbox to determine if a post initiation dialog should appear
-'                sQuickLaunch = GetINISetting(location, useloop & "-QuickLaunch", interimSettingsFile) '.nn Added new check box to allow a quick launch of the chosen app
-'                sAutoHideDock = GetINISetting(location, useloop & "-AutoHideDock", interimSettingsFile)  '.nn Added new check box to allow autohide of the dock after launch of the chosen app
-'                sSecondApp = GetINISetting(location, useloop & "-SecondApp", interimSettingsFile) ' .42 DAEB 21/05/2021 rdIconConfig.frm Added new field for second program to be run
-'
-'                sRunSecondAppBeforehand = GetINISetting(location, useloop & "-RunSecondAppBeforehand", interimSettingsFile)
-'                sAppToTerminate = GetINISetting(location, useloop & "-AppToTerminate", interimSettingsFile)
-'
-'                sDisabled = GetINISetting(location, useloop & "-Disabled", interimSettingsFile)      ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
-'            End If
-            
-            ' write the rocketdock alternative settings.ini
-            'writeSettingsIni (useloop)
-            'Call writeIconSettingsIni("Software\SteamyDock\IconSettings" & "\Icons", useloop, interimSettingsFile)
+            Call createDockIcons(useloop)
 
-'        Next useloop
+        Next useloop
         
         ' make a backup of the rdSettings.ini after the intermediate file has been created
         'Call fbackupSettings("")
@@ -6075,7 +6042,7 @@ Private Sub readRocketDockSettings()
         frmRegistry.chkWriteSettings.Value = 1
         frmRegistry.chkWriteConfig.Value = 0
 
-        Call fbackupSettings   ' make a backup of the settings.ini file each restart
+        'Call fbackupSettings   ' make a backup of the settings.ini file each restart
         
         ' copy the original settings file to a duplicate that we will operate upon
         FileCopy origSettingsFile, interimSettingsFile
@@ -6101,7 +6068,7 @@ Private Sub readRocketDockSettings()
         'readIconRegistryWriteSettings interimSettingsFile
         
         ' make a backup of the rdSettings.ini after the intermediate file has been created
-        Call fbackupSettings
+        'Call fbackupSettings
         
     End If
 
@@ -7015,7 +6982,7 @@ Private Sub mnuAddProgram_Click()
     Dim retFileName As String: retFileName = vbNullString
     Dim retfileTitle As String: retfileTitle = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
 
    On Error GoTo mnuAddProgram_Click_Error
    If debugFlg = 1 Then debugLog "%mnuAddProgram_Click"
@@ -7044,13 +7011,13 @@ Private Sub mnuAddProgram_Click()
     'MsgBox "2. iconFileName " & iconFileName
                 
     If fFExists(iconFilename) Then
-      iconImage = iconFilename
+      IconImage = iconFilename
     Else
         iconFilename = App.Path & "\my collection\steampunk icons MKVI" & "\document-EXE.png"
         If fFExists(iconFilename) Then
-            iconImage = iconFilename
+            IconImage = iconFilename
         Else
-            iconImage = App.Path & "\Icons\help.png"
+            IconImage = App.Path & "\Icons\help.png"
         End If
     End If
     
@@ -7066,7 +7033,7 @@ Private Sub mnuAddProgram_Click()
 '        iconImage = App.Path & "\Icons\help.png"
 '    End If
         
-    Call menuAddSomething(iconImage, retFileName, retFileName, vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, retFileName, retFileName, vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -7138,7 +7105,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddSeparator_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
 
     On Error GoTo mnuAddSeparator_click_Error
@@ -7146,16 +7113,16 @@ Private Sub mnuAddSeparator_click()
            
     iconFilename = App.Path & "\my collection" & "\separator.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
 
     sIsSeparator = "1"
         
     ' general tool to add an icon
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Separator", vbNullString, vbNullString, vbNullString, vbNullString, sIsSeparator)
+    Call menuAddSomething(IconImage, "Separator", vbNullString, vbNullString, vbNullString, vbNullString, sIsSeparator)
         
     txtLabelName.Enabled = False
     txtCurrentIcon.Enabled = False
@@ -7185,7 +7152,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuaddFolder_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     
     Dim getFolder As String: getFolder = vbNullString
@@ -7213,13 +7180,13 @@ Private Sub mnuaddFolder_click()
     
         iconFilename = App.Path & "\my collection" & "\folder-closed.png"
         If fFExists(iconFilename) Then
-            iconImage = iconFilename
+            IconImage = iconFilename
         Else
-            iconImage = "\Icons\help.png"
+            IconImage = "\Icons\help.png"
         End If
         
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSomething(iconImage, "User Folder", getFolder, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSomething(IconImage, "User Folder", getFolder, vbNullString, vbNullString, vbNullString, vbNullString)
     End If
 
    On Error GoTo 0
@@ -7238,7 +7205,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddMyComputer_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     
     ' check the icon exists
@@ -7247,13 +7214,13 @@ Private Sub mnuAddMyComputer_click()
 
     iconFilename = App.Path & "\my collection" & "\my folder.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "My Computer", "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "My Computer", "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString)
 
 
    On Error GoTo 0
@@ -7273,7 +7240,7 @@ End Sub
 '
 Private Sub mnuAddMyDocuments_Click()
 '
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     
     On Error GoTo mnuAddMyDocuments_Click_Error
@@ -7283,14 +7250,14 @@ Private Sub mnuAddMyDocuments_Click()
     ' check the icon exist
     iconFilename = App.Path & "\my collection" & "\folder-closed.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = App.Path & "\Icons\help.png"
+        IconImage = App.Path & "\Icons\help.png"
     End If
        
-    If fFExists(iconImage) Then
+    If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSomething(iconImage, "My Documents", "::{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}", vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSomething(IconImage, "My Documents", "::{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}", vbNullString, vbNullString, vbNullString, vbNullString)
     Else
         MsgBox "Unable to add my Documents image as it does not exist"
     End If
@@ -7313,7 +7280,7 @@ End Sub
 '
 Private Sub mnuAddMyMusic_Click()
 '
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     Dim userprof As String: userprof = vbNullString
 
@@ -7325,18 +7292,18 @@ Private Sub mnuAddMyMusic_Click()
 
     iconFilename = App.Path & "\my collection" & "\music.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = App.Path & "\Icons\help.png"
+        IconImage = App.Path & "\Icons\help.png"
     End If
 
     userprof = Environ$("USERPROFILE")
     
-    If fFExists(iconImage) Then
+    If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         ' using the Special CLSID for the video folder this, in fact resolves to the my documents folder and not the video folder below.
         'Call menuAddSomething( iconImage, "My Music", "::{1CF1260C-4DD0-4ebb-811F-33C572699FDE}", vbNullString, vbNullString, vbNullString, vbNullString)
-        Call menuAddSomething(iconImage, "My Music", userprof & "\Documents\Music", vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSomething(IconImage, "My Music", userprof & "\Documents\Music", vbNullString, vbNullString, vbNullString, vbNullString)
     Else
         MsgBox "Unable to add my Music image as it does not exist"
     End If
@@ -7360,7 +7327,7 @@ End Sub
 '
 Private Sub mnuAddMyPictures_Click()
 '
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     Dim userprof As String: userprof = vbNullString
     
@@ -7372,17 +7339,17 @@ Private Sub mnuAddMyPictures_Click()
 
     iconFilename = App.Path & "\my collection" & "\pictures.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = App.Path & "\Icons\help.png"
+        IconImage = App.Path & "\Icons\help.png"
     End If
        
     userprof = Environ$("USERPROFILE")
 
-    If fFExists(iconImage) Then
+    If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         'Call menuAddSomething( iconImage, "My Pictures", "::{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}", vbNullString, vbNullString, vbNullString, vbNullString)
-        Call menuAddSomething(iconImage, "My Pictures", userprof & "\Documents\Pictures", vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSomething(IconImage, "My Pictures", userprof & "\Documents\Pictures", vbNullString, vbNullString, vbNullString, vbNullString)
     Else
         MsgBox "Unable to add my Pictures image as it does not exist"
     End If
@@ -7405,7 +7372,7 @@ End Sub
 '
 Private Sub mnuAddMyVideos_Click()
 
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     Dim userprof As String: userprof = vbNullString
     
@@ -7418,17 +7385,17 @@ Private Sub mnuAddMyVideos_Click()
 
     iconFilename = App.Path & "\my collection" & "\video-folder.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = App.Path & "\Icons\help.png"
+        IconImage = App.Path & "\Icons\help.png"
     End If
            
     userprof = Environ$("USERPROFILE")
        
-    If fFExists(iconImage) Then
+    If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         'Call menuAddSomething( iconImage, "My Videos", "::{A0953C92-50DC-43bf-BE83-3742FED03C9C}", vbNullString, vbNullString, vbNullString, vbNullString)
-        Call menuAddSomething(iconImage, "My Videos", userprof & "\Documents\Videos", vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSomething(IconImage, "My Videos", userprof & "\Documents\Videos", vbNullString, vbNullString, vbNullString, vbNullString)
     Else
         MsgBox "Unable to add my Videos image as it does not exist"
     End If
@@ -7450,7 +7417,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddEnhanced_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     
     On Error GoTo mnuAddEnhanced_click_Error
@@ -7459,16 +7426,16 @@ Private Sub mnuAddEnhanced_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\SteamyRocket.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '[icons]
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     ' 17/11/2020    .04 DAEB Replaced all occurrences of rocket1.exe with iconsettings.exe
 
-    Call menuAddSomething(iconImage, "Enhanced Icon Settings", App.Path & "\iconsettings.exe", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Enhanced Icon Settings", App.Path & "\iconsettings.exe", vbNullString, vbNullString, vbNullString, vbNullString)
     'Call menuAddSomething( iconImage, "Enhanced Icon Settings", "[Icons]", vbNullString, vbNullString, vbNullString, vbNullString)
    
    On Error GoTo 0
@@ -9392,7 +9359,7 @@ Private Sub populateThumbnails(ByVal baseImageSize As Long, ByRef startItem As I
                             If thisThumbnailCacheCount = 0 Then thisThumbnailCacheCount = 250 ' default value
                             
                             ' limit the cache to certain number of image items to prevent out of memory messages
-                            If imlThumbnailCache.ListImages.count <= thisThumbnailCacheCount Then
+                            If imlThumbnailCache.ListImages.Count <= thisThumbnailCacheCount Then
                                 
                                 ' add the current thumbnail to the cache with a unique key
                                 Set picTemporaryStore.Picture = picThumbIcon(useloop).Image
@@ -9568,7 +9535,7 @@ Public Sub deleteRdMap(Optional ByVal backupFirst As Boolean = False, Optional B
         Exit Sub
     End If
 
-    If backupFirst = True Then Call fbackupSettings
+    'If backupFirst = True Then Call fbackupSettings
 
     'Note: we only write to the interim settings file
     'the write to the actual settings or registry happens when the user "saves & restarts"
@@ -10036,7 +10003,7 @@ Private Sub readTreeviewDefaultFolder()
     folderTreeView.HideSelection = False ' Ensures found item highlighted
 
     If defaultFolderNodeKey <> vbNullString Then
-        For iX = 1 To folderTreeView.Nodes.count
+        For iX = 1 To folderTreeView.Nodes.Count
             If Trim$(folderTreeView.Nodes(iX).Key) = Trim$(defaultFolderNodeKey) Then
                 iFound = True
                 Exit For
@@ -10067,35 +10034,35 @@ readTreeviewDefaultFolder_Error:
 
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : readRegistryWriteSettings
-' Author    : beededea
-' Date      : 20/06/2019
-' Purpose   : Read the registry one line at a time and create a temporary settings file
-'---------------------------------------------------------------------------------------
+''---------------------------------------------------------------------------------------
+'' Procedure : readRegistryWriteSettings
+'' Author    : beededea
+'' Date      : 20/06/2019
+'' Purpose   : Read the registry one line at a time and create a temporary settings file
+''---------------------------------------------------------------------------------------
+''
+'Private Sub readRegistryWriteSettings()
+'    Dim useloop As Integer: useloop = 0
 '
-Private Sub readRegistryWriteSettings()
-    Dim useloop As Integer: useloop = 0
-    
-        PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
-    
-   On Error GoTo readRegistryWriteSettings_Error
-      If debugFlg = 1 Then debugLog "%" & "readRegistryWriteSettings"
-   
-    For useloop = rdIconLowerBound To rdIconUpperBound
-         ' get the relevant entries from the registry
-         readRegistryIconValues (useloop)
-         Call writeIconSettingsIni(useloop, False)
-         
-     Next useloop
-
-   On Error GoTo 0
-   Exit Sub
-
-readRegistryWriteSettings_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readRegistryWriteSettings of Form rDIconConfigForm"
-End Sub
+'        PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
+'
+'   On Error GoTo readRegistryWriteSettings_Error
+'      If debugFlg = 1 Then debugLog "%" & "readRegistryWriteSettings"
+'
+'    For useloop = rdIconLowerBound To rdIconUpperBound
+'         ' get the relevant entries from the registry
+'         readRegistryIconValues (useloop)
+'         Call writeIconSettingsIni(useloop, False)
+'
+'     Next useloop
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'readRegistryWriteSettings_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readRegistryWriteSettings of Form rDIconConfigForm"
+'End Sub
 
 
 ''---------------------------------------------------------------------------------------
@@ -14025,7 +13992,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuClearCache_Click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     
     On Error GoTo menuAdd_Click_Error
@@ -14034,13 +14001,13 @@ Private Sub mnuClearCache_Click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\recyclebin-full.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     ' thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Clear Cache", Environ$("windir") & "\System32\RUNDLL32.exe", "advapi32.dll , ProcessIdleTasks", vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Clear Cache", Environ$("windir") & "\System32\RUNDLL32.exe", "advapi32.dll , ProcessIdleTasks", vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14089,7 +14056,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddShutdown_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     
    On Error GoTo mnuAddShutdown_click_Error
@@ -14099,13 +14066,13 @@ Private Sub mnuAddShutdown_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\shutdown.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Shutdown", Environ$("windir") & "\System32\shutdown.exe", "/s /t 00 /f /i", vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Shutdown", Environ$("windir") & "\System32\shutdown.exe", "/s /t 00 /f /i", vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14123,7 +14090,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '.101 DAEB 09/11/2022 rDIConConfig.frm Add the restart option.
 Private Sub mnuAddRestart_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     
    On Error GoTo mnuAddRestart_click_Error
@@ -14133,13 +14100,13 @@ Private Sub mnuAddRestart_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\Reboot.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Shutdown", Environ$("windir") & "\System32\shutdown.exe", "/r", vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Shutdown", Environ$("windir") & "\System32\shutdown.exe", "/r", vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14157,7 +14124,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddSleep_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
    
     ' check the icon exists
@@ -14165,14 +14132,14 @@ Private Sub mnuAddSleep_click()
 
     iconFilename = App.Path & "\my collection" & "\sleep.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = App.Path & "\Icons\help.png"
+        IconImage = App.Path & "\Icons\help.png"
     End If
            
-    If fFExists(iconImage) Then
+    If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSomething(iconImage, "Sleep", Environ$("windir") & "\System32\RUNDLL32.exe", "powrprof.dll,SetSuspendState 0,1,0", vbNullString, vbNullString, vbNullString)
+        Call menuAddSomething(IconImage, "Sleep", Environ$("windir") & "\System32\RUNDLL32.exe", "powrprof.dll,SetSuspendState 0,1,0", vbNullString, vbNullString, vbNullString)
     Else
         MsgBox "Unable to add sleep image as it does not exist"
     End If
@@ -14193,7 +14160,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddLog_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
 
     On Error GoTo mnuAddLog_click_Error
@@ -14202,13 +14169,13 @@ Private Sub mnuAddLog_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\console-green-screen-logout.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Log Out", Environ$("windir") & "\system32\shutdown.exe", "/l", "%windir%", vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Log Out", Environ$("windir") & "\system32\shutdown.exe", "/l", "%windir%", vbNullString, vbNullString)
 
     On Error GoTo 0
     Exit Sub
@@ -14226,7 +14193,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddLock_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
 
     On Error GoTo mnuAddLock_click_Error
@@ -14235,13 +14202,13 @@ Private Sub mnuAddLock_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\padlockLockWorkstation.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Lock Workstation", Environ$("windir") & "\system32\rundll32.exe", "user32.dll, LockWorkStation", "%windir%", vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Lock Workstation", Environ$("windir") & "\system32\rundll32.exe", "user32.dll, LockWorkStation", "%windir%", vbNullString, vbNullString)
 
     On Error GoTo 0
     Exit Sub
@@ -14259,7 +14226,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddNetwork_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
 
     On Error GoTo mnuAddNetwork_click_Error
@@ -14268,13 +14235,13 @@ Private Sub mnuAddNetwork_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\big-globe(network).png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     ' thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Network", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Network", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14293,7 +14260,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddWorkgroup_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
 
     On Error GoTo mnuAddWorkgroup_click_Error
@@ -14302,13 +14269,13 @@ Private Sub mnuAddWorkgroup_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\big-globe(network).png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Network", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Network", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14327,7 +14294,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddPrinters_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     On Error GoTo mnuAddPrinters_click_Error
     If debugFlg = 1 Then debugLog "%" & "mnuAddPrinters_click"
@@ -14335,13 +14302,13 @@ Private Sub mnuAddPrinters_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\printer.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Printers", "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Printers", "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}", vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14360,7 +14327,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddTask_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     ' check the icon exists
     On Error GoTo mnuAddTask_click_Error
@@ -14368,26 +14335,26 @@ Private Sub mnuAddTask_click()
     
     iconFilename = App.Path & "\my collection" & "\task-manager(tskmgr).png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     'Call menuAddSomething( iconImage, "Task Manager", "taskmgr", vbNullString, vbNullString, vbNullString, vbNullString)
 
     If Is64bit() Then
         ' if a 32 bit application on a 64bit o/s, regardless of the command, the o/s calls C:\Windows\SysWOW64\taskmgr.exe
-        If fFExists(iconImage) Then
+        If fFExists(IconImage) Then
             '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-            Call menuAddSomething(iconImage, "Task Manager", Environ$("windir") & "\SysWOW64\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString)
+            Call menuAddSomething(IconImage, "Task Manager", Environ$("windir") & "\SysWOW64\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString)
         Else
             MsgBox "Unable to add Task Manager image as it has been deleted"
         End If
     Else
         ' if a 32 bit application on a 32bit o/s, regardless of the o/s calls C:\Windows\System32\taskmgr.exe
-        If fFExists(iconImage) Then
+        If fFExists(IconImage) Then
             '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-            Call menuAddSomething(iconImage, "Task Manager", Environ$("windir") & "\System32\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString)
+            Call menuAddSomething(IconImage, "Task Manager", Environ$("windir") & "\System32\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString)
         Else
             MsgBox "Unable to add Task Manager image as it has been deleted"
         End If
@@ -14410,7 +14377,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddControl_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     ' check the icon exists
     On Error GoTo mnuAddControl_click_Error
@@ -14418,13 +14385,13 @@ Private Sub mnuAddControl_click()
 
     iconFilename = App.Path & "\my collection" & "\control-panel(control).png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Control panel", "control", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Control panel", "control", vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14442,7 +14409,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddPrograms_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     On Error GoTo mnuAddPrograms_click_Error
        If debugFlg = 1 Then debugLog "%" & "mnuAddPrograms_click"
@@ -14451,13 +14418,13 @@ Private Sub mnuAddPrograms_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\programs and features.ico"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Programs and Features", "appwiz.cpl", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Programs and Features", "appwiz.cpl", vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14476,7 +14443,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddDiscMgmt_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     On Error GoTo mnuAddDiscMgmt_click_Error
     If debugFlg = 1 Then debugLog "%" & "mnuAddDiscMgmt_click"
@@ -14484,13 +14451,13 @@ Private Sub mnuAddDiscMgmt_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\discMgmt.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Disc Management", "diskmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Disc Management", "diskmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14508,7 +14475,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddDevMgmt_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     On Error GoTo mnuAddDevMgmt_click_Error
     If debugFlg = 1 Then debugLog "%" & "mnuAddDevMgmt_click"
@@ -14516,13 +14483,13 @@ Private Sub mnuAddDevMgmt_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\Administrative Tools(compmgmt.msc).png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Device Management", "devmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Device Management", "devmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14541,7 +14508,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddEventViewer_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     On Error GoTo mnuAddEventViewer_click_Error
     If debugFlg = 1 Then debugLog "%" & "mnuAddEventViewer_click"
@@ -14549,13 +14516,13 @@ Private Sub mnuAddEventViewer_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\event-viewer(CEventVwr.msc).png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Event Viewer", "eventvwr.msc", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Event Viewer", "eventvwr.msc", vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14574,7 +14541,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddPerfMon_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     On Error GoTo mnuAddPerfMon_click_Error
     If debugFlg = 1 Then debugLog "%" & "mnuAddPerfMon_click"
@@ -14582,13 +14549,13 @@ Private Sub mnuAddPerfMon_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\perfmon.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Performance Monitor", "perfmon.msc", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Performance Monitor", "perfmon.msc", vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14605,7 +14572,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddServices_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     On Error GoTo mnuAddServices_click_Error
     If debugFlg = 1 Then debugLog "%" & "mnuAddServices_click"
@@ -14613,13 +14580,13 @@ Private Sub mnuAddServices_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\Administrative Tools(compmgmt.msc).png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Services Management", "services.msc", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Services Management", "services.msc", vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14636,7 +14603,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddTaskSched_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     On Error GoTo mnuAddTaskSched_click_Error
     If debugFlg = 1 Then debugLog "%" & "mnuAddTaskSched_click"
@@ -14644,13 +14611,13 @@ Private Sub mnuAddTaskSched_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\glass-clipboard.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Task Scheduler", "taskschd.msc", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Task Scheduler", "taskschd.msc", vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14667,7 +14634,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddDock_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     ' check the icon exists
     On Error GoTo mnuAddDock_click_Error
@@ -14675,13 +14642,13 @@ Private Sub mnuAddDock_click()
 
     iconFilename = App.Path & "\my collection" & "\dock settings.ico"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Dock Settings", "[Settings]", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Dock Settings", "[Settings]", vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14700,7 +14667,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddAdministrative_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     ' check the icon exists
     On Error GoTo mnuAddAdministrative_click_Error
@@ -14708,13 +14675,13 @@ Private Sub mnuAddAdministrative_click()
 
     iconFilename = App.Path & "\my collection" & "\Administrative Tools(compmgmt.msc).png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Administration Tools", "compmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Administration Tools", "compmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14732,7 +14699,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddRecycle_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     On Error GoTo mnuAddRecycle_click_Error
     If debugFlg = 1 Then debugLog "%" & "mnuAddRecycle_click"
@@ -14740,13 +14707,13 @@ Private Sub mnuAddRecycle_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\recyclebin-full.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Recycle Bin", "::{645ff040-5081-101b-9f08-00aa002f954e}", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Recycle Bin", "::{645ff040-5081-101b-9f08-00aa002f954e}", vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14769,7 +14736,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddClearCache_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     On Error GoTo mnuAddClearCache_click_Error
     If debugFlg = 1 Then debugLog "%" & "mnuAddClearCache_click"
@@ -14777,13 +14744,13 @@ Private Sub mnuAddClearCache_click()
     ' check the icon exists
     iconFilename = App.Path & "\my collection" & "\recyclebin-full.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Clear Cache", Environ$("windir") & "\system32\rundll32.exe", "advapi32.dll , ProcessIdleTasks", "%windir%", vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Clear Cache", Environ$("windir") & "\system32\rundll32.exe", "advapi32.dll , ProcessIdleTasks", "%windir%", vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14804,7 +14771,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddQuit_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
 
     ' check the icon exists
@@ -14813,13 +14780,13 @@ Private Sub mnuAddQuit_click()
    
     iconFilename = App.Path & "\my collection" & "\quit.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Quit", "[Quit]", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Quit", "[Quit]", vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -14836,7 +14803,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddProgramFiles_click()
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
 
     ' check the icon exists
@@ -14845,13 +14812,13 @@ Private Sub mnuAddProgramFiles_click()
    
     iconFilename = App.Path & "\my collection" & "\hard-drive-indicator-D.png"
     If fFExists(iconFilename) Then
-        iconImage = iconFilename
+        IconImage = iconFilename
     Else
-        iconImage = "\Icons\help.png"
+        IconImage = "\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-    Call menuAddSomething(iconImage, "Program Files", "::{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}", vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSomething(IconImage, "Program Files", "::{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}", vbNullString, vbNullString, vbNullString, vbNullString)
 
    On Error GoTo 0
    Exit Sub
@@ -17454,7 +17421,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
     
     Dim suffix As String: suffix = vbNullString
     Dim FileName As String: FileName = vbNullString
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconTitle As String: iconTitle = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     Dim iconCommand As String: iconCommand = vbNullString
@@ -17480,7 +17447,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
 '        Exit Sub
 '    End If
     
-    iconImage = vbNullString
+    IconImage = vbNullString
     iconTitle = vbNullString
     iconArguments = vbNullString
     iconWorkingDirectory = vbNullString
@@ -17488,9 +17455,9 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
     ' if there is more than one file dropped reject the drop
     ' if the dock is not the bottom layer then pop up a message box
     ' ie. don't pop it up if layered underneath everything as no-one will see the msgbox
-    If Data.Files.count > 1 Then
+    If Data.Files.Count > 1 Then
        ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.count, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.Count, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.count
         Exit Sub
     End If
@@ -17509,7 +17476,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
         If fDirExists(iconTitle) Then
             iconFilename = App.Path & "\my collection\steampunk icons MKVI" & "\document-dir.png"
             If fFExists(iconFilename) Then
-                iconImage = iconFilename
+                IconImage = iconFilename
             End If
         Else ' otherwise it is a file
     
@@ -17542,9 +17509,9 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                       End If
                       
                       If fFExists(iconFilename) Then
-                          iconImage = iconFilename
+                          IconImage = iconFilename
                       Else
-                          iconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
+                          IconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
                       End If
                       
                     End If
@@ -17556,7 +17523,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                          ' check the icon exists
                         iconFilename = App.Path & "\my collection\steampunk icons MKVI" & "\document-msc.png"
                         If fFExists(iconFilename) Then
-                            iconImage = iconFilename
+                            IconImage = iconFilename
                         End If
                     End If
                     
@@ -17567,7 +17534,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                          ' check the icon exists
                         iconFilename = App.Path & "\my collection\steampunk icons MKVI" & "\document-bat.png"
                         If fFExists(iconFilename) Then
-                            iconImage = iconFilename
+                            IconImage = iconFilename
                         End If
                     End If
                     
@@ -17578,7 +17545,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                          ' check the icon exists
                         iconFilename = App.Path & "\my collection\steampunk icons MKVI" & "\document-cpl.png"
                         If fFExists(iconFilename) Then
-                            iconImage = iconFilename
+                            IconImage = iconFilename
                         End If
                     End If
                     
@@ -17624,9 +17591,9 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                         iconFilename = identifyAppIcons(iconCommand)
                          
                         If fFExists(iconFilename) Then
-                          iconImage = iconFilename
+                          IconImage = iconFilename
                         Else
-                          iconImage = App.Path & "\my collection\steampunk icons MKVI" & "\document-lnk.png"
+                          IconImage = App.Path & "\my collection\steampunk icons MKVI" & "\document-lnk.png"
                         End If
                     End If
             
@@ -17636,8 +17603,8 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                   
                   Effect = vbDropEffectCopy
                   
-                  iconImage = iconCommand
-                  If Not fFExists(iconImage) Then
+                  IconImage = iconCommand
+                  If Not fFExists(IconImage) Then
                       Exit Sub
                   End If
               
@@ -17659,13 +17626,13 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                 Effect = vbDropEffectCopy
                                   
                 suffix = LCase$(ExtractSuffix(Data.Files(1)))
-                iconImage = App.Path & "\my collection\steampunk icons MKVI\document-" & suffix & ".png"
+                IconImage = App.Path & "\my collection\steampunk icons MKVI\document-" & suffix & ".png"
                 iconCommand = Data.Files(1)
-                If Not fFExists(iconImage) Then
-                    iconImage = App.Path & "\my collection\steampunk icons MKVI" & "\document-zip.png"
+                If Not fFExists(IconImage) Then
+                    IconImage = App.Path & "\my collection\steampunk icons MKVI" & "\document-zip.png"
                 End If
                 
-                If Not fFExists(iconImage) Then
+                If Not fFExists(IconImage) Then
                     Exit Sub
                 End If
             
@@ -17679,10 +17646,10 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                   Effect = vbDropEffectCopy
                   
                   suffix = LCase$(ExtractSuffix(Data.Files(1)))
-                  iconImage = App.Path & "\my collection\steampunk icons MKVI\document-" & suffix & ".png"
+                  IconImage = App.Path & "\my collection\steampunk icons MKVI\document-" & suffix & ".png"
                   iconCommand = Data.Files(1)
-                  If Not fFExists(iconImage) Then
-                      iconImage = App.Path & "\nixietubelargeQ.png"
+                  If Not fFExists(IconImage) Then
+                      IconImage = App.Path & "\nixietubelargeQ.png"
                   End If
                       
               End If
@@ -17690,12 +17657,12 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
         End If
         
         ' if no specific image found
-        If iconImage = vbNullString Then
-            iconImage = App.Path & "\nixietubelargeQ.png"
+        If IconImage = vbNullString Then
+            IconImage = App.Path & "\nixietubelargeQ.png"
         End If
         
-        If fFExists(iconImage) Then ' last check that the default ? image has not been deleted.
-            Call menuAddSomething(iconImage, iconTitle, iconCommand, iconArguments, iconWorkingDirectory, vbNullString, vbNullString)
+        If fFExists(IconImage) Then ' last check that the default ? image has not been deleted.
+            Call menuAddSomething(IconImage, iconTitle, iconCommand, iconArguments, iconWorkingDirectory, vbNullString, vbNullString)
         Else
             ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
              'MessageBox Me.hwnd, iconImage & " missing default image, " & App.Path & "\nixietubelargeQ.png" & " drop unsuccessful. ", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
