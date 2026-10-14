@@ -25,7 +25,7 @@ End Type
   
 Public debugFlg As Integer
 Public fileIconListPosition As Integer
-Public rdIconNumber As Integer
+Public selectedIconIndex As Integer
 
 Public gblIcoSizePreset As Integer
 Public thumbArray() As Integer
@@ -1417,11 +1417,11 @@ Public Sub readInterimAndWriteConfig()
 '
 '                For useloop = 0 To rdIconUpperBound
 '
-'                    readIconParams useloop, False
+'                    readIconParamsFromDb useloop, False
 '
 '                    ' write the steamydock config file
 '
-'                    Call writeIconSettingsIni(useloop, False)
+'                    Call writeIconSettingsDb(useloop, False)
 '
 '                    writeRegistryOnce (useloop)
 '                Next useloop
@@ -1439,8 +1439,8 @@ Public Sub readInterimAndWriteConfig()
 ''                chkReadConfig.Value = 0
 '
 '                ' write the rocketdock settings.ini
-'                'writeSettingsIni (rdIconNumber) ' the settings.ini only exists when RD is set to use it
-'                Call writeIconSettingsIni("Software\RocketDock" & "\Icons", rdIconNumber, interimSettingsFile)
+'                'writeSettingsIni (selectedIconIndex) ' the settings.ini only exists when RD is set to use it
+'                Call writeIconSettingsDb("Software\RocketDock" & "\Icons", selectedIconIndex, interimSettingsFile)
 '
 '                ' copy the duplicate settings file to the original
 '                FileCopy interimSettingsFile, origSettingsFile
@@ -1453,7 +1453,7 @@ Public Sub readInterimAndWriteConfig()
 '                For useloop = 0 To rdIconUpperBound
 '
 '                     'readSettingsIni (useloop)
-'                    readIconParams "Software\RocketDock\Icons", useloop, interimSettingsFile
+'                    readIconParamsFromDb "Software\RocketDock\Icons", useloop, interimSettingsFile
 '
 '                     ' write the rocketdock registry
 '                    writeRegistryOnce (useloop)

@@ -22,6 +22,7 @@ Begin VB.Form rDIconConfigForm
    HasDC           =   0   'False
    Icon            =   "rdIconConfig.frx":0000
    LinkTopic       =   "Form1"
+   LockControls    =   -1  'True
    MaxButton       =   0   'False
    MinButton       =   0   'False
    ScaleHeight     =   10440
@@ -2595,7 +2596,7 @@ Private Sub Form_Initialize()
     moreConfigVisible = False
     iconChanged = False
     dotCount = 0 ' a variable used on the 'working...' button
-    rdIconNumber = 0
+    selectedIconIndex = 0
     rdIconUpperBound = 0  ' the final icon in the registry/settings
     rdIconLowerBound = 0
     thumbnailDragTimerCounter = 0
@@ -2654,17 +2655,21 @@ Private Sub Form_Load()
     Dim answer As VbMsgBoxResult: answer = vbNo
     ReDim thumbArray(12) As Integer
     
+    Dim sFilename As String
+    
     On Error GoTo Form_Load_Error
     
     ' dictionary to contain the icons (will eventually replace the above image dictionaries)
-    Set sDockIcons = New Dictionary
-    sDockIcons.CompareMode = 1 'case-insenitive Key-Comparisons
+    Set sDockIcons = New Collection
+    'sDockIcons.CompareMode = 1 'case-insenitive Key-Comparisons
     
     startupFlg = True
     
     If debugFlg = 1 Then debugLog "%" & "Form_Load"
     
     rDIconConfigForm.Hide
+    
+    'MsgBox "starting"
         
     ' set the application to be DPI aware using the 'forbidden' API.
     If IsProcessDPIAware() = False Then Call setDPIAware
@@ -2698,9 +2703,12 @@ Private Sub Form_Load()
           
     'if the process already exists then kill it
     'Call killPreviousInstance ' .13 DAEB 27/02/2021 rdIConConfigFrm moved to a subroutine for clarity
-    
+        
     ' check the main dock settings file exists
     Call locateDockSettingsFiles
+    
+    ' Creates an incrementally named backup of the settings.db
+    Call backupDatabase
     
     ' call the function to connect to or create the database
     Call connectSQLDatabase
@@ -2720,8 +2728,8 @@ Private Sub Form_Load()
     ' set the default path to the icons root
     Call setInitialPath ' .13 DAEB 27/02/2021 rdIConConfigFrm moved to a subroutine for clarity
     
-    ' copy the dock settings file to the interim version
-    Call copyDockSettingsFile
+'    ' copy the dock settings file to the interim version
+'    Call copyDockSettingsFile
     
     ' open the icon data file
     'Call openIconDataFile
@@ -2749,9 +2757,13 @@ Private Sub Form_Load()
     
     ' sets other characteristics of the form and menus
     Call adjustMainControls
+    
+    'MsgBox "createThumbnailLayout 3 secs"
             
     ' dynamically create thumbnail picboxes and sort the captions
     Call createThumbnailLayout
+    
+    'MsgBox "createDockMapBoxes 1 sec"
     
     gblProgramStatus = "runtime" ' don't move it
     
@@ -2777,8 +2789,10 @@ Private Sub Form_Load()
     ' open the app settings.ini and read the default folder for the tool to display
     Call readTreeviewDefaultFolder
     
+    'MsgBox "displayIconElement 5 secs"
+    
     ' display the first icon in the preview window
-    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False, False)
+    Call displayIconElement(selectedIconIndex, picPreview, True, gblIcoSizePreset, True, False, False)
          
     ' set the theme colour on startup
     Call setThemeSkin(Me) ' .05 17/11/2020 rDIconConfigForm.frm DAEB Added the missing code to read/write the current theme to the tool's own settings file
@@ -2786,28 +2800,29 @@ Private Sub Form_Load()
     ' select the thumbnail view rather than the file list view and populate it
     fileIconListPosition = 0
     
+    'MsgBox "refreshThumbnailViewPanel 4 secs"
+    
     ' refrest the thumbnail view panel (top right)
     Call refreshThumbnailViewPanel
              
     ' show the main form as soon as possible, once most items have been populated leading to perceived faster load times
     gblDoNotResize = True ' essential
     
+    'MsgBox "display dock 4 secs"
+    
     ' now display the dock icon map after the main form has been displayed
     Call displayDockMap
     
     ' set the status of the control buttons at startup
     Call setControlButtonStatus
-    
-    ' Creates an incrementally named backup of the settings.db
-    Call backupDatabase
             
     ' check the registry for Rocketdock usage (mostly obsolete now)
     Call chkTheRegistry
     
-    If fFExists(interimSettingsFile) Then '
-        'get the dockSettingsFile.ini for this icon alone
-        Call readIconParams(startRecordNumber)
-    End If
+'    If fFExists(interimSettingsFile) Then '
+'        'get the dockSettingsFile.ini for this icon alone
+'        Call readIconParamsFromDb(startRecordNumber)
+'    End If
     
     ' .46 DAEB 16/04/2022 rdIconConfig.frm Made the word Blank visible or not during startup
     If getFileNameFromPath(sFilename) = "blank.png" Then
@@ -2830,11 +2845,19 @@ Private Sub Form_Load()
     
     ' start the timers
     Call startTheTimers
+    
+    'MsgBox "rDIconConfigForm.Show 5 secs"
                 
-    ' now show the form that is hidden until it is composited
+    ' now show the form that is hidden until it is composited. zis is vere ze magik hapenz
     rDIconConfigForm.Show
         
-    ' note: the final act in startup is the form_resize_event that is triggered by the subclassed WM_EXITSIZEMOVE when the form is finally revealed
+    ' note: the final act in startup is the form_resize_event that is triggered by the subclassed WM_EXITSIZEMOVE when the form is finally revealed above in rDIconConfigForm.Show
+    
+    ' The form resize event also does the following taks that completes the drawing of the form - controls, icons &c:
+    ' o repopulates the thumbnails top right, resized, clearing the cache first
+    ' o refreshes the preview bottom left image with anew size image
+    ' o resizes all the icons in the map
+    
     startupFlg = False ' now negate the startup flag
     
    On Error GoTo 0
@@ -2946,7 +2969,8 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub Form_Resize_Event()
-
+    Static mapCreated As Boolean
+    
     Dim currentFontSize As Single: currentFontSize = 0
     
     On Error GoTo Form_Resize_Event_Error
@@ -2979,11 +3003,18 @@ Private Sub Form_Resize_Event()
         Call makeFramesVisible
 
         ' refresh the preview bottom left with new size image
-        Call picRdMap_MouseDown_event(rdIconNumber)
+        Call picRdMap_MouseDown_event(selectedIconIndex)
 
         ' resize all the icons in the map
-        Call recreateTheMap(rdIconUpperBound)
-            
+        If startupFlg = True And mapCreated = False Then
+            mapCreated = recreateTheMap(rdIconUpperBound)
+        End If
+        
+        If startupFlg = False Then
+            recreateTheMap (rdIconUpperBound)
+            mapCreated = False
+        End If
+        
         fraExtraOptions.Refresh
         
     Else
@@ -3068,6 +3099,7 @@ Private Sub makeFramesInvisible()
 
     picFrameThumbs.Visible = False
     picRdThumbFrame.Visible = False
+    fraProperties.Visible = False
 
    On Error GoTo 0
    Exit Sub
@@ -3090,6 +3122,7 @@ Private Sub makeFramesVisible()
 
     picFrameThumbs.Visible = True
     picRdThumbFrame.Visible = True
+    fraProperties.Visible = True
 
    On Error GoTo 0
    Exit Sub
@@ -3487,7 +3520,7 @@ Private Sub displayTheChosenIcon(ByVal retFileName As String, Optional ByVal ret
         Call displayResizedImage(FileName, picTemporaryStore, 64)
                                 
         ' .62 DAEB 04/05/2022 rDIConConfig.frm change the icon image in the map to that chosen
-        Call displayResizedImage(FileName, picRdMap(rdIconNumber), 32)
+        Call displayResizedImage(FileName, picRdMap(selectedIconIndex), 32)
                        
         picPreview.ToolTipText = FileName
         picPreview.Tag = FileName
@@ -3774,6 +3807,8 @@ Private Sub selectApplication(ByVal inputFolderName As String, ByRef retFileName
    Dim iconPath As String: iconPath = vbNullString
     Dim dllPath As String: dllPath = vbNullString
     Dim dialogInitDir As String: dialogInitDir = vbNullString
+    
+    Dim sDockletFile  As String
 
     Const x_MaxBuffer = 256
     
@@ -3785,6 +3820,8 @@ Private Sub selectApplication(ByVal inputFolderName As String, ByRef retFileName
 
     If debugFlg = 1 Then debugLog "%" & "selectApplication_Error"
     
+    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).DockletFile
+        
     'On Error GoTo l_err1
     'savLblTarget = inputFoldername
     
@@ -4113,11 +4150,15 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtCompMgmt_click()
+
+   Dim sCommand As String
+   
    On Error GoTo mnuTrgtCompMgmt_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtCompMgmt_click"
 
     sCommand = "compmgmt.msc"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -4137,10 +4178,14 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtDevMgmt_Click()
+    
+    Dim sCommand As String
+    
     On Error GoTo mnuTrgtDevMgmt_Click_Error
 
     sCommand = "devmgmt.msc"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
     On Error GoTo 0
     Exit Sub
@@ -4163,11 +4208,15 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtDiscMgmt_click()
-   On Error GoTo mnuTrgtDiscMgmt_click_Error
-   If debugFlg = 1 Then debugLog "%mnuTrgtDiscMgmt_click"
+    
+    Dim sCommand As String
+   
+    On Error GoTo mnuTrgtDiscMgmt_click_Error
+    If debugFlg = 1 Then debugLog "%mnuTrgtDiscMgmt_click"
 
     sCommand = "diskmgmt.msc"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -4185,10 +4234,14 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtEventViewer_Click()
+    
+    Dim sCommand As String
+   
     On Error GoTo mnuTrgtEventViewer_Click_Error
 
     sCommand = "eventvwr.msc"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
     On Error GoTo 0
     Exit Sub
@@ -4211,11 +4264,14 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtPerfMon_Click()
+    
+    Dim sCommand As String
+   
     On Error GoTo mnuTrgtPerfMon_Click_Error
-
 
     sCommand = "perfmon.msc"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
     On Error GoTo 0
     Exit Sub
@@ -4238,10 +4294,14 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtServices_Click()
+    
+    Dim sCommand As String
+   
     On Error GoTo mnuTrgtServices_Click_Error
 
     sCommand = "services.msc"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
 
     On Error GoTo 0
@@ -4265,12 +4325,14 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtTaskSched_Click()
+    
+    Dim sCommand As String
+   
     On Error GoTo mnuTrgtTaskSched_Click_Error
-
-
 
     sCommand = "taskschd.msc"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
     On Error GoTo 0
     Exit Sub
@@ -4296,7 +4358,7 @@ Private Sub optRunSecondAppAfterward_Click()
    On Error GoTo optRunSecondAppAfterward_Click_Error
 
     btnSet.Enabled = True ' tell the program that something has changed
-        btnCancel.Visible = True
+    btnCancel.Visible = True
     btnClose.Visible = False
 
    On Error GoTo 0
@@ -4318,7 +4380,7 @@ Private Sub optRunSecondAppBeforehand_Click()
    On Error GoTo optRunSecondAppBeforehand_Click_Error
 
     btnSet.Enabled = True ' tell the program that something has changed
-        btnCancel.Visible = True
+    btnCancel.Visible = True
     btnClose.Visible = False
 
    On Error GoTo 0
@@ -4340,7 +4402,7 @@ End Sub
 Private Sub picRdMap_OLEDragOver(ByRef Index As Integer, ByRef Data As DataObject, ByRef Effect As Long, ByRef Button As Integer, ByRef Shift As Integer, ByRef X As Single, ByRef Y As Single, ByRef State As Integer)
    On Error GoTo picRdMap_OLEDragOver_Error
 
-    rdIconNumber = Index
+    selectedIconIndex = Index
 
    On Error GoTo 0
    Exit Sub
@@ -4397,8 +4459,8 @@ Private Sub rdMapDragTimer_Timer()
 
     If rdMapDragTimerCounter >= 25 Then
         If rdMapIconMouseDown = True Then
-            picRdMap(rdIconNumber).Drag vbBeginDrag
-            srcRdIconNumber = rdIconNumber ' record the source icon number for reordering later
+            picRdMap(selectedIconIndex).Drag vbBeginDrag
+            srcRdIconNumber = selectedIconIndex ' record the source icon number for reordering later
         End If
         rdMapDragTimer.Enabled = False
         rdMapDragTimerCounter = 0
@@ -4499,7 +4561,7 @@ Private Sub settingsTimer_Timer()
                     ' we don't bother to read the current record source here as we have already done so above.
     
                     ' read the rdsettings.ini one item up in the list
-                    Call readIconParams(useloop)
+                    Call readIconParamsFromDb(useloop)
     
                     ' .83 DAEB 03/06/2022 rDIConConfig.frm Display the icon we just moved by dragging, one by one rather than the whole map
                     'Call displayIconElement(useloop, picRdMap(useloop), True, 32, True, False)
@@ -5306,7 +5368,7 @@ Private Sub determineStartRecord()
 
     On Error GoTo determineStartRecord_Error
    
-    rdIconNumber = rdIconLowerBound ' normally starts at zero
+    selectedIconIndex = rdIconLowerBound ' normally starts at zero
     
     Randomize
     
@@ -5316,21 +5378,21 @@ Private Sub determineStartRecord()
             testingNo = Val(Command)
             If testingNo > 0 And testingNo <= rdIconUpperBound Then
                 'MsgBox testingNo
-                rdIconNumber = testingNo
+                selectedIconIndex = testingNo
             Else
-                rdIconNumber = rdIconUpperBound / 2
+                selectedIconIndex = rdIconUpperBound / 2
             End If
         End If
     Else
-        rdIconNumber = rdIconUpperBound / 2
+        selectedIconIndex = rdIconUpperBound / 2
     End If
     
-    'MsgBox "rdIconNumber = " & rdIconNumber
+    'MsgBox "selectedIconIndex = " & selectedIconIndex
     ' set the very large icon record number displayed on the main form
     Call showIconLargeNumber
     
     ' .47 DAEB 16/04/2022 rdIconConfig.frm Added StartRecordNumber
-    startRecordNumber = rdIconNumber
+    startRecordNumber = selectedIconIndex
    
    On Error GoTo 0
    Exit Sub
@@ -5490,7 +5552,7 @@ Private Sub btnAdd_Click()
             ' .65 DAEB 04/05/2022 rDIConConfig.frm Use the underlying control index rather than that stored in the array
             itemno = filesIconList.ListIndex
             
-            ans = msgBoxA(" Add this icon - " & filesIconList.List(itemno) & " - at position " & rdIconNumber + 1 & " in the dock? ", vbQuestion + vbYesNo, "Confirm dragging and dropping to the dock", True, "btnAdd_Click")
+            ans = msgBoxA(" Add this icon - " & filesIconList.List(itemno) & " - at position " & selectedIconIndex + 1 & " in the dock? ", vbQuestion + vbYesNo, "Confirm dragging and dropping to the dock", True, "btnAdd_Click")
             If ans = 6 Then
                 Call changeMapImage
             End If
@@ -5845,7 +5907,7 @@ Private Sub determineFirstRun()
         
         'write the rdsettings file
         'writeSettingsIni (rdIconUpperBound)
-'        Call writeIconSettingsIni("Software\SteamyDock\IconSettings" & "\Icons", rdIconUpperBound, interimSettingsFile)
+'        Call writeIconSettingsDb("Software\SteamyDock\IconSettings" & "\Icons", rdIconUpperBound, interimSettingsFile)
 '
 '        'amend the count in both the rdSettings.ini
 '        PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, interimSettingsFile
@@ -6546,7 +6608,7 @@ Private Sub btnKillIcon_Click()
         End If
         
         ' now display the current icon textual and preview details, the previous icon displayed now havin been deleted
-        Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False, False)
+        Call displayIconElement(selectedIconIndex, picPreview, True, gblIcoSizePreset, True, False, False)
    
    On Error GoTo 0
    Exit Sub
@@ -6565,11 +6627,31 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub btnSet_Click()
-   
-   On Error GoTo btnSet_Click_Error
-   If debugFlg = 1 Then debugLog "%" & "btnSet_Click"
-   
     
+    Dim sFilename As String
+    Dim sFileName2 As String
+    Dim sTitle  As String
+    Dim sCommand As String
+    Dim sArguments  As String
+    Dim sWorkingDirectory  As String
+    Dim sShowCmd  As String
+    Dim sOpenRunning  As String
+    Dim sRunElevated  As String
+    Dim sIsSeparator  As String
+    Dim sUseContext  As String
+    Dim sDockletFile  As String
+    Dim sUseDialog  As String
+    Dim sUseDialogAfter  As String
+    Dim sQuickLaunch  As String
+    Dim sAutoHideDock  As String
+    Dim sSecondApp  As String
+    Dim sRunSecondAppBeforehand  As String
+    Dim sAppToTerminate As String
+    Dim sDisabled  As String
+    
+    On Error GoTo btnSet_Click_Error
+    If debugFlg = 1 Then debugLog "%" & "btnSet_Click"
+   
     sFilename = txtCurrentIcon.Text
     
     sTitle = txtLabelName.Text
@@ -6602,9 +6684,31 @@ Private Sub btnSet_Click()
     ' save the current fields to the settings file or registry
     If fFExists(interimSettingsFile) Then '
         ' write the rocketdock settings.ini
-        'writeSettingsIni (rdIconNumber) ' the settings.ini only exists when RD is set to use it
+
+        sDockIcons.Item(selectedIconIndex).FileName = sFilename
+        sDockIcons.Item(selectedIconIndex).FileName2 = sFileName2
+        sDockIcons.Item(selectedIconIndex).Title = sTitle
+        sDockIcons.Item(selectedIconIndex).Command = sCommand
+        sDockIcons.Item(selectedIconIndex).Arguments = sArguments
+        sDockIcons.Item(selectedIconIndex).WorkingDirectory = sWorkingDirectory
+        sDockIcons.Item(selectedIconIndex).ShowCmd = (sShowCmd)
+        sDockIcons.Item(selectedIconIndex).OpenRunning = (sOpenRunning)
+        sDockIcons.Item(selectedIconIndex).IsSeparator = (sIsSeparator)
+        sDockIcons.Item(selectedIconIndex).UseContext = (sUseContext)
+        sDockIcons.Item(selectedIconIndex).DockletFile = (sDockletFile)
+        sDockIcons.Item(selectedIconIndex).UseDialog = (sUseDialog)
+        sDockIcons.Item(selectedIconIndex).UseDialogAfter = (sUseDialogAfter)
+        sDockIcons.Item(selectedIconIndex).QuickLaunch = (sQuickLaunch)
+        sDockIcons.Item(selectedIconIndex).AutoHideDock = (sAutoHideDock)
+        sDockIcons.Item(selectedIconIndex).SecondApp = sSecondApp
+        sDockIcons.Item(selectedIconIndex).RunElevated = (sRunElevated)
+        sDockIcons.Item(selectedIconIndex).RunSecondAppBeforehand = sRunSecondAppBeforehand
+        sDockIcons.Item(selectedIconIndex).AppToTerminate = sAppToTerminate
+        sDockIcons.Item(selectedIconIndex).Disabled = (sDisabled)
+
+
         PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
-        Call writeIconSettingsIni(rdIconNumber, False)
+        Call writeIconSettingsDb(selectedIconIndex, False)
     End If
     
     ' tell the user that all has been saved
@@ -6619,7 +6723,7 @@ Private Sub btnSet_Click()
         'only if the rdMAp has already been displayed already do we carry out the image refresh
         If Not picRdMap(2).ToolTipText = vbNullString Then ' check that the array has been populated already
             ' we just reload the sole picbox that has changed
-            Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False)
+            Call displayIconElement(selectedIconIndex, picRdMap(selectedIconIndex), True, 32, True, False, False)
         End If
         iconChanged = False
     End If
@@ -7107,6 +7211,7 @@ End Sub
 Private Sub mnuAddSeparator_click()
     Dim IconImage As String: IconImage = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
+    Dim sIsSeparator  As String
 
     On Error GoTo mnuAddSeparator_click_Error
     If debugFlg = 1 Then debugLog "mnuAddSeparator_click"
@@ -7284,7 +7389,6 @@ Private Sub mnuAddMyMusic_Click()
     Dim iconFilename As String: iconFilename = vbNullString
     Dim userprof As String: userprof = vbNullString
 
-    
     ' check the icon exists
     On Error GoTo mnuAddMyMusic_Click_Error
 
@@ -7331,7 +7435,6 @@ Private Sub mnuAddMyPictures_Click()
     Dim iconFilename As String: iconFilename = vbNullString
     Dim userprof As String: userprof = vbNullString
     
-    
     ' check the icon exists
     On Error GoTo mnuAddMyPictures_Click_Error
 
@@ -7376,8 +7479,6 @@ Private Sub mnuAddMyVideos_Click()
     Dim iconFilename As String: iconFilename = vbNullString
     Dim userprof As String: userprof = vbNullString
     
-
-        
     ' check the icon exists
     On Error GoTo mnuAddMyVideos_Click_Error
 
@@ -7461,11 +7562,14 @@ Private Sub mnuAddDocklet_click() ' disable this if RD is not the defaultdock
     Dim retFileName As String: retFileName = vbNullString
     Dim retfileTitle As String: retfileTitle = vbNullString
 
+    Dim sDockletFile  As String
 
     Const x_MaxBuffer = 256
     
     On Error GoTo mnuAddDocklet_click_Error
     If debugFlg = 1 Then debugLog "%mnuAddDocklet_click"
+    
+    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).DockletFile
     
     ' set the default folder to the docklet folder under rocketdock
     If defaultDock = 0 Then ' .14 DAEB 27/02/2021 rdIConConfigForm.frm Added default dock check to ensure it works without RD installed
@@ -7744,23 +7848,65 @@ End Sub
 Private Sub btnCancel_Click()
     Dim FileName As String: FileName = vbNullString
     
+    Dim sFilename As String
+    Dim sFileName2 As String
+    Dim sTitle  As String
+    Dim sCommand  As String
+    Dim sArguments  As String
+    Dim sWorkingDirectory  As String
+    Dim sShowCmd  As String
+    Dim sOpenRunning  As String
+    Dim sRunElevated  As String
+    Dim sIsSeparator  As String
+    Dim sUseContext  As String
+    Dim sDockletFile  As String
+    Dim sUseDialog  As String
+    Dim sUseDialogAfter  As String
+    Dim sQuickLaunch  As String
+    Dim sAutoHideDock  As String
+    Dim sSecondApp  As String
+    Dim sRunSecondAppBeforehand  As String
+    Dim sAppToTerminate As String
+    Dim sDisabled  As String
+    
     On Error GoTo btnCancel_Click_Error
     If debugFlg = 1 Then debugLog "%" & "btnCancel_Click"
+    
+    sFilename = sDockIcons.Item(CStr(selectedIconIndex)).FileName
+    sFileName2 = sDockIcons.Item(CStr(selectedIconIndex)).FileName2
+    sTitle = sDockIcons.Item(CStr(selectedIconIndex)).Title
+    sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command
+    sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments
+    sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory
+    sShowCmd = sDockIcons.Item(CStr(selectedIconIndex)).ShowCmd
+    sOpenRunning = sDockIcons.Item(CStr(selectedIconIndex)).OpenRunning
+    sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex)).IsSeparator
+    sUseContext = sDockIcons.Item(CStr(selectedIconIndex)).UseContext
+    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).DockletFile
+    sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
+    sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
+    sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex)).QuickLaunch
+    sAutoHideDock = sDockIcons.Item(CStr(selectedIconIndex)).AutoHideDock
+    sSecondApp = sDockIcons.Item(CStr(selectedIconIndex)).SecondApp
+    sRunElevated = sDockIcons.Item(CStr(selectedIconIndex)).RunElevated
+    sRunSecondAppBeforehand = sDockIcons.Item(CStr(selectedIconIndex)).RunSecondAppBeforehand
+    sAppToTerminate = sDockIcons.Item(CStr(selectedIconIndex)).AppToTerminate
+    sDisabled = sDockIcons.Item(CStr(selectedIconIndex)).Disabled
     
     settingsTimer.Enabled = False
 
     If pvtMapImageChanged = True Then
         ' now change the icon image back again
         ' the target picture control and the icon size
-        Call displayResizedImage(previousIcon, picRdMap(rdIconNumber), 32)
+        Call displayResizedImage(previousIcon, picRdMap(selectedIconIndex), 32)
         pvtMapImageChanged = False
     End If
     
     If fFExists(interimSettingsFile) Then '
         'get the rocketdock settings.ini for this icon alone
-        Call readIconParams(rdIconNumber)
+        Call readIconParamsFromDb(selectedIconIndex)
     'Else
-        'readRegistryIconValues (rdIconNumber)
+        'readRegistryIconValues (selectedIconIndex)
     End If
     
     'reset all the current icon displayed characteristics
@@ -7838,7 +7984,7 @@ Private Sub btnAddFolder_Click()
             ' remove the ?
             
             If Left$(rDCustomIconFolder, 1) = "?" Then
-                folderTreeView.SelectedItem.Key = Mid$(rDCustomIconFolder, 2)
+                folderTreeView.SelectedItem.Key = mID$(rDCustomIconFolder, 2)
             Else
                 folderTreeView.SelectedItem.Key = rDCustomIconFolder
             End If
@@ -8004,9 +8150,9 @@ Private Sub rdMapPageDown_Press()
     If exitSubFlg = True Then Exit Sub
     
     'increment the icon number
-    rdIconNumber = rdIconNumber + 15
+    selectedIconIndex = selectedIconIndex + 15
     'check we haven't gone too far
-    If rdIconNumber > rdIconUpperBound Then rdIconNumber = rdIconUpperBound
+    If selectedIconIndex > rdIconUpperBound Then selectedIconIndex = rdIconUpperBound
     
     ' only move the map if the array has been populated,
     If Not picRdMap(2).ToolTipText = vbNullString Then
@@ -8017,9 +8163,9 @@ Private Sub rdMapPageDown_Press()
         
         ' moves the RdMap on one position (one click) if it is already set at the rightmost screen position
         If rdMapHScroll.Value < rdMapHScroll.Max - 15 Then
-            rdMapHScroll.Value = rdIconNumber
+            rdMapHScroll.Value = selectedIconIndex
         Else
-            If rdIconNumber < rdMapHScroll.Max Then 'ignore the following if we are already at the end
+            If selectedIconIndex < rdMapHScroll.Max Then 'ignore the following if we are already at the end
                 'scroll the map 15 places before the end
                 If rdMapHScroll.Max - 15 >= 0 Then ' the scrollbar doesn't like to go less than zero
                     rdMapHScroll.Value = rdMapHScroll.Max - 15
@@ -8028,7 +8174,7 @@ Private Sub rdMapPageDown_Press()
                 End If
             End If
             ' we are now at the end
-            rdIconNumber = rdMapHScroll.Max
+            selectedIconIndex = rdMapHScroll.Max
         End If
     End If
     
@@ -8071,13 +8217,13 @@ Private Sub preMapPageUpDown(ByRef exitSubFlg As Boolean)
         If pvtMapImageChanged = True Then
             ' now change the icon image
             ' the target picture control and the icon size
-            Call displayResizedImage(previousIcon, picRdMap(rdIconNumber), 32)
+            Call displayResizedImage(previousIcon, picRdMap(selectedIconIndex), 32)
             pvtMapImageChanged = False
         End If
     End If
     
     'remove and reset the highlighting on the Rocket dock map
-     picRdMap(rdIconNumber).BorderStyle = 0
+     picRdMap(selectedIconIndex).BorderStyle = 0
 
    On Error GoTo 0
    Exit Sub
@@ -8101,10 +8247,10 @@ Private Sub postMapPageUpDown()
    
     Call showIconLargeNumber
     
-    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False, False)
+    Call displayIconElement(selectedIconIndex, picPreview, True, gblIcoSizePreset, True, False, False)
     
     'set the highlighting on the Rocket dock map
-    picRdMap(rdIconNumber).BorderStyle = 1
+    picRdMap(selectedIconIndex).BorderStyle = 1
 
     previewFrameGotFocus = True
 
@@ -8133,8 +8279,8 @@ Private Sub showIconLargeNumber()
 
    On Error GoTo showIconLargeNumber_Error
 
-    lblRdIconNumber.Caption = CStr(rdIconNumber - 1)
-    lblRdIconNumber.ToolTipText = "This is SteamyDock icon number " & CStr(rdIconNumber - 1) & " "
+    lblRdIconNumber.Caption = CStr(selectedIconIndex - 1)
+    lblRdIconNumber.ToolTipText = "This is SteamyDock icon number " & CStr(selectedIconIndex - 1) & " "
 
    On Error GoTo 0
    Exit Sub
@@ -8163,13 +8309,13 @@ Private Sub rdMapPageUp_Press()
     If exitSubFlg = True Then Exit Sub
     
     'increment the icon number
-    rdIconNumber = rdIconNumber - 15
+    selectedIconIndex = selectedIconIndex - 15
     'check we haven't gone too far
-    If rdIconNumber < rdIconLowerBound Then rdIconNumber = rdIconLowerBound
+    If selectedIconIndex < rdIconLowerBound Then selectedIconIndex = rdIconLowerBound
     
     ' only move the map if the array has been populated,
     If Not picRdMap(2).ToolTipText = vbNullString Then
-        rdMapHScroll.Value = rdIconNumber
+        rdMapHScroll.Value = selectedIconIndex
     End If
     
     Call postMapPageUpDown
@@ -8523,7 +8669,7 @@ Private Sub btnHomeRdMap()
     'Call picRdMap_MouseDown(rdMapHScroll.Value, 1, 0, 0, 0) ' DEAN
     
     ' .69 DAEB 16/05/2022 rDIConConfig.frm Moved the core left click code to a separate routine to avoid the clicks-via-code from activating a start drag
-    Call picRdMap_MouseDown_event(rdMapHScroll.Value) ' , rdIconNumber)
+    Call picRdMap_MouseDown_event(rdMapHScroll.Value) ' , selectedIconIndex)
 
     ' we signify that all changes have been lost
     btnSet.Enabled = False ' this has to be done at the end
@@ -8568,16 +8714,16 @@ Private Sub btnEndRdMap()
         End If
     End If
     
-    picRdMap(rdIconNumber).BorderStyle = 0
+    picRdMap(selectedIconIndex).BorderStyle = 0
         
     rdMapHScroll.Value = rdMapHScroll.Max - 15
-    rdIconNumber = rdMapHScroll.Value
+    selectedIconIndex = rdMapHScroll.Value
     
         ' set the primary selection in the map
     'Call picRdMap_MouseDown(rdMapHScroll.Max, 1, 0, 0, 0) ' DEAN
     
     ' .69 DAEB 16/05/2022 rDIConConfig.frm Moved the core left click code to a separate routine to avoid the clicks-via-code from activating a start drag
-    Call picRdMap_MouseDown_event(rdMapHScroll.Max) ' , rdIconNumber)
+    Call picRdMap_MouseDown_event(rdMapHScroll.Max) ' , selectedIconIndex)
     
     'picRdMap(rdMapHScroll.Max).BorderStyle = 1
 
@@ -8615,20 +8761,20 @@ Private Sub btnPrev_Click()
     
     If exitSubFlg = True Then Exit Sub
     
-    oldiconNumber = rdIconNumber
+    oldiconNumber = selectedIconIndex
         
     'decrement the icon number
-    rdIconNumber = rdIconNumber - 1
-    If rdIconNumber < rdIconLowerBound Then
-        rdIconNumber = rdIconLowerBound    'check we haven't gone too far
+    selectedIconIndex = selectedIconIndex - 1
+    If selectedIconIndex < rdIconLowerBound Then
+        selectedIconIndex = rdIconLowerBound    'check we haven't gone too far
         Exit Sub
     End If
     
-    Call picRdMap_MouseDown_event(rdIconNumber) ' , oldiconNumber)
+    Call picRdMap_MouseDown_event(selectedIconIndex) ' , oldiconNumber)
     
     Call postButtonClick("btnPrev_Click")
     
-    picRdMap(rdIconNumber).SetFocus
+    picRdMap(selectedIconIndex).SetFocus
 
    On Error GoTo 0
    Exit Sub
@@ -8657,20 +8803,20 @@ Private Sub btnNext_Click()
     
     If exitSubFlg = True Then Exit Sub
         
-    oldiconNumber = rdIconNumber
+    oldiconNumber = selectedIconIndex
     
     'increment the icon number
-    rdIconNumber = rdIconNumber + 1
+    selectedIconIndex = selectedIconIndex + 1
     'check we haven't gone too far
-    If rdIconNumber > rdIconUpperBound Then
-        rdIconNumber = rdIconUpperBound
+    If selectedIconIndex > rdIconUpperBound Then
+        selectedIconIndex = rdIconUpperBound
     End If
     
-    Call picRdMap_MouseDown_event(rdIconNumber) ' , oldiconNumber)
+    Call picRdMap_MouseDown_event(selectedIconIndex) ' , oldiconNumber)
 
     Call postButtonClick("btnNext_Click")
     
-    picRdMap(rdIconNumber).SetFocus
+    picRdMap(selectedIconIndex).SetFocus
     
    On Error GoTo 0
    Exit Sub
@@ -8713,15 +8859,15 @@ Private Sub preButtonClick(ByVal exitSubFlg As Boolean)
         If pvtMapImageChanged = True Then
             ' now change the icon image back again
             ' the target picture control, ie. the map, and the icon size
-            Call displayResizedImage(previousIcon, picRdMap(rdIconNumber), 32)
+            Call displayResizedImage(previousIcon, picRdMap(selectedIconIndex), 32)
             pvtMapImageChanged = False
         End If
 
     End If
     
 '    ' remove the highlighting of the previously highlighted icon on the Rocket dock map, first the border and then the blue overlay
-'    picRdMap(rdIconNumber).BorderStyle = 0
-'    Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False, False)
+'    picRdMap(selectedIconIndex).BorderStyle = 0
+'    Call displayIconElement(selectedIconIndex, picRdMap(selectedIconIndex), True, 32, True, False, False, False)
 
     On Error GoTo 0
     Exit Sub
@@ -8757,27 +8903,27 @@ Private Sub postButtonClick(ByVal theButton As String)
     
         ' moves the RdMap on one position (one click to the left) if the map box selected is already set at the leftmost map position
         If theButton = "btnPrev_Click" Then
-            If rdIconNumber < rdMapHScroll.Value Then
+            If selectedIconIndex < rdMapHScroll.Value Then
                 btnMapPrev_Click
             End If
         End If
         
         ' moves the RdMap on one position (one click to the right) if the map box selected is already set at the rightmost map position
         If theButton = "btnNext_Click" Then
-            If rdIconNumber > rdMapHScroll.Value + 15 Then
+            If selectedIconIndex > rdMapHScroll.Value + 15 Then
                 btnMapNext_Click
             End If
         End If
     End If
     
 '    ' add the highlighting on the currently selected icon on the Rocket dock map - the blue overlay
-'    picRdMap(rdIconNumber).BorderStyle = 1
-'    Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False, True)
+'    picRdMap(selectedIconIndex).BorderStyle = 1
+'    Call displayIconElement(selectedIconIndex, picRdMap(selectedIconIndex), True, 32, True, False, False, True)
 '
 '    Call showIconLargeNumber
 '
 '    ' now display the icon in preview at larger size, on its own, bottom left.
-'    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False, False, False)
+'    Call displayIconElement(selectedIconIndex, picPreview, True, gblIcoSizePreset, True, False, False, False)
     
     previewFrameGotFocus = True
 
@@ -8821,13 +8967,55 @@ Private Sub displayIconElement(ByVal thisRecordNumber As Integer, ByRef picBox A
     Dim bSuccess As Boolean: bSuccess = False
     Dim returnedFilename As String: returnedFilename = vbNullString
     
+    Dim sFilename As String
+    Dim sFileName2 As String
+    Dim sTitle  As String
+    Dim sCommand  As String
+    Dim sArguments  As String
+    Dim sWorkingDirectory  As String
+    Dim sShowCmd  As String
+    Dim sOpenRunning  As String
+    Dim sRunElevated  As String
+    Dim sIsSeparator  As String
+    Dim sUseContext  As String
+    Dim sDockletFile  As String
+    Dim sUseDialog  As String
+    Dim sUseDialogAfter  As String
+    Dim sQuickLaunch  As String
+    Dim sAutoHideDock  As String
+    Dim sSecondApp  As String
+    Dim sRunSecondAppBeforehand  As String
+    Dim sAppToTerminate As String
+    Dim sDisabled  As String
+    
     On Error GoTo displayIconElement_Error
     If debugFlg = 1 Then debugLog "%" & "displayIconElement"
 
     ' read the icon data
     If fFExists(interimSettingsFile) Then '
-        Call readIconParams(thisRecordNumber)
+        Call readIconParamsFromDb(thisRecordNumber)
     End If
+        
+    sFilename = sDockIcons.Item(CStr(thisRecordNumber)).FileName
+    sFileName2 = sDockIcons.Item(CStr(thisRecordNumber)).FileName2
+    sTitle = sDockIcons.Item(CStr(thisRecordNumber)).Title
+    sCommand = sDockIcons.Item(CStr(thisRecordNumber)).Command
+    sArguments = sDockIcons.Item(CStr(thisRecordNumber)).Arguments
+    sWorkingDirectory = sDockIcons.Item(CStr(thisRecordNumber)).WorkingDirectory
+    sShowCmd = sDockIcons.Item(CStr(thisRecordNumber)).ShowCmd
+    sOpenRunning = sDockIcons.Item(CStr(thisRecordNumber)).OpenRunning
+    sIsSeparator = sDockIcons.Item(CStr(thisRecordNumber)).IsSeparator
+    sUseContext = sDockIcons.Item(CStr(thisRecordNumber)).UseContext
+    sDockletFile = sDockIcons.Item(CStr(thisRecordNumber)).DockletFile
+    sUseDialog = sDockIcons.Item(CStr(thisRecordNumber)).UseDialog
+    sUseDialogAfter = sDockIcons.Item(CStr(thisRecordNumber)).UseDialogAfter
+    sQuickLaunch = sDockIcons.Item(CStr(thisRecordNumber)).QuickLaunch
+    sAutoHideDock = sDockIcons.Item(CStr(thisRecordNumber)).AutoHideDock
+    sSecondApp = sDockIcons.Item(CStr(thisRecordNumber)).SecondApp
+    sRunElevated = sDockIcons.Item(CStr(thisRecordNumber)).RunElevated
+    sRunSecondAppBeforehand = sDockIcons.Item(CStr(thisRecordNumber)).RunSecondAppBeforehand
+    sAppToTerminate = sDockIcons.Item(CStr(thisRecordNumber)).AppToTerminate
+    sDisabled = sDockIcons.Item(CStr(thisRecordNumber)).Disabled
 
     ' .46 DAEB 16/04/2022 rdIconConfig.frm Made the word Blank visible or not when clicking on the icon map
     If getFileNameFromPath(sFilename) = "blank.png" Then
@@ -9441,7 +9629,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub populateDockMap(ByVal xDeviation As Integer)
-
+    
     Dim useloop As Integer: useloop = 0
     Dim busyFilename As String: busyFilename = vbNullString
     Dim dotString As String: dotString = vbNullString
@@ -9584,11 +9772,11 @@ Public Sub deleteRdMap(Optional ByVal backupFirst As Boolean = False, Optional B
     'set the slider bar
     rdMapHScroll.Max = 1
 
-    rdIconNumber = rdIconLowerBound
+    selectedIconIndex = rdIconLowerBound
     
     If refreshDisplay = True Then
         ' load the new icon as an image in the picturebox
-        Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False)
+        Call displayIconElement(selectedIconIndex, picRdMap(selectedIconIndex), True, 32, True, False, False)
         
         Call populateDockMap(rdIconLowerBound) ' regenerate the map from position zero
     End If
@@ -9890,7 +10078,7 @@ Private Sub filesIconList_DblClick()
     
     ' now change the icon image
     ' the target picture control and the icon size
-    Call displayResizedImage(txtCurrentIcon.Text, picRdMap(rdIconNumber), 32, True)
+    Call displayResizedImage(txtCurrentIcon.Text, picRdMap(selectedIconIndex), 32, True)
         
     ' we signify that no changes have been made
     btnSet.Enabled = True ' this has to be done at the end
@@ -10052,7 +10240,7 @@ End Sub
 '    For useloop = rdIconLowerBound To rdIconUpperBound
 '         ' get the relevant entries from the registry
 '         readRegistryIconValues (useloop)
-'         Call writeIconSettingsIni(useloop, False)
+'         Call writeIconSettingsDb(useloop, False)
 '
 '     Next useloop
 '
@@ -10294,7 +10482,7 @@ Private Sub readCustomLocation()
     End If
     
     If Not rDCustomIconFolder = vbNullString Then
-        rDCustomIconFolder = Mid$(rDCustomIconFolder, 2) ' remove the question mark
+        rDCustomIconFolder = mID$(rDCustomIconFolder, 2) ' remove the question mark
         If fDirExists(rDCustomIconFolder) Then
             ' add the chosen folder to the treeview
             folderTreeView.Nodes.Add , , rDCustomIconFolder, rDCustomIconFolder
@@ -10604,23 +10792,23 @@ Private Sub picRdMap_DragDrop(Index As Integer, Source As Control, X As Single, 
     'if dragging from one part of the map to another but landing on the same icon as the one we started from
     If srcDragControl = "rdMap" And rdMapIconSrcIndex = Index Then
         rdMapIconMouseDown = False
-        picRdMap(rdIconNumber).Drag vbEndDrag
+        picRdMap(selectedIconIndex).Drag vbEndDrag
 
         Exit Sub
     End If
     
     'remove the current highlighting on the Rocket dock map
-    picRdMap(rdIconNumber).BorderStyle = 0
+    picRdMap(selectedIconIndex).BorderStyle = 0
    
     ' The icon is dragged to a position in the dock
     ' Now read and display the characteristics of the icon that is being replaced
     ' but this time do NOT show the icon in preview form, bottom left as we just want the text.
     
-    rdIconNumber = Index
+    selectedIconIndex = Index
     Call showIconLargeNumber
     
     ' show the target icon details only
-    Call displayIconElement(rdIconNumber, picPreview, False, gblIcoSizePreset, True, False, False) ' < False to showing the image but show the target details
+    Call displayIconElement(selectedIconIndex, picPreview, False, gblIcoSizePreset, True, False, False) ' < False to showing the image but show the target details
 
     If Index <= rdIconUpperBound Then
         picRdMap(Index).BorderStyle = 1 ' highlight the new icon position
@@ -10630,7 +10818,7 @@ Private Sub picRdMap_DragDrop(Index As Integer, Source As Control, X As Single, 
     
     ' .73 DAEB 16/05/2022 rDIConConfig.frm Add ability to drag and drop icons in the map to an alternate position
     If srcDragControl = "rdMap" Then
-        trgtRdIconNumber = rdIconNumber
+        trgtRdIconNumber = selectedIconIndex
         Call reOrderRdMap(srcRdIconNumber, trgtRdIconNumber)
         '
     Else ' add an icon from the thumbnail list
@@ -10646,7 +10834,7 @@ Private Sub picRdMap_DragDrop(Index As Integer, Source As Control, X As Single, 
             FileName = FileName & txtCurrentIcon.Text
             
             ' refresh the image display on the map
-            Call displayResizedImage(FileName, picRdMap(rdIconNumber), 32)
+            Call displayResizedImage(FileName, picRdMap(selectedIconIndex), 32)
         End If
         
         Call btnSet_Click ' automatically press the set button
@@ -10731,6 +10919,28 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
     Dim notQuiteTheTop As Integer: notQuiteTheTop = 0
     Dim answer As VbMsgBoxResult: answer = vbNo
     
+    Dim sFilename As String
+    Dim sFileName2 As String
+    Dim sTitle  As String
+    Dim sCommand  As String
+    Dim sArguments  As String
+    Dim sWorkingDirectory  As String
+    Dim sShowCmd  As String
+    Dim sOpenRunning  As String
+    Dim sRunElevated  As String
+    Dim sIsSeparator  As String
+    Dim sUseContext  As String
+    Dim sDockletFile  As String
+    Dim sUseDialog  As String
+    Dim sUseDialogAfter  As String
+    Dim sQuickLaunch  As String
+    Dim sAutoHideDock  As String
+    Dim sSecondApp  As String
+    Dim sRunSecondAppBeforehand  As String
+    Dim sAppToTerminate As String
+    Dim sDisabled  As String
+
+    
     ' ask if you wish to move the icon
     On Error GoTo reOrderRdMap_Error
 
@@ -10747,7 +10957,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
     End If
         
     picThumbIconMouseDown = False
-    picRdMap(rdIconNumber).Drag vbEndDrag
+    picRdMap(srcRdIconNumber).Drag vbEndDrag
 
     ' TBD
     Me.MousePointer = 0 ' this changes the drag icon back to a normal pointer much quicker than waiting for the vbEndDrag to do its stuff.
@@ -10755,12 +10965,31 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
     pvtMapImageChanged = True
 
     notQuiteTheTop = rdIconUpperBound - 1
-    
-    
 
     ' take the source icon details and store those in the stored vars
-    Call readIconParams(srcRdIconNumber)
+    Call readIconParamsFromDb(srcRdIconNumber)
 
+    sFilename = sDockIcons.Item(CStr(srcRdIconNumber)).FileName
+    sFileName2 = sDockIcons.Item(CStr(srcRdIconNumber)).FileName2
+    sTitle = sDockIcons.Item(CStr(srcRdIconNumber)).Title
+    sCommand = sDockIcons.Item(CStr(srcRdIconNumber)).Command
+    sArguments = sDockIcons.Item(CStr(srcRdIconNumber)).Arguments
+    sWorkingDirectory = sDockIcons.Item(CStr(srcRdIconNumber)).WorkingDirectory
+    sShowCmd = sDockIcons.Item(CStr(srcRdIconNumber)).ShowCmd
+    sOpenRunning = sDockIcons.Item(CStr(srcRdIconNumber)).OpenRunning
+    sIsSeparator = sDockIcons.Item(CStr(srcRdIconNumber)).IsSeparator
+    sUseContext = sDockIcons.Item(CStr(srcRdIconNumber)).UseContext
+    sDockletFile = sDockIcons.Item(CStr(srcRdIconNumber)).DockletFile
+    sUseDialog = sDockIcons.Item(CStr(srcRdIconNumber)).UseDialog
+    sUseDialogAfter = sDockIcons.Item(CStr(srcRdIconNumber)).UseDialogAfter
+    sQuickLaunch = sDockIcons.Item(CStr(srcRdIconNumber)).QuickLaunch
+    sAutoHideDock = sDockIcons.Item(CStr(srcRdIconNumber)).AutoHideDock
+    sSecondApp = sDockIcons.Item(CStr(srcRdIconNumber)).SecondApp
+    sRunElevated = sDockIcons.Item(CStr(srcRdIconNumber)).RunElevated
+    sRunSecondAppBeforehand = sDockIcons.Item(CStr(srcRdIconNumber)).RunSecondAppBeforehand
+    sAppToTerminate = sDockIcons.Item(CStr(srcRdIconNumber)).AppToTerminate
+    sDisabled = sDockIcons.Item(CStr(srcRdIconNumber)).Disabled
+        
         
     srcFilename = sFilename
     srcFileName2 = sFileName2
@@ -10788,7 +11017,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
     End If
     
     ' read the target icon details and store those in the trgt vars
-    Call readIconParams(trgtRdIconNumber)
+    Call readIconParamsFromDb(trgtRdIconNumber)
 
 
     trgtFilename = sFilename
@@ -10833,10 +11062,10 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
             ' we don't bother to read the current record source here as we have already done so above.
             
             ' read the rdsettings.ini one item up in the list
-            Call readIconParams(useloop + 1)
+            Call readIconParamsFromDb(useloop + 1)
             
             'write the the next item up at the current source location effectively overwriting the current record
-            Call writeIconSettingsIni(useloop, False)
+            Call writeIconSettingsDb(useloop, False)
             
             ' .83 DAEB 03/06/2022 rDIConConfig.frm Display the icon we just moved by dragging, one by one rather than the whole map
             Call displayIconElement(useloop, picRdMap(useloop), True, 32, True, False, False)
@@ -10873,7 +11102,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
         End If
         
         PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
-        Call writeIconSettingsIni(trgtRdIconNumber, False)
+        Call writeIconSettingsDb(trgtRdIconNumber, False)
             
         Call displayIconElement(trgtRdIconNumber, picRdMap(trgtRdIconNumber), True, 32, True, False, False)
 
@@ -10888,10 +11117,10 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
         For useloop = srcRdIconNumber To trgtRdIconNumber Step -1
                 
             ' read the rdsettings.ini one item up in the list
-            Call readIconParams(useloop - 1)
+            Call readIconParamsFromDb(useloop - 1)
             
             'write the the next item up at the current source location effectively overwriting it
-            Call writeIconSettingsIni(useloop, False)
+            Call writeIconSettingsDb(useloop, False)
         
             Call displayIconElement(useloop, picRdMap(useloop), True, 32, True, False, False)
 
@@ -10927,7 +11156,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
             
         End If
         
-        Call writeIconSettingsIni(trgtRdIconNumber, False)
+        Call writeIconSettingsDb(trgtRdIconNumber, False)
         PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
         
         ' .83 DAEB 03/06/2022 rDIConConfig.frm Display the icon we just moved by dragging, one by one rather than the whole map
@@ -10951,7 +11180,10 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
     End If
     
     txtArguments.Text = sArguments
+    sDockIcons.Item(CStr(selectedIconIndex)).Arguments = sArguments
+    
     txtStartIn.Text = sWorkingDirectory
+    sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory = sWorkingDirectory
     
     cmbRunState.ListIndex = 1 ' .34 DAEB 05/05/2021 rDIConConfigForm.frm sShowCmd value must be at least 1 to open a normal window and needs to be calculated from the dropdown value +1
     cmbOpenRunning.ListIndex = 0 ' "Use Global Setting"
@@ -12079,7 +12311,7 @@ Private Sub picFrameThumbs_MouseDown(ByRef Button As Integer, ByRef Shift As Int
 
    If Button = 2 Then
         'gblStoredIndex = Index ' get the icon number from the array's index
-        menuAddToDock.Caption = "Add icon at position " & rdIconNumber + 1 & " in the map"
+        menuAddToDock.Caption = "Add icon at position " & selectedIconIndex + 1 & " in the map"
 
         Me.PopupMenu thumbmenu, vbPopupMenuRightButton
         
@@ -12111,7 +12343,7 @@ Private Sub picThumbIcon_MouseDown(ByRef Index As Integer, ByRef Button As Integ
     On Error GoTo picThumbIcon_MouseDown_Error
         
     If Button = 2 Then
-        menuAddToDock.Caption = "Add icon at position " & rdIconNumber + 1 & " in the map"
+        menuAddToDock.Caption = "Add icon at position " & selectedIconIndex + 1 & " in the map"
         gblStoredIndex = Index ' get the icon number from the array's index
         Me.PopupMenu thumbmenu, vbPopupMenuRightButton
         Exit Sub
@@ -12321,7 +12553,7 @@ Private Sub picPreview_MouseDown(ByRef Button As Integer, ByRef Shift As Integer
    
     If Button = 2 Then
         If picPreview.Tag <> txtCurrentIcon.Text Then
-            mnuAddPreviewIcon.Caption = "Add this icon at position " & rdIconNumber + 1 & " in the map"
+            mnuAddPreviewIcon.Caption = "Add this icon at position " & selectedIconIndex + 1 & " in the map"
             mnuAddPreviewIcon.Visible = True
         Else
             mnuAddPreviewIcon.Visible = False
@@ -12401,10 +12633,10 @@ Private Sub picRdMap_MouseDown(ByRef Index As Integer, ByRef Button As Integer, 
     If debugFlg = 1 Then debugLog "%" & "picRdMap_MouseDown"
 
     ' .69 DAEB 16/05/2022 rDIConConfig.frm Moved the core left click code to a separate routine to avoid the clicks-via-code from activating a start drag
-    Call picRdMap_MouseDown_event(Index) ' , rdIconNumber)
+    Call picRdMap_MouseDown_event(Index) ' , selectedIconIndex)
 
     If Button = 2 Then
-        rdIconNumber = Index ' get the icon number from the array's index
+        selectedIconIndex = Index ' get the icon number from the array's index
         Me.PopupMenu rdMapMenu, vbPopupMenuRightButton
         Exit Sub
     End If
@@ -12469,7 +12701,7 @@ Sub picRdMap_MouseDown_event(ByVal currentIndex As Integer, Optional ByVal oldIn
         If pvtMapImageChanged = True Then
             ' now change the icon image back again
             ' the target picture control and the icon size
-            'Call displayResizedImage(previousIcon, picRdMap(rdIconNumber-1), 32)
+            'Call displayResizedImage(previousIcon, picRdMap(selectedIconIndex-1), 32)
             pvtMapImageChanged = False
         End If
     End If
@@ -12486,7 +12718,7 @@ Sub picRdMap_MouseDown_event(ByVal currentIndex As Integer, Optional ByVal oldIn
     End If
    
     ' set the global icon Number tot he currently selected index
-    rdIconNumber = currentIndex
+    selectedIconIndex = currentIndex
     
     ' display the large numeral giving the icon count
     Call showIconLargeNumber
@@ -12646,7 +12878,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Sub recreateTheMap(ByVal oldRdIconMax As Integer)
+Public Function recreateTheMap(ByVal oldRdIconMax As Integer) As Boolean
     Dim useloop As Integer: useloop = 0
     
     On Error GoTo recreateTheMap_Error
@@ -12675,9 +12907,11 @@ Public Sub recreateTheMap(ByVal oldRdIconMax As Integer)
     End If
     
     Call populateDockMap(rdIconLowerBound) ' show the map from position zero
+    
+    recreateTheMap = True
 
     On Error GoTo 0
-    Exit Sub
+    Exit Function
 
 recreateTheMap_Error:
 
@@ -12688,7 +12922,7 @@ recreateTheMap_Error:
           End If
     End With
 
-End Sub
+End Function
 
 
 '---------------------------------------------------------------------------------------
@@ -12756,7 +12990,7 @@ Private Sub sliPreviewSize_Change()
     'if the thumbview or fileiconlist have the focus
     If picRdMapGotFocus = True Or previewFrameGotFocus = True Then
         ' if the map or the preview have focus
-        Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False, False)
+        Call displayIconElement(selectedIconIndex, picPreview, True, gblIcoSizePreset, True, False, False)
     Else
         If textCurrentFolder.Text <> vbNullString Then ' changed from filesIconList.path to textCurrentFolder.Text for compatibility with VB.net
             FileName = textCurrentFolder.Text ' changed from filesIconList.path to textCurrentFolder.Text for compatibility with VB.net
@@ -13605,15 +13839,58 @@ Private Sub menuLeft_Click()
     Dim storedAppToTerminate As String: storedAppToTerminate = vbNullString
     Dim storedDisabled   As String: storedDisabled = vbNullString
     Dim storedRunElevated   As String: storedRunElevated = vbNullString
-
+    
+    Dim sFilename As String
+    Dim sFileName2 As String
+    Dim sTitle  As String
+    Dim sCommand  As String
+    Dim sArguments  As String
+    Dim sWorkingDirectory  As String
+    Dim sShowCmd  As String
+    Dim sOpenRunning  As String
+    Dim sRunElevated  As String
+    Dim sIsSeparator  As String
+    Dim sUseContext  As String
+    Dim sDockletFile  As String
+    Dim sUseDialog  As String
+    Dim sUseDialogAfter  As String
+    Dim sQuickLaunch  As String
+    Dim sAutoHideDock  As String
+    Dim sSecondApp  As String
+    Dim sRunSecondAppBeforehand  As String
+    Dim sAppToTerminate As String
+    Dim sDisabled  As String
+    
     ' take the current icon -1 and read its details and store it
     On Error GoTo menuLeft_Click_Error
     If debugFlg = 1 Then debugLog "%" & "menuLeft_Click"
     
     ' .82 DAEB 02/06/2022 rDIConConfig.frm Added check for moving right or left beyond the end of the RDMap.
-    If rdIconNumber - 1 < 0 Then Exit Sub
+    If selectedIconIndex - 1 < 0 Then Exit Sub
     
-    Call readIconParams(rdIconNumber - 1)
+    Call readIconParamsFromDb(selectedIconIndex - 1)
+    
+    sFilename = sDockIcons.Item(CStr(selectedIconIndex - 1)).FileName
+    sFileName2 = sDockIcons.Item(CStr(selectedIconIndex - 1)).FileName2
+    sTitle = sDockIcons.Item(CStr(selectedIconIndex - 1)).Title
+    sCommand = sDockIcons.Item(CStr(selectedIconIndex - 1)).Command
+    sArguments = sDockIcons.Item(CStr(selectedIconIndex - 1)).Arguments
+    sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex - 1)).WorkingDirectory
+    sShowCmd = sDockIcons.Item(CStr(selectedIconIndex - 1)).ShowCmd
+    sOpenRunning = sDockIcons.Item(CStr(selectedIconIndex - 1)).OpenRunning
+    sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex - 1)).IsSeparator
+    sUseContext = sDockIcons.Item(CStr(selectedIconIndex - 1)).UseContext
+    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex - 1)).DockletFile
+    sUseDialog = sDockIcons.Item(CStr(selectedIconIndex - 1)).UseDialog
+    sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex - 1)).UseDialogAfter
+    sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex - 1)).QuickLaunch
+    sAutoHideDock = sDockIcons.Item(CStr(selectedIconIndex - 1)).AutoHideDock
+    sSecondApp = sDockIcons.Item(CStr(selectedIconIndex - 1)).SecondApp
+    sRunElevated = sDockIcons.Item(CStr(selectedIconIndex - 1)).RunElevated
+    sRunSecondAppBeforehand = sDockIcons.Item(CStr(selectedIconIndex - 1)).RunSecondAppBeforehand
+    sAppToTerminate = sDockIcons.Item(CStr(selectedIconIndex - 1)).AppToTerminate
+    sDisabled = sDockIcons.Item(CStr(selectedIconIndex - 1)).Disabled
+
         
     storedFilename = sFilename
     storedFileName2 = sFileName2
@@ -13642,9 +13919,9 @@ Private Sub menuLeft_Click()
     End If
     
     ' take the current icon details and write it into the place of the one to the left (-1)
-    Call readIconParams(rdIconNumber)
+    Call readIconParamsFromDb(selectedIconIndex)
     
-    Call writeIconSettingsIni(rdIconNumber - 1, False)
+    Call writeIconSettingsDb(selectedIconIndex - 1, False)
 
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
@@ -13677,16 +13954,16 @@ Private Sub menuLeft_Click()
     End If
     
     ' take the stored icon details and write it into the current location
-    Call writeIconSettingsIni(rdIconNumber, False)
+    Call writeIconSettingsDb(selectedIconIndex, False)
 
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
-    Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False)
-    'Call displayIconElement(rdIconNumber - 1, picRdMap(rdIconNumber - 1), True, 32, True, False, False, True)
+    Call displayIconElement(selectedIconIndex, picRdMap(selectedIconIndex), True, 32, True, False, False)
+    'Call displayIconElement(selectedIconIndex - 1, picRdMap(selectedIconIndex - 1), True, 32, True, False, False, True)
     
-    rdIconNumber = rdIconNumber - 1
+    selectedIconIndex = selectedIconIndex - 1
     
-    Call picRdMap_MouseDown_event(rdIconNumber) ' , rdIconNumber + 1)
+    Call picRdMap_MouseDown_event(selectedIconIndex) ' , selectedIconIndex + 1)
     
     btnSet.Enabled = False ' tell the program that nothing has changed
     btnClose.Visible = True
@@ -13729,15 +14006,57 @@ Private Sub menuright_Click()
     Dim storedAppToTerminate As String: storedAppToTerminate = vbNullString
     Dim storedDisabled   As String: storedDisabled = vbNullString
     Dim storedRunElevated   As String: storedRunElevated = vbNullString
+    
+    Dim sFilename As String
+    Dim sFileName2 As String
+    Dim sTitle  As String
+    Dim sCommand  As String
+    Dim sArguments  As String
+    Dim sWorkingDirectory  As String
+    Dim sShowCmd  As String
+    Dim sOpenRunning  As String
+    Dim sRunElevated  As String
+    Dim sIsSeparator  As String
+    Dim sUseContext  As String
+    Dim sDockletFile  As String
+    Dim sUseDialog  As String
+    Dim sUseDialogAfter  As String
+    Dim sQuickLaunch  As String
+    Dim sAutoHideDock  As String
+    Dim sSecondApp  As String
+    Dim sRunSecondAppBeforehand  As String
+    Dim sAppToTerminate As String
+    Dim sDisabled  As String
      
     On Error GoTo menuright_Click_Error
     If debugFlg = 1 Then debugLog "%" & "menuright_Click"
 
     ' .82 DAEB 02/06/2022 rDIConConfig.frm Added check for moving right or left beyond the end of the RDMap.
-    If rdIconNumber > rdIconUpperBound Then Exit Sub
+    If selectedIconIndex > rdIconUpperBound Then Exit Sub
     
     ' take the current icon plus one and read its details and store it
-     Call readIconParams(rdIconNumber + 1)
+     Call readIconParamsFromDb(selectedIconIndex + 1)
+     
+    sFilename = sDockIcons.Item(CStr(selectedIconIndex - 1)).FileName
+    sFileName2 = sDockIcons.Item(CStr(selectedIconIndex - 1)).FileName2
+    sTitle = sDockIcons.Item(CStr(selectedIconIndex - 1)).Title
+    sCommand = sDockIcons.Item(CStr(selectedIconIndex - 1)).Command
+    sArguments = sDockIcons.Item(CStr(selectedIconIndex - 1)).Arguments
+    sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex - 1)).WorkingDirectory
+    sShowCmd = sDockIcons.Item(CStr(selectedIconIndex - 1)).ShowCmd
+    sOpenRunning = sDockIcons.Item(CStr(selectedIconIndex - 1)).OpenRunning
+    sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex - 1)).IsSeparator
+    sUseContext = sDockIcons.Item(CStr(selectedIconIndex - 1)).UseContext
+    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex - 1)).DockletFile
+    sUseDialog = sDockIcons.Item(CStr(selectedIconIndex - 1)).UseDialog
+    sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex - 1)).UseDialogAfter
+    sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex - 1)).QuickLaunch
+    sAutoHideDock = sDockIcons.Item(CStr(selectedIconIndex - 1)).AutoHideDock
+    sSecondApp = sDockIcons.Item(CStr(selectedIconIndex - 1)).SecondApp
+    sRunElevated = sDockIcons.Item(CStr(selectedIconIndex - 1)).RunElevated
+    sRunSecondAppBeforehand = sDockIcons.Item(CStr(selectedIconIndex - 1)).RunSecondAppBeforehand
+    sAppToTerminate = sDockIcons.Item(CStr(selectedIconIndex - 1)).AppToTerminate
+    sDisabled = sDockIcons.Item(CStr(selectedIconIndex - 1)).Disabled
             
     storedFilename = sFilename
     storedFileName2 = sFileName2
@@ -13764,11 +14083,11 @@ Private Sub menuright_Click()
         storedDisabled = sDisabled
     End If
     ' take the current icon details and write it into the place of the one to the right
-    'readSettingsIni (rdIconNumber)
-     Call readIconParams(rdIconNumber)
+    'readSettingsIni (selectedIconIndex)
+     Call readIconParamsFromDb(selectedIconIndex)
     
-    'writeSettingsIni (rdIconNumber + 1)
-    Call writeIconSettingsIni(rdIconNumber + 1, False)
+    'writeSettingsIni (selectedIconIndex + 1)
+    Call writeIconSettingsDb(selectedIconIndex + 1, False)
 
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
 
@@ -13796,15 +14115,15 @@ Private Sub menuright_Click()
         sDisabled = storedDisabled
     End If
     ' take the stored icon details and write it into the current location
-    'writeSettingsIni (rdIconNumber)
-    Call writeIconSettingsIni(rdIconNumber, False)
+    'writeSettingsIni (selectedIconIndex)
+    Call writeIconSettingsDb(selectedIconIndex, False)
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
-    Call displayIconElement(rdIconNumber, picRdMap(rdIconNumber), True, 32, True, False, False)
-    'Call displayIconElement(rdIconNumber + 1, picRdMap(rdIconNumber + 1), True, 32, True, False, False)
+    Call displayIconElement(selectedIconIndex, picRdMap(selectedIconIndex), True, 32, True, False, False)
+    'Call displayIconElement(selectedIconIndex + 1, picRdMap(selectedIconIndex + 1), True, 32, True, False, False)
     
-    rdIconNumber = rdIconNumber + 1
-    Call picRdMap_MouseDown_event(rdIconNumber) ' , rdIconNumber)
+    selectedIconIndex = selectedIconIndex + 1
+    Call picRdMap_MouseDown_event(selectedIconIndex) ' , selectedIconIndex)
 
     btnSet.Enabled = False ' tell the program that nothing has changed
     btnClose.Visible = True
@@ -13834,10 +14153,31 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
     Optional ByVal thisShowCmd As String, Optional ByVal thisOpenRunning As String, _
     Optional ByVal thisUseDialog As String, Optional ByVal thisUseDialogAfter As String, _
     Optional ByVal thisQuickLaunch As String, _
-    Optional ByVal thisAutoHideDock As String, Optional ByVal thisSecondApp As String, Optional ByVal thisDisabled As String, Optional ByVal sRunElevated As String)
+    Optional ByVal thisAutoHideDock As String, Optional ByVal thisSecondApp As String, Optional ByVal thisDisabled As String, Optional ByVal thisRunElevated As String)
 
     Dim useloop As Integer: useloop = 0
     Dim thisIcon As Integer
+    
+    Dim sFilename As String
+    Dim sFileName2 As String
+    Dim sTitle  As String
+    Dim sCommand  As String
+    Dim sArguments  As String
+    Dim sWorkingDirectory  As String
+    Dim sShowCmd  As String
+    Dim sOpenRunning  As String
+    Dim sRunElevated  As String
+    Dim sIsSeparator  As String
+    Dim sUseContext  As String
+    Dim sDockletFile  As String
+    Dim sUseDialog  As String
+    Dim sUseDialogAfter  As String
+    Dim sQuickLaunch  As String
+    Dim sAutoHideDock  As String
+    Dim sSecondApp  As String
+    Dim sRunSecondAppBeforehand  As String
+    Dim sAppToTerminate As String
+    Dim sDisabled  As String
 
     On Error GoTo menuAddSomething_Error
     If debugFlg = 1 Then debugLog "%" & "menuAddSomething"
@@ -13851,14 +14191,14 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
     ' starting at the end of the rocketdock map, step backward and decrement the number
     ' until we reach the current position.
     
-    For useloop = rdIconUpperBound To rdIconNumber Step -1
+    For useloop = rdIconUpperBound To selectedIconIndex Step -1
          
          Call zeroAllIconCharacteristics
          
-         Call readIconParams(useloop)
+         Call readIconParamsFromDb(useloop)
         
         ' and increment the identifier by one
-         Call writeIconSettingsIni(useloop + 1, False)
+         Call writeIconSettingsDb(useloop + 1, False)
          
     Next useloop
     
@@ -13898,12 +14238,19 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
     ' with the following blank characteristics
     sFilename = thisFilename ' the default Rocketdock filename for a blank item
     
-    sTitle = thisTitle
-    sCommand = thisCommand
-    sArguments = thisArguments
-    sWorkingDirectory = thisWorkingDirectory
-    sDockletFile = thisDocklet
-    sIsSeparator = thIsSeparator
+'    sTitle = thisTitle
+'    sCommand = thisCommand
+'    sArguments
+'    sWorkingDirectory = thisWorkingDirectory
+'    sDockletFile = thisDocklet
+'    sIsSeparator = thIsSeparator
+    
+    sDockIcons.Item(selectedIconIndex).Title = thisTitle
+    sDockIcons.Item(selectedIconIndex).Command = thisCommand
+    sDockIcons.Item(selectedIconIndex).Arguments = sArguments
+    sDockIcons.Item(selectedIconIndex).WorkingDirectory = thisWorkingDirectory
+    sDockIcons.Item(selectedIconIndex).Docklet = thisDocklet
+    sDockIcons.Item(selectedIconIndex).Separator = thIsSeparator
     
     sShowCmd = "1" ' .34 DAEB 05/05/2021 rDIConConfigForm.frm The value must be at least 1 to open a normal window and needs to be calculated from the dropdown value +1
     
@@ -13917,14 +14264,17 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
 '    End If
     
     txtArguments.Text = sArguments
+    sDockIcons.Item(CStr(selectedIconIndex)).Arguments = sArguments
+    
     txtStartIn.Text = sWorkingDirectory
+    sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory = sWorkingDirectory
     
     cmbRunState.ListIndex = 1 ' .34 DAEB 05/05/2021 rDIConConfigForm.frm sShowCmd value must be at least 1 to open a normal window and needs to be calculated from the dropdown value +1
     cmbOpenRunning.ListIndex = 0 ' "Use Global Setting"
     chkRunElevated.Value = 0
     
     'writeSettingsIni (thisIcon)
-    Call writeIconSettingsIni(thisIcon, False)
+    Call writeIconSettingsDb(thisIcon, False)
     
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
@@ -13963,7 +14313,14 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuClone_Click()
-        
+    Dim sFilename As String
+    Dim sTitle  As String
+    Dim sCommand  As String
+    Dim sArguments  As String
+    Dim sWorkingDirectory  As String
+    Dim sDockletFile  As String
+    Dim sIsSeparator  As String
+    
     On Error GoTo mnuClone_Click_Error
     If debugFlg = 1 Then debugLog "%" & "mnuClone_Click"
       
@@ -13973,6 +14330,14 @@ Private Sub mnuClone_Click()
     
     ' general tool to clone an icon
     
+    sFilename = sDockIcons.Item(CStr(selectedIconIndex)).FileName
+    sTitle = sDockIcons.Item(CStr(selectedIconIndex)).Title
+    sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command
+    sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments
+    sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory
+    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).DockletFile
+    sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex)).IsSeparator
+
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory
     Call menuAddSomething(sFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sDockletFile, sIsSeparator)
     
@@ -14837,7 +15202,8 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtSeparator_click()
-       
+    Dim sIsSeparator  As String
+    
    On Error GoTo mnuTrgtSeparator_click_Error
    If debugFlg = 1 Then debugLog "mnuTrgtSeparator_click"
       
@@ -14883,7 +15249,9 @@ Private Sub mnuTrgtClearCache_click()
     
     Dim getFolder As String: getFolder = vbNullString
     Dim dialogInitDir As String: dialogInitDir = vbNullString
-   
+    Dim sCommand  As String
+    Dim sArguments  As String
+    
     On Error GoTo mnuTrgtClearCache_click_Error
     If debugFlg = 1 Then debugLog "%mnuTrgtClearCache_click"
 
@@ -14891,8 +15259,10 @@ Private Sub mnuTrgtClearCache_click()
     sArguments = "advapi32.dll , ProcessIdleTasks"
     
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
+    
     txtArguments.Text = sArguments
-
+    sDockIcons.Item(CStr(selectedIconIndex)).Arguments = sArguments
 
    On Error GoTo 0
    Exit Sub
@@ -14913,7 +15283,7 @@ Private Sub mnuTrgtFolder_click()
     
     Dim getFolder As String: getFolder = vbNullString
     Dim dialogInitDir As String: dialogInitDir = vbNullString
-   
+    
    On Error GoTo mnuTrgtFolder_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtFolder_click"
 
@@ -14933,8 +15303,8 @@ Private Sub mnuTrgtFolder_click()
     'getFolder = ChooseDir_Click ' old method to show the dialog box to select a folder
     If getFolder <> vbNullString Then txtTarget.Text = getFolder
 
-    sCommand = getFolder
-
+   sDockIcons.Item(CStr(selectedIconIndex)).Command = getFolder
+    
    On Error GoTo 0
    Exit Sub
 
@@ -14951,6 +15321,8 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtShutdown_click()
+    Dim sCommand  As String
+    Dim sArguments  As String
 
    On Error GoTo mnuTrgtShutdown_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtShutdown_click"
@@ -14959,7 +15331,11 @@ Private Sub mnuTrgtShutdown_click()
     sArguments = "/s /t 00 /f /i"
     
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
+    
     txtArguments.Text = sArguments
+    sDockIcons.Item(CStr(selectedIconIndex)).Arguments = sArguments
+
 
    On Error GoTo 0
    Exit Sub
@@ -14977,7 +15353,9 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtHibernate_click()
-
+    Dim sCommand  As String
+    Dim sArguments  As String
+    
    On Error GoTo mnuTrgtHibernate_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtHibernate_click"
 
@@ -14985,8 +15363,11 @@ Private Sub mnuTrgtHibernate_click()
     sArguments = "/h"
     
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
+    
     txtArguments.Text = sArguments
-
+    sDockIcons.Item(CStr(selectedIconIndex)).Arguments = sArguments
+   
    On Error GoTo 0
    Exit Sub
 
@@ -15003,7 +15384,9 @@ End Sub
 '---------------------------------------------------------------------------------------
 '.101 DAEB 09/11/2022 rDIConConfig.frm Add the restart option.
 Private Sub mnuTrgtRestart_click()
-
+    Dim sCommand  As String
+    Dim sArguments  As String
+    
    On Error GoTo mnuTrgtRestart_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtRestart_click"
 
@@ -15011,7 +15394,11 @@ Private Sub mnuTrgtRestart_click()
     sArguments = "/r"
     
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
+    
     txtArguments.Text = sArguments
+    sDockIcons.Item(CStr(selectedIconIndex)).Arguments = sArguments
+
 
    On Error GoTo 0
    Exit Sub
@@ -15030,6 +15417,8 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtSleep_click()
+    Dim sCommand  As String
+    Dim sArguments  As String
 
     On Error GoTo mnuTrgtSleep_click_Error
 
@@ -15037,7 +15426,10 @@ Private Sub mnuTrgtSleep_click()
     sArguments = "powrprof.dll,SetSuspendState 0,1,0"
     
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
+    
     txtArguments.Text = sArguments
+    sDockIcons.Item(CStr(selectedIconIndex)).Arguments = sArguments
 
     On Error GoTo 0
     Exit Sub
@@ -15055,12 +15447,15 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtEnhanced_click()
+    Dim sCommand  As String
+   
    On Error GoTo mnuTrgtEnhanced_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtEnhanced_click"
 
     sCommand = App.Path & "\iconsettings.exe" ' 17/11/2020    .04 DAEB Replaced all occurrences of rocket1.exe with iconsettings.exe
 
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -15079,6 +15474,9 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtLog_click()
+    Dim sCommand  As String
+    Dim sArguments  As String
+    Dim sWorkingDirectory  As String
 
    On Error GoTo mnuTrgtLog_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtLog_click"
@@ -15088,8 +15486,13 @@ Private Sub mnuTrgtLog_click()
     sWorkingDirectory = "%windir%"
     
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
+    
     txtArguments.Text = sArguments
+    sDockIcons.Item(CStr(selectedIconIndex)).Arguments = sArguments
+    
     txtStartIn.Text = sWorkingDirectory
+    sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory = sWorkingDirectory
 
    On Error GoTo 0
    Exit Sub
@@ -15107,6 +15510,9 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtLock_click()
+    Dim sCommand  As String
+    Dim sArguments  As String
+    Dim sWorkingDirectory  As String
 
    On Error GoTo mnuTrgtLock_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtLock_click"
@@ -15116,8 +15522,13 @@ Private Sub mnuTrgtLock_click()
     sWorkingDirectory = "%windir%"
     
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
+    
     txtArguments.Text = sArguments
+    sDockIcons.Item(CStr(selectedIconIndex)).Arguments = sArguments
+    
     txtStartIn.Text = sWorkingDirectory
+    sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory = sWorkingDirectory
 
    On Error GoTo 0
    Exit Sub
@@ -15135,12 +15546,15 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtWorkgroup_click()
+    Dim sCommand  As String
+    Dim sArguments  As String
 
    On Error GoTo mnuTrgtWorkgroup_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtWorkgroup_click"
 
     sCommand = "::{208D2C60-3AEA-1069-A2D7-08002B30309D}"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -15159,12 +15573,15 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtNetwork_click()
-
+    Dim sCommand  As String
+    Dim sArguments  As String
+   
    On Error GoTo mnuTrgtNetwork_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtNetwork_click"
 
     sCommand = "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -15183,12 +15600,14 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtMyComputer_click()
+    Dim sCommand  As String
  
    On Error GoTo mnuTrgtMyComputer_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtMyComputer_click"
 
     sCommand = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -15206,6 +15625,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtMyDocuments_click()
+    Dim sCommand  As String
  
    On Error GoTo mnuTrgtMyDocuments_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtMyDocuments_click"
@@ -15230,6 +15650,7 @@ End Sub
 '
 Private Sub mnuTrgtMyMusic_click()
     Dim userprof As String: userprof = vbNullString
+    Dim sCommand  As String
     
     ' initialise the vars above
     
@@ -15242,6 +15663,7 @@ Private Sub mnuTrgtMyMusic_click()
 
     sCommand = userprof & "\Documents\Music"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -15261,6 +15683,7 @@ End Sub
 '
 Private Sub mnuTrgtMyPictures_click()
     Dim userprof As String: userprof = vbNullString
+    Dim sCommand  As String
     
     ' initialise the vars above
     
@@ -15273,6 +15696,7 @@ Private Sub mnuTrgtMyPictures_click()
 
     sCommand = userprof & "\Documents\Pictures"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -15292,6 +15716,7 @@ End Sub
 '
 Private Sub mnuTrgtMyVideos_click()
     Dim userprof As String: userprof = vbNullString
+    Dim sCommand  As String
     
     ' initialise the vars above
     
@@ -15304,6 +15729,7 @@ Private Sub mnuTrgtMyVideos_click()
 
     sCommand = userprof & "\Documents\Videos"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -15322,11 +15748,14 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtPrinters_click()
+    Dim sCommand  As String
+   
    On Error GoTo mnuTrgtPrinters_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtPrinters_click"
 
     sCommand = "::{2227a280-3aea-1069-a2de-08002b30309d}"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -15343,11 +15772,14 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtTask_click()
+    Dim sCommand  As String
+   
    On Error GoTo mnuTrgtTask_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtTask_click"
 
     sCommand = "taskmgr"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -15364,11 +15796,14 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtControl_click()
+    Dim sCommand  As String
+   
    On Error GoTo mnuTrgtControl_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtControl_click"
 
     sCommand = "control"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -15385,11 +15820,14 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtProgramFiles_click()
+    Dim sCommand  As String
+   
    On Error GoTo mnuTrgtProgramFiles_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtProgramFiles_click"
 
     sCommand = "::{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -15406,11 +15844,14 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtPrograms_click()
+    Dim sCommand  As String
+   
    On Error GoTo mnuTrgtPrograms_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtPrograms_click"
 
     sCommand = "appwiz.cpl"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -15428,11 +15869,14 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtRecycle_click()
+    Dim sCommand  As String
+   
    On Error GoTo mnuTrgtRecycle_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtRecycle_click"
 
     sCommand = "::{645ff040-5081-101b-9f08-00aa002f954e}"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -15453,6 +15897,7 @@ Private Sub mnuTrgtDocklet_click()
     Dim dialogInitDir As String: dialogInitDir = vbNullString
     Dim retFileName As String: retFileName = vbNullString
     Dim retfileTitle As String: retfileTitle = vbNullString
+    Dim sDockletFile As String
     
     Const x_MaxBuffer = 256
     ' set the default folder to the docklet folder under rocketdock
@@ -15523,11 +15968,14 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtDock_click()
+    Dim sCommand  As String
+
    On Error GoTo mnuTrgtDock_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtDock_click"
 
     sCommand = "[Settings]"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -15544,11 +15992,14 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTrgtRocketdock_click()
+    Dim sCommand  As String
+
    On Error GoTo mnuTrgtRocketdock_click_Error
    If debugFlg = 1 Then debugLog "%mnuTrgtRocketdock_click"
 
     sCommand = "[Quit]"
     txtTarget.Text = sCommand
+    sDockIcons.Item(CStr(selectedIconIndex)).Command = sCommand
 
    On Error GoTo 0
    Exit Sub
@@ -15593,7 +16044,7 @@ Private Sub mnuDelete_Click()
     On Error GoTo mnuDelete_Click_Error
     If debugFlg = 1 Then debugLog "%" & "mnuDelete_Click"
     
-    Call deleteRdMapPosition(rdIconNumber)
+    Call deleteRdMapPosition(selectedIconIndex)
     
    On Error GoTo 0
    Exit Sub
@@ -15646,11 +16097,11 @@ Private Sub deleteRdMapPosition(ByVal thisIconNumber As Integer, Optional confir
             ' read the rocketdock alternative rdsettings.ini one item up in the list
             'readSettingsIni (useloop + 1) ' the alternative rdsettings.ini only exists when RD is set to use it
             
-             Call readIconParams(useloop + 1)
+             Call readIconParamsFromDb(useloop + 1)
             
             'write the the new item at the current location effectively overwriting it
             'writeSettingsIni (useloop)
-            Call writeIconSettingsIni(useloop, False)
+            Call writeIconSettingsDb(useloop, False)
         Next useloop
     End If
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
@@ -15681,8 +16132,8 @@ Private Sub deleteRdMapPosition(ByVal thisIconNumber As Integer, Optional confir
     'set the slider bar to the new maximum
     rdMapHScroll.Max = rdIconUpperBound - 1
 
-    If thisIconNumber > rdIconUpperBound Then rdIconNumber = rdIconUpperBound
-    thisIcon = rdIconNumber
+    If thisIconNumber > rdIconUpperBound Then selectedIconIndex = rdIconUpperBound
+    thisIcon = selectedIconIndex
     
     ' load the new icon as an image in the picturebox
     Call displayIconElement(thisIcon, picRdMap(thisIcon), True, 32, True, False, False)
@@ -16314,6 +16765,27 @@ Private Sub menuRun_click()
     Dim listOfTypes As String: listOfTypes = vbNullString
     Dim useloop As Integer: useloop = 0
     
+    Dim sFilename As String
+    Dim sFileName2 As String
+    Dim sTitle  As String
+    Dim sCommand  As String
+    Dim sArguments  As String
+    Dim sWorkingDirectory  As String
+    Dim sShowCmd  As String
+    Dim sOpenRunning  As String
+    Dim sRunElevated  As String
+    Dim sIsSeparator  As String
+    Dim sUseContext  As String
+    Dim sDockletFile  As String
+    Dim sUseDialog  As String
+    Dim sUseDialogAfter  As String
+    Dim sQuickLaunch  As String
+    Dim sAutoHideDock  As String
+    Dim sSecondApp  As String
+    Dim sRunSecondAppBeforehand  As String
+    Dim sAppToTerminate As String
+    Dim sDisabled  As String
+
     userLevel = "open"
     
     On Error GoTo menuRun_click_Error
@@ -16323,7 +16795,29 @@ Private Sub menuRun_click()
     
     Call showIconLargeNumber
 
-    Call displayIconElement(rdIconNumber, picPreview, True, gblIcoSizePreset, True, False, False)
+    Call displayIconElement(selectedIconIndex, picPreview, True, gblIcoSizePreset, True, False, False)
+    
+    sFilename = sDockIcons.Item(CStr(selectedIconIndex)).FileName
+    sFileName2 = sDockIcons.Item(CStr(selectedIconIndex)).FileName2
+    sTitle = sDockIcons.Item(CStr(selectedIconIndex)).Title
+    sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command
+    sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments
+    sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory
+    sShowCmd = sDockIcons.Item(CStr(selectedIconIndex)).ShowCmd
+    sOpenRunning = sDockIcons.Item(CStr(selectedIconIndex)).OpenRunning
+    sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex)).IsSeparator
+    sUseContext = sDockIcons.Item(CStr(selectedIconIndex)).UseContext
+    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).DockletFile
+    sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
+    sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
+    sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex)).QuickLaunch
+    sAutoHideDock = sDockIcons.Item(CStr(selectedIconIndex)).AutoHideDock
+    sSecondApp = sDockIcons.Item(CStr(selectedIconIndex)).SecondApp
+    sRunElevated = sDockIcons.Item(CStr(selectedIconIndex)).RunElevated
+    sRunSecondAppBeforehand = sDockIcons.Item(CStr(selectedIconIndex)).RunSecondAppBeforehand
+    sAppToTerminate = sDockIcons.Item(CStr(selectedIconIndex)).AppToTerminate
+    sDisabled = sDockIcons.Item(CStr(selectedIconIndex)).Disabled
+    
     
     ' we signify that all changes have been lost so the "save this icon" will not appear when switching icons
     btnSet.Enabled = False ' this has to be done at the end
@@ -16554,12 +17048,18 @@ End Sub
 ' Purpose   : runs the shellexecute API function and puts up a dialogue box if required
 '---------------------------------------------------------------------------------------
 '
-Private Sub executeCommand(ByVal userLevel As String, ByVal sCommand As String, ByVal sArguments As String, ByVal sWorkingDirectory As String, ByVal lastVal As Integer)
+Private Sub executeCommand(ByVal userLevel As String, ByVal thisCommand As String, ByVal thisArguments As String, ByVal thisWorkingDirectory As String, ByVal lastVal As Integer)
 
-   On Error GoTo executeCommand_Error
-   
+    Dim sTitle As String
+    Dim sCommand  As String
+    
+    On Error GoTo executeCommand_Error
+
+    sTitle = sDockIcons.Item(CStr(selectedIconIndex)).Title
+    sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command
+       
     ' run the selected program
-    Call ShellExecute(hWnd, userLevel, sCommand, sArguments, sWorkingDirectory, lastVal)
+    Call ShellExecute(hWnd, userLevel, thisCommand, thisArguments, thisWorkingDirectory, lastVal)
             
     userLevel = "open" ' return to default
     
@@ -16588,7 +17088,13 @@ End Sub
 '
 Private Sub shellCommand(ByVal shellparam1 As String, ByVal vbNormalFocus)
 
-   On Error GoTo shellCommand_Error
+    Dim sTitle  As String
+    Dim sCommand  As String
+    
+    On Error GoTo shellCommand_Error
+
+    sTitle = sDockIcons.Item(CStr(selectedIconIndex)).Title
+    sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command
 
     ' run the selected program
     Call Shell(shellparam1, vbNormalFocus)
@@ -16640,10 +17146,10 @@ Private Sub displayDockMap()
     Call busyStop
 
     ' .29 DAEB 14/03/2021 rDIConConfigForm.frm change to focus the icon map on the icon pre-selected
-    If rdIconNumber > 0 Then
+    If selectedIconIndex > 0 Then
         Call picRdMapSetFocus ' set focus to the rocketdock icon map
-        rdMapHScroll.Value = rdIconNumber ' set the map scroll value to the pre-selected number
-        picRdMap(rdIconNumber).BorderStyle = 1 ' put a border around the selected map image
+        rdMapHScroll.Value = selectedIconIndex ' set the map scroll value to the pre-selected number
+        picRdMap(selectedIconIndex).BorderStyle = 1 ' put a border around the selected map image
     End If
     
    On Error GoTo 0
@@ -17486,7 +17992,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                     Effect = vbDropEffectCopy
                    
                     ' take the filename, extract just the filename body minus the suffix
-                    sJustTheFilename = Mid(iconTitle, InStrRev(iconTitle, "\") + 1, Len(iconTitle))
+                    sJustTheFilename = mID(iconTitle, InStrRev(iconTitle, "\") + 1, Len(iconTitle))
                     sJustTheFilename = ExtractFilenameWithoutSuffix(sJustTheFilename)
                     iconTitle = sJustTheFilename
                     
@@ -17500,7 +18006,7 @@ Private Sub picRdMap_OLEDragDrop(ByRef Index As Integer, ByRef Data As DataObjec
                     If suffix = ".exe" Then
                       ' dig into the EXE to determine the icon to use using privateExtractIcon
                       If rDRetainIcons = "1" Then
-                          iconFilename = fExtractEmbeddedPNGFromEXE(iconCommand, picRdMap(rdIconNumber), 32, True)
+                          iconFilename = fExtractEmbeddedPNGFromEXE(iconCommand, picRdMap(selectedIconIndex), 32, True)
                       Else
                           ' as an alternative, we have a list of apps that we can match the shortcut name against, it exists in an external comma
                           ' delimited file. The list has two identification factors that are used to find a match and then we find an
