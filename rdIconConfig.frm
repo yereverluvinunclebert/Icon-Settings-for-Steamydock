@@ -5907,7 +5907,7 @@ Private Sub determineFirstRun()
         
         'write the rdsettings file
         'writeSettingsIni (rdIconUpperBound)
-'        Call writeIconSettingsDb("Software\SteamyDock\IconSettings" & "\Icons", rdIconUpperBound, interimSettingsFile)
+'        Call writeIconParamsToDB("Software\SteamyDock\IconSettings" & "\Icons", rdIconUpperBound, interimSettingsFile)
 '
 '        'amend the count in both the rdSettings.ini
 '        PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, interimSettingsFile
@@ -6708,7 +6708,7 @@ Private Sub btnSet_Click()
 
 
         PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
-        Call writeIconSettingsDb(selectedIconIndex, False)
+        Call writeIconParamsToDB(selectedIconIndex, False)
     End If
     
     ' tell the user that all has been saved
@@ -10240,7 +10240,7 @@ End Sub
 '    For useloop = rdIconLowerBound To rdIconUpperBound
 '         ' get the relevant entries from the registry
 '         readRegistryIconValues (useloop)
-'         Call writeIconSettingsDb(useloop, False)
+'         Call writeIconParamsToDB(useloop, False)
 '
 '     Next useloop
 '
@@ -11065,7 +11065,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
             Call readIconParamsFromDb(useloop + 1)
             
             'write the the next item up at the current source location effectively overwriting the current record
-            Call writeIconSettingsDb(useloop, False)
+            Call writeIconParamsToDB(useloop, False)
             
             ' .83 DAEB 03/06/2022 rDIConConfig.frm Display the icon we just moved by dragging, one by one rather than the whole map
             Call displayIconElement(useloop, picRdMap(useloop), True, 32, True, False, False)
@@ -11102,7 +11102,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
         End If
         
         PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
-        Call writeIconSettingsDb(trgtRdIconNumber, False)
+        Call writeIconParamsToDB(trgtRdIconNumber, False)
             
         Call displayIconElement(trgtRdIconNumber, picRdMap(trgtRdIconNumber), True, 32, True, False, False)
 
@@ -11120,7 +11120,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
             Call readIconParamsFromDb(useloop - 1)
             
             'write the the next item up at the current source location effectively overwriting it
-            Call writeIconSettingsDb(useloop, False)
+            Call writeIconParamsToDB(useloop, False)
         
             Call displayIconElement(useloop, picRdMap(useloop), True, 32, True, False, False)
 
@@ -11156,7 +11156,7 @@ Private Sub reOrderRdMap(ByVal srcRdIconNumber As Integer, ByVal trgtRdIconNumbe
             
         End If
         
-        Call writeIconSettingsDb(trgtRdIconNumber, False)
+        Call writeIconParamsToDB(trgtRdIconNumber, False)
         PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
         
         ' .83 DAEB 03/06/2022 rDIConConfig.frm Display the icon we just moved by dragging, one by one rather than the whole map
@@ -13921,7 +13921,7 @@ Private Sub menuLeft_Click()
     ' take the current icon details and write it into the place of the one to the left (-1)
     Call readIconParamsFromDb(selectedIconIndex)
     
-    Call writeIconSettingsDb(selectedIconIndex - 1, False)
+    Call writeIconParamsToDB(selectedIconIndex - 1, False)
 
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
@@ -13954,7 +13954,7 @@ Private Sub menuLeft_Click()
     End If
     
     ' take the stored icon details and write it into the current location
-    Call writeIconSettingsDb(selectedIconIndex, False)
+    Call writeIconParamsToDB(selectedIconIndex, False)
 
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
@@ -14087,7 +14087,7 @@ Private Sub menuright_Click()
      Call readIconParamsFromDb(selectedIconIndex)
     
     'writeSettingsIni (selectedIconIndex + 1)
-    Call writeIconSettingsDb(selectedIconIndex + 1, False)
+    Call writeIconParamsToDB(selectedIconIndex + 1, False)
 
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
 
@@ -14116,7 +14116,7 @@ Private Sub menuright_Click()
     End If
     ' take the stored icon details and write it into the current location
     'writeSettingsIni (selectedIconIndex)
-    Call writeIconSettingsDb(selectedIconIndex, False)
+    Call writeIconParamsToDB(selectedIconIndex, False)
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
     Call displayIconElement(selectedIconIndex, picRdMap(selectedIconIndex), True, 32, True, False, False)
@@ -14198,7 +14198,7 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
          Call readIconParamsFromDb(useloop)
         
         ' and increment the identifier by one
-         Call writeIconSettingsDb(useloop + 1, False)
+         Call writeIconParamsToDB(useloop + 1, False)
          
     Next useloop
     
@@ -14274,7 +14274,7 @@ Private Sub menuAddSomething(ByVal thisFilename As String, ByVal thisTitle As St
     chkRunElevated.Value = 0
     
     'writeSettingsIni (thisIcon)
-    Call writeIconSettingsDb(thisIcon, False)
+    Call writeIconParamsToDB(thisIcon, False)
     
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile
     
@@ -16101,7 +16101,7 @@ Private Sub deleteRdMapPosition(ByVal thisIconNumber As Integer, Optional confir
             
             'write the the new item at the current location effectively overwriting it
             'writeSettingsIni (useloop)
-            Call writeIconSettingsDb(useloop, False)
+            Call writeIconParamsToDB(useloop, False)
         Next useloop
     End If
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", interimSettingsFile

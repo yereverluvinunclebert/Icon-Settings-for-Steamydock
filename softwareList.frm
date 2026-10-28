@@ -948,7 +948,7 @@ Function FindFilesAPI(Path As String, SearchStr As String, FileCount As Integer,
     Dim DirName As String: DirName = vbNullString ' SubDirectory Name
     Dim dirNames() As String ' Buffer for directory name entries
     Dim nDir As Integer: nDir = 0 ' Number of directories in this path
-    Dim i As Integer: i = 0 ' For-loop counter...
+    Dim I As Integer: I = 0 ' For-loop counter...
     Dim hSearch As Long: hSearch = 0 ' Search Handle
     Dim WFD As WIN32_FIND_DATA
     Dim Cont As Integer: Cont = 0
@@ -996,9 +996,9 @@ Function FindFilesAPI(Path As String, SearchStr As String, FileCount As Integer,
     ' If there are sub-directories...
     If nDir > 0 Then
         ' Recursively walk into them...
-        For i = 0 To nDir - 1
-            FindFilesAPI = FindFilesAPI + FindFilesAPI(Path & dirNames(i) & "\", SearchStr, FileCount, DirCount)
-        Next i
+        For I = 0 To nDir - 1
+            FindFilesAPI = FindFilesAPI + FindFilesAPI(Path & dirNames(I) & "\", SearchStr, FileCount, DirCount)
+        Next I
     End If
 
    On Error GoTo 0
@@ -1256,7 +1256,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub savesizes()
-    Dim i As Integer: i = 0
+    Dim I As Integer: I = 0
     Dim a As Integer: a = 0
     Dim Ctrl As Control
 
@@ -1264,9 +1264,9 @@ Private Sub savesizes()
     On Error GoTo savesizes_Error
 
     ReDim swFormControlPositions(1 To Controls.Count)
-    i = 1
+    I = 1
     For Each Ctrl In Controls
-        With swFormControlPositions(i)
+        With swFormControlPositions(I)
             
             
             If TypeOf Ctrl Is Line Then
@@ -1287,7 +1287,7 @@ Private Sub savesizes()
                 On Error GoTo 0
             End If
         End With
-        i = i + 1
+        I = I + 1
     Next Ctrl
 
     ' Save the form's size.
@@ -1420,7 +1420,7 @@ Public Sub generateDockInformation()
             sWorkingDirectory = iconWorkingDirectory
 
             ' write the settings.ini
-           ' Call writeIconSettingsDb(useloop2, False)
+           ' Call writeIconParamsToDB(useloop2, False)
     
         Next useloop2
         
@@ -1447,7 +1447,7 @@ Public Sub generateDockInformation()
             sWorkingDirectory = iconWorkingDirectory
 
             ' write the alternative settings.ini
-            'Call writeIconSettingsDb(useloop2, False)
+            'Call writeIconParamsToDB(useloop2, False)
             listCounter = listCounter + 1
             
          Next useloop2
@@ -1468,7 +1468,7 @@ Public Sub generateDockInformation()
             readIconParamsFromDb useloop2
 
             ' write the alternative settings.ini
-            Call writeIconSettingsDb(useloop2, False)
+            Call writeIconParamsToDB(useloop2, False)
 
         Next useloop2
 
@@ -1486,7 +1486,7 @@ Public Sub generateDockInformation()
 
             
             ' write the settings.ini
-            Call writeIconSettingsDb(useloop2, False)
+            Call writeIconParamsToDB(useloop2, False)
 
         Next useloop2
 
@@ -1509,7 +1509,7 @@ Public Sub generateDockInformation()
             readIconParamsFromDb useloop2
 
             ' write them at their new location
-            Call writeIconSettingsDb(useloop2, False)
+            Call writeIconParamsToDB(useloop2, False)
 
         Next useloop2
 
@@ -1526,7 +1526,7 @@ Public Sub generateDockInformation()
 
 
             ' write the approved icon list to the settings.ini
-            Call writeIconSettingsDb(useloop2, False)
+            Call writeIconParamsToDB(useloop2, False)
             listCounter = listCounter + 1
             
         Next useloop2

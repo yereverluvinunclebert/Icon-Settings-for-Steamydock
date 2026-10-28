@@ -948,7 +948,7 @@ Private Sub StringToByte(ByVal InString As String, ByRef ByteArray() As Byte)
     intLen = Len(InString)
     If intLen > intUbound - intLbound Then intLen = intUbound - intLbound
     For intX = 1 To intLen
-        ByteArray(intX - 1 + intLbound) = Asc(Mid$(InString, intX, 1))
+        ByteArray(intX - 1 + intLbound) = Asc(mID$(InString, intX, 1))
     Next
 
    On Error GoTo 0
@@ -1421,7 +1421,7 @@ Public Sub readInterimAndWriteConfig()
 '
 '                    ' write the steamydock config file
 '
-'                    Call writeIconSettingsDb(useloop, False)
+'                    Call writeIconParamsToDB(useloop, False)
 '
 '                    writeRegistryOnce (useloop)
 '                Next useloop
@@ -1440,7 +1440,7 @@ Public Sub readInterimAndWriteConfig()
 '
 '                ' write the rocketdock settings.ini
 '                'writeSettingsIni (selectedIconIndex) ' the settings.ini only exists when RD is set to use it
-'                Call writeIconSettingsDb("Software\RocketDock" & "\Icons", selectedIconIndex, interimSettingsFile)
+'                Call writeIconParamsToDB("Software\RocketDock" & "\Icons", selectedIconIndex, interimSettingsFile)
 '
 '                ' copy the duplicate settings file to the original
 '                FileCopy interimSettingsFile, origSettingsFile
